@@ -1,0 +1,36 @@
+presets:
+  - name: "Autumn Leaves"
+    buttons:
+      A: { label: "Verse", note: 60 }
+      B: { label: "Chorus", note: 61 }
+      C: { label: "Bridge", note: 62 }
+      D: { label: "Comp", cc: 10, toggle: true }
+      E: { label: "Delay", cc: 11, toggle: true }
+      F: { label: "Loop", cc: 12 }
+    encoders:
+      Vol: { label: "Vol", cc: 7 }
+      Gain: { label: "Reverb", cc: 91 }
+
+  - name: "Blue Bossa"
+    buttons:
+      A: { label: "Head", note: 60 }
+      B: { label: "Solo", note: 61 }
+      C: { label: "Outro", note: 62 }
+      D: { label: "Wah", cc: 10, toggle: true }
+      E: { label: "Oct Up", cc: 11 }
+      F: { label: "Loop", cc: 12 }
+    encoders:
+      Vol: { label: "Vol", cc: 7 }
+      Gain: { label: "Dist", cc: 15 }
+
+  - name: "So What"
+    buttons:
+      A: { label: "Head", note: 60 }
+      B: { label: "Solo", note: 61 }
+      C: { label: "Trade", note: 62 }
+      D: { label: "Phaser", cc: 10, toggle: true }
+      E: { label: "Trem", cc: 11, toggle: true }
+      F: { label: "Loop", cc: 12 }
+    encoders:
+      Vol: { label: "Vol", cc: 7 }
+      Gain: { label: "Chorus", cc: 93 }
