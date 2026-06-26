@@ -49,6 +49,8 @@ struct ButtonConfig {
     cc: Option<u8>,
     #[serde(default)]
     toggle: Option<bool>,
+    #[serde(default)]
+    color: Option<String>,
 }
 
 #[derive(Deserialize)]

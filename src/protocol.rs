@@ -80,37 +80,70 @@ pub mod opendeck_set_messages {
     use super::*;
     use crate::{ButtonConfig, EncoderConfig};
 
-    // OpenDeck Switch block=1: section 1=MessageType, section 2=MidiId, section 0=Type
-    // OpenDeck Encoder block=2: section 3=MidiId
+    // OpenDeck Switch block=1: section 0=Type, 1=MessageType, 2=MidiId
+    // OpenDeck Output block=4: section 5=ControlType, 3=ActivationId, 6=ActivationValue, 7=Channel
+
+    fn color_to_value(color: &str) -> u16 {
+        match color.to_lowercase().as_str() {
+            "red" => 1,
+            "green" => 2,
+            "yellow" => 3,
+            "blue" => 4,
+            "magenta" => 5,
+            "cyan" => 6,
+            "white" => 7,
+            _ => 2, // default green
+        }
+    }
+
+    // LED control types
+    const LOCAL_NOTE_SINGLE: u16 = 1;
+    const LOCAL_CC_SINGLE: u16 = 3;
 
     pub fn button(preset: u8, comp_index: u8, cfg: &ButtonConfig) -> Vec<Vec<u8>> {
         let mut msgs = Vec::new();
         let idx = comp_index as u16;
 
-        // TODO: preset switching in OpenDeck config is separate — for now configure preset 0 only
+        // TODO: per-preset MIDI config requires OpenDeck preset switching
         if preset > 0 {
             return msgs;
         }
 
         if let Some(note) = cfg.note {
-            // Message type = Note (0x00)
-            msgs.push(opendeck_set_single(1, 1, idx, 0x00));
-            // MIDI ID = note number
-            msgs.push(opendeck_set_single(1, 2, idx, note as u16));
+            msgs.push(opendeck_set_single(1, 1, idx, 0x00)); // MessageType = Note
+            msgs.push(opendeck_set_single(1, 2, idx, note as u16)); // MidiId
         } else if let Some(cc) = cfg.cc {
-            // Message type = CC (0x02) or CC with reset (0x03) for toggle
-            let msg_type = if cfg.toggle.unwrap_or(false) {
-                0x03
-            } else {
-                0x02
-            };
+            let msg_type = if cfg.toggle.unwrap_or(false) { 0x03 } else { 0x02 };
             msgs.push(opendeck_set_single(1, 1, idx, msg_type));
             msgs.push(opendeck_set_single(1, 2, idx, cc as u16));
         }
 
-        // Set type = Latching if toggle
         if cfg.toggle.unwrap_or(false) {
-            msgs.push(opendeck_set_single(1, 0, idx, 1)); // Latching
+            msgs.push(opendeck_set_single(1, 0, idx, 1)); // Type = Latching
+        }
+
+        // LED config: button index maps to LED index
+        if cfg.color.is_some() || cfg.note.is_some() || cfg.cc.is_some() {
+            let led_idx = idx;
+            // Control type
+            let control_type = if cfg.note.is_some() {
+                LOCAL_NOTE_SINGLE
+            } else {
+                LOCAL_CC_SINGLE
+            };
+            msgs.push(opendeck_set_single(4, 5, led_idx, control_type));
+
+            // Activation ID = note or CC number
+            let act_id = cfg.note.unwrap_or(0) | cfg.cc.unwrap_or(0);
+            msgs.push(opendeck_set_single(4, 3, led_idx, act_id as u16));
+
+            // Activation value
+            msgs.push(opendeck_set_single(4, 6, led_idx, 127));
+
+            // Color (stored separately — uses a custom section or we skip for now)
+            // For now, color is applied via the firmware's set_output_color
+            // which isn't exposed via standard OpenDeck protocol.
+            // We'll handle color through the label protocol extension later.
         }
 
         msgs
@@ -125,8 +158,7 @@ pub mod opendeck_set_messages {
         }
 
         if let Some(cc) = cfg.cc {
-            // MIDI ID
-            msgs.push(opendeck_set_single(2, 3, idx, cc));
+            msgs.push(opendeck_set_single(2, 3, idx, cc)); // MIDI ID
         }
 
         msgs
