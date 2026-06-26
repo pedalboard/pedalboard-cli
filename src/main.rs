@@ -107,9 +107,15 @@ async fn send_sysex(
 async fn upload(address: &str, setlist: &Setlist) -> Result<(), Box<dyn std::error::Error>> {
     let (mut ws, _) = connect_async(address).await?;
 
-    // Handshake
-    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7]).await?;
-    println!("Connected.");
+    // Handshake — must wait for ACK before sending config
+    ws.send(Message::Binary(vec![0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7].into())).await?;
+    match tokio::time::timeout(std::time::Duration::from_secs(5), ws.next()).await {
+        Ok(Some(Ok(_))) => println!("Connected."),
+        _ => {
+            eprintln!("Handshake failed — no response from device");
+            return Ok(());
+        }
+    }
 
     for (preset_idx, preset) in setlist.presets.iter().enumerate() {
         println!("  Preset {}: \"{}\"", preset_idx + 1, preset.name);
