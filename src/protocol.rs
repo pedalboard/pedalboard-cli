@@ -137,9 +137,9 @@ pub mod opendeck_set_messages {
             msgs.push(opendeck_set_single(1, 4, idx, ch as u16));
         }
 
-        // LED config: button index maps to LED index
-        if cfg.color.is_some() || cfg.note.is_some() || cfg.cc.is_some() {
-            let led_idx = idx;
+        // LED config: button A-F maps to LED index 0-5
+        if cfg.color.is_some() || cfg.note.is_some() || cfg.cc.is_some() || cfg.program_change.is_some() {
+            let led_idx = idx - 2; // buttons are hw 2-7, LEDs are 0-5
             // Control type
             let control_type = if cfg.note.is_some() {
                 if cfg.level.unwrap_or(false) { LOCAL_NOTE_MULTI } else { LOCAL_NOTE_SINGLE }
