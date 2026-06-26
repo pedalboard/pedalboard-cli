@@ -34,7 +34,7 @@ fn opendeck_set_single(block: u8, section: u8, index: u16, value: u16) -> Vec<u8
 }
 
 // Label INDEX layout:
-// Switch:  preset * 6 * 16 + comp_index * 16 + char_pos
+// Switch:  preset * 10 * 16 + comp_index * 16 + char_pos
 // Encoder: preset * 2 * 16 + comp_index * 16 + char_pos
 // Preset name: preset_index * 16 + char_pos
 
@@ -56,10 +56,10 @@ pub mod label_set_messages {
     pub fn button(preset: u8, comp_index: u8, label: &str) -> Vec<Vec<u8>> {
         let mut msgs = Vec::new();
         for (i, ch) in label.bytes().enumerate().take(16) {
-            let idx = preset as u16 * 6 * 16 + comp_index as u16 * 16 + i as u16;
+            let idx = preset as u16 * 10 * 16 + comp_index as u16 * 16 + i as u16;
             msgs.push(label_set_single(0x01, 0x05, idx, ch));
         }
-        let idx = preset as u16 * 6 * 16 + comp_index as u16 * 16 + label.len().min(15) as u16;
+        let idx = preset as u16 * 10 * 16 + comp_index as u16 * 16 + label.len().min(15) as u16;
         msgs.push(label_set_single(0x01, 0x05, idx, 0));
         msgs
     }
