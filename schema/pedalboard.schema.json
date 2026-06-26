@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pedalboard Configuration",
+  "description": "Declarative configuration for the pedalboard MIDI controller",
+  "type": "object",
+  "required": ["presets"],
+  "properties": {
+    "presets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": { "$ref": "#/$defs/preset" }
+    }
+  },
+  "$defs": {
+    "preset": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 16,
+          "description": "Preset display name"
+        },
+        "bpm": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 300,
+          "description": "Tempo for MIDI clock"
+        },
+        "buttons": {
+          "type": "object",
+          "propertyNames": { "enum": ["A", "B", "C", "D", "E", "F"] },
+          "additionalProperties": { "$ref": "#/$defs/button" }
+        },
+        "encoders": {
+          "type": "object",
+          "propertyNames": { "enum": ["Vol", "Gain"] },
+          "additionalProperties": { "$ref": "#/$defs/encoder" }
+        },
+        "analogs": {
+          "type": "object",
+          "propertyNames": { "enum": ["Exp1", "Exp2"] },
+          "additionalProperties": { "$ref": "#/$defs/analog" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "button": {
+      "type": "object",
+      "required": ["label"],
+      "properties": {
+        "label": { "type": "string", "maxLength": 16 },
+        "note": { "type": "integer", "minimum": 0, "maximum": 127 },
+        "cc": { "type": "integer", "minimum": 0, "maximum": 127 },
+        "toggle": { "type": "boolean", "default": false },
+        "level": { "type": "boolean", "default": false },
+        "color": { "$ref": "#/$defs/color" },
+        "channel": { "type": "integer", "minimum": 1, "maximum": 16 }
+      },
+      "additionalProperties": false
+    },
+    "encoder": {
+      "type": "object",
+      "required": ["label"],
+      "properties": {
+        "label": { "type": "string", "maxLength": 16 },
+        "cc": { "type": "integer", "minimum": 0, "maximum": 16383 },
+        "channel": { "type": "integer", "minimum": 1, "maximum": 16 }
+      },
+      "additionalProperties": false
+    },
+    "analog": {
+      "type": "object",
+      "required": ["label"],
+      "properties": {
+        "label": { "type": "string", "maxLength": 16 },
+        "cc": { "type": "integer", "minimum": 0, "maximum": 127 },
+        "channel": { "type": "integer", "minimum": 1, "maximum": 16 }
+      },
+      "additionalProperties": false
+    },
+    "color": {
+      "type": "string",
+      "enum": ["red", "green", "yellow", "blue", "magenta", "cyan", "white"]
+    }
+  }
+}
