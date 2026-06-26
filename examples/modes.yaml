@@ -3,10 +3,12 @@
 presets:
   - name: "Live FX"
     buttons:
-      A: { label: "Board+", cc: 95, value: 127, channel: 2, color: green }
-      B: { label: "Board-", cc: 94, value: 127, channel: 2, color: green }
-      D: { label: "Board+", cc: 95, value: 127, channel: 2, color: blue }
-      E: { label: "Board-", cc: 94, value: 127, channel: 2, color: blue }
+      A: { label: "Board 1", program_change: 0, channel: 2, color: blue }
+      B: { label: "Board 2", program_change: 1, channel: 2, color: green }
+      C: { label: "Board 3", program_change: 2, channel: 2, color: green }
+      D: { label: "Next", cc: 95, value: 127, channel: 2 }
+      E: { label: "Prev", cc: 94, value: 127, channel: 2 }
+      F: { label: "Board 4", program_change: 3, channel: 2, color: magenta }
     encoders:
       Vol: { label: "Vol", cc: 7 }
       Gain: { label: "Gain", cc: 1 }

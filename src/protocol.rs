@@ -114,6 +114,9 @@ pub mod opendeck_set_messages {
         if let Some(note) = cfg.note {
             msgs.push(opendeck_set_single(1, 1, idx, 0x00)); // MessageType = Note
             msgs.push(opendeck_set_single(1, 2, idx, note as u16)); // MidiId
+        } else if let Some(pc) = cfg.program_change {
+            msgs.push(opendeck_set_single(1, 1, idx, 0x01)); // MessageType = ProgramChange
+            msgs.push(opendeck_set_single(1, 2, idx, pc as u16)); // MidiId = program number
         } else if let Some(cc) = cfg.cc {
             let msg_type = if cfg.toggle.unwrap_or(false) { 0x03 } else { 0x02 };
             msgs.push(opendeck_set_single(1, 1, idx, msg_type));
