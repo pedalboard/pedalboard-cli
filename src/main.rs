@@ -69,6 +69,7 @@ struct EncoderConfig {
 }
 
 const BUTTON_KEYS: &[&str] = &["A", "B", "C", "D", "E", "F"];
+const BUTTON_HW_OFFSET: u8 = 2; // A=2, B=3, ..., F=7 (0-1 are encoder buttons)
 const ENCODER_KEYS: &[&str] = &["Vol", "Gain"];
 
 #[tokio::main]
@@ -119,12 +120,13 @@ async fn upload(address: &str, setlist: &Setlist) -> Result<(), Box<dyn std::err
         // Set button labels and MIDI config
         for (key_idx, key) in BUTTON_KEYS.iter().enumerate() {
             if let Some(btn) = preset.buttons.get(*key) {
+                let hw_idx = key_idx as u8 + BUTTON_HW_OFFSET;
                 // Label
                 for msg in label_set_messages::button(preset_idx as u8, key_idx as u8, &btn.label) {
                     send_sysex(&mut ws, &msg).await?;
                 }
                 // MIDI config
-                for msg in opendeck_set_messages::button(preset_idx as u8, key_idx as u8, btn) {
+                for msg in opendeck_set_messages::button(preset_idx as u8, hw_idx, btn) {
                     send_sysex(&mut ws, &msg).await?;
                 }
                 print!("    {}: {} ", key, btn.label);
