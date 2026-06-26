@@ -48,6 +48,8 @@ struct ButtonConfig {
     #[serde(default)]
     cc: Option<u8>,
     #[serde(default)]
+    value: Option<u8>,
+    #[serde(default)]
     toggle: Option<bool>,
     #[serde(default)]
     level: Option<bool>,

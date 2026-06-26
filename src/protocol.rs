@@ -124,6 +124,11 @@ pub mod opendeck_set_messages {
             msgs.push(opendeck_set_single(1, 0, idx, 1)); // Type = Latching
         }
 
+        // Button value (velocity/CC value sent on press)
+        if let Some(value) = cfg.value {
+            msgs.push(opendeck_set_single(1, 3, idx, value as u16));
+        }
+
         // LED config: button index maps to LED index
         if cfg.color.is_some() || cfg.note.is_some() || cfg.cc.is_some() {
             let led_idx = idx;

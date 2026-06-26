@@ -53,6 +53,7 @@
         "label": { "type": "string", "maxLength": 16 },
         "note": { "type": "integer", "minimum": 0, "maximum": 127 },
         "cc": { "type": "integer", "minimum": 0, "maximum": 127 },
+        "value": { "type": "integer", "minimum": 0, "maximum": 127, "description": "Fixed CC/note value sent on press" },
         "toggle": { "type": "boolean", "default": false },
         "level": { "type": "boolean", "default": false },
         "color": { "$ref": "#/$defs/color" },
