@@ -50,6 +50,8 @@ struct ButtonConfig {
     #[serde(default)]
     toggle: Option<bool>,
     #[serde(default)]
+    level: Option<bool>,
+    #[serde(default)]
     color: Option<String>,
 }
 

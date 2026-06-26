@@ -99,6 +99,8 @@ pub mod opendeck_set_messages {
     // LED control types
     const LOCAL_NOTE_SINGLE: u16 = 1;
     const LOCAL_CC_SINGLE: u16 = 3;
+    const LOCAL_NOTE_MULTI: u16 = 7;
+    const LOCAL_CC_MULTI: u16 = 9;
 
     pub fn button(preset: u8, comp_index: u8, cfg: &ButtonConfig) -> Vec<Vec<u8>> {
         let mut msgs = Vec::new();
@@ -127,7 +129,9 @@ pub mod opendeck_set_messages {
             let led_idx = idx;
             // Control type
             let control_type = if cfg.note.is_some() {
-                LOCAL_NOTE_SINGLE
+                if cfg.level.unwrap_or(false) { LOCAL_NOTE_MULTI } else { LOCAL_NOTE_SINGLE }
+            } else if cfg.level.unwrap_or(false) {
+                LOCAL_CC_MULTI
             } else {
                 LOCAL_CC_SINGLE
             };
