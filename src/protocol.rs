@@ -140,10 +140,10 @@ pub mod opendeck_set_messages {
             // Activation value
             msgs.push(opendeck_set_single(4, 6, led_idx, 127));
 
-            // Color (stored separately — uses a custom section or we skip for now)
-            // For now, color is applied via the firmware's set_output_color
-            // which isn't exposed via standard OpenDeck protocol.
-            // We'll handle color through the label protocol extension later.
+            // Color (section 1 = color for RGB LEDs)
+            if let Some(ref color) = cfg.color {
+                msgs.push(opendeck_set_single(4, 1, led_idx, color_to_value(color)));
+            }
         }
 
         msgs
