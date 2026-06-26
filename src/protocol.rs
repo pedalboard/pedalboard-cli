@@ -142,7 +142,13 @@ pub mod opendeck_set_messages {
             let led_idx = idx - 2; // buttons are hw 2-7, LEDs are 0-5
             // Control type
             let control_type = if cfg.note.is_some() {
-                if cfg.level.unwrap_or(false) { LOCAL_NOTE_MULTI } else { LOCAL_NOTE_SINGLE }
+                if cfg.level.unwrap_or(false) {
+                    LOCAL_NOTE_MULTI
+                } else {
+                    LOCAL_NOTE_SINGLE
+                }
+            } else if cfg.program_change.is_some() {
+                10 // Static (always on)
             } else if cfg.level.unwrap_or(false) {
                 LOCAL_CC_MULTI
             } else {
