@@ -129,6 +129,11 @@ pub mod opendeck_set_messages {
             msgs.push(opendeck_set_single(1, 3, idx, value as u16));
         }
 
+        // Channel (OpenDeck uses 1-based, section 4)
+        if let Some(ch) = cfg.channel {
+            msgs.push(opendeck_set_single(1, 4, idx, ch as u16));
+        }
+
         // LED config: button index maps to LED index
         if cfg.color.is_some() || cfg.note.is_some() || cfg.cc.is_some() {
             let led_idx = idx;
@@ -168,6 +173,11 @@ pub mod opendeck_set_messages {
 
         if let Some(cc) = cfg.cc {
             msgs.push(opendeck_set_single(2, 3, idx, cc)); // MIDI ID
+        }
+
+        // Channel (section 4)
+        if let Some(ch) = cfg.channel {
+            msgs.push(opendeck_set_single(2, 4, idx, ch as u16));
         }
 
         msgs

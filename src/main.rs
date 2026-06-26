@@ -55,6 +55,8 @@ struct ButtonConfig {
     level: Option<bool>,
     #[serde(default)]
     color: Option<String>,
+    #[serde(default)]
+    channel: Option<u8>,
 }
 
 #[derive(Deserialize)]
@@ -62,6 +64,8 @@ struct EncoderConfig {
     label: String,
     #[serde(default)]
     cc: Option<u16>,
+    #[serde(default)]
+    channel: Option<u8>,
 }
 
 const BUTTON_KEYS: &[&str] = &["A", "B", "C", "D", "E", "F"];

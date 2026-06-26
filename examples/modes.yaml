@@ -1,34 +1,33 @@
 # Replicates the original 3-mode pedalboard configuration
-# Devices: TC Electronic Plethora, Boss RC-500, Pedalboard Audio
+# RC-500: channel 1, Plethora: channel 2
 presets:
   - name: "Live FX"
     buttons:
-      A: { label: "Board+", cc: 4, color: green }       # Plethora board up (CC#4 val=1)
-      B: { label: "Board-", cc: 4, color: green }       # Plethora board down (CC#4 val=0) 
-      # Note: Plethora uses CC#4 with value 1=up, 0=down — needs custom handling
-      D: { label: "Board+", cc: 4, color: blue }        # duplicate for right hand
-      E: { label: "Board-", cc: 4, color: blue }
+      A: { label: "Board+", cc: 95, value: 127, channel: 2, color: green }
+      B: { label: "Board-", cc: 94, value: 127, channel: 2, color: green }
+      D: { label: "Board+", cc: 95, value: 127, channel: 2, color: blue }
+      E: { label: "Board-", cc: 94, value: 127, channel: 2, color: blue }
     encoders:
       Vol: { label: "Vol", cc: 7 }
       Gain: { label: "Gain", cc: 1 }
 
   - name: "Looper"
     buttons:
-      A: { label: "Rhythm", cc: 80, toggle: true, color: green }  # RC-500 rhythm on/off
-      B: { label: "Vari", cc: 81, color: blue }                    # RC-500 rhythm variation
-      D: { label: "Mem+", cc: 82, color: yellow }                  # RC-500 memory up
-      E: { label: "Mem-", cc: 83, color: yellow }                  # RC-500 memory down
-      F: { label: "Clear", cc: 84, color: red }                    # RC-500 clear current
+      A: { label: "Rhythm", cc: 80, toggle: true, channel: 1, color: green }
+      B: { label: "Vari", cc: 81, value: 127, channel: 1, color: blue }
+      D: { label: "Mem+", cc: 82, value: 127, channel: 1, color: yellow }
+      E: { label: "Mem-", cc: 83, value: 127, channel: 1, color: yellow }
+      F: { label: "Clear", cc: 84, value: 127, channel: 1, color: red }
     encoders:
-      Vol: { label: "Level", cc: 20 }                              # RC-500 current track level
+      Vol: { label: "Level", cc: 6, channel: 1 }
       Gain: { label: "Gain", cc: 1 }
 
   - name: "Setup"
     buttons:
-      A: { label: "Pat+", cc: 7, color: magenta }     # RC-500 rhythm pattern up
-      B: { label: "Pat-", cc: 7, color: magenta }     # RC-500 rhythm pattern down
-      D: { label: "Kit+", cc: 8, color: cyan }        # RC-500 drum kit up
-      E: { label: "Kit-", cc: 8, color: cyan }        # RC-500 drum kit down
+      A: { label: "Pat+", cc: 7, value: 127, channel: 1, color: magenta }
+      B: { label: "Pat-", cc: 7, value: 0, channel: 1, color: magenta }
+      D: { label: "Kit+", cc: 8, value: 127, channel: 1, color: cyan }
+      E: { label: "Kit-", cc: 8, value: 0, channel: 1, color: cyan }
     encoders:
       Vol: { label: "Vol", cc: 7 }
       Gain: { label: "Gain", cc: 1 }
