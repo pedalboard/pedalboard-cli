@@ -42,6 +42,20 @@ struct PresetConfig {
     buttons: std::collections::HashMap<String, ButtonConfig>,
     #[serde(default)]
     encoders: std::collections::HashMap<String, EncoderConfig>,
+    #[serde(default)]
+    analog: std::collections::HashMap<String, AnalogYamlConfig>,
+}
+
+#[derive(Deserialize)]
+struct AnalogYamlConfig {
+    label: String,
+    cc: u8,
+    #[serde(default)]
+    channel: Option<u8>,
+    #[serde(default)]
+    min: Option<u8>,
+    #[serde(default)]
+    max: Option<u8>,
 }
 
 #[derive(Deserialize)]
@@ -322,11 +336,25 @@ fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Preset
                 let _ = encoders.push(enc_cfg);
             }
 
+            const ANALOG_KEYS: &[&str] = &["Exp1", "Exp2"];
+            let mut analog = heapless::Vec::new();
+            for key in ANALOG_KEYS {
+                if let Some(a) = p.analog.get(*key) {
+                    let _ = analog.push(pc::AnalogConfig {
+                        label: pc::Label::try_from(a.label.as_str()).unwrap_or_default(),
+                        cc: a.cc,
+                        channel: a.channel.unwrap_or(1),
+                        min: a.min.unwrap_or(0),
+                        max: a.max.unwrap_or(127),
+                    });
+                }
+            }
+
             pc::Preset {
                 name: pc::Label::try_from(p.name.as_str()).unwrap_or_default(),
                 buttons,
                 encoders,
-                analog: heapless::Vec::new(),
+                analog,
             }
         })
         .collect()

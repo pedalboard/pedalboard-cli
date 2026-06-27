@@ -1,0 +1,35 @@
+presets:
+  - name: "Feature Test"
+    buttons:
+      # A: Momentary NoteOn/Off — LED green while pressed
+      A: { label: "Note", note: 60, color: green }
+      # B: Toggle CC — LED blue when on, off when inactive
+      B: { label: "Toggle", cc: 80, toggle: true, color: blue }
+      # C: CcCycle — cycles through RC-500 drum kit values
+      C: { label: "Kit+", cc: 8, values: [0, 8, 17, 26, 35, 43, 51], color: cyan }
+      # D: Normal CC + long-press prev preset — LED yellow while pressed
+      D: { label: "FX1", cc: 20, value: 127, color: yellow, on_long_press: prev_preset }
+      # E: Program Change
+      E: { label: "PC 3", program_change: 3, color: magenta }
+      # F: Normal CC + long-press next preset — LED red while pressed
+      F: { label: "FX2", cc: 21, value: 127, color: red, on_long_press: next_preset }
+    encoders:
+      # Vol: CC#7 (standard volume)
+      Vol: { label: "Vol", cc: 7 }
+      # Gain: CC#91 (reverb send)
+      Gain: { label: "Reverb", cc: 91 }
+    analog:
+      Exp1: { label: "Wah", cc: 11 }
+      Exp2: { label: "Volume", cc: 7 }
+
+  - name: "Cycle Test"
+    buttons:
+      A: { label: "Kit+", cc: 8, values: [0, 8, 17, 26, 35, 43, 51, 59, 68, 76, 85], color: green }
+      B: { label: "Kit-", cc: 8, values: [0, 8, 17, 26, 35, 43, 51, 59, 68, 76, 85], reverse: true, color: red }
+      C: { label: "Note", note: 64, color: blue }
+      D: { label: "Prev", cc: 99, color: yellow, on_long_press: prev_preset }
+      E: { label: "PC 0", program_change: 0, color: cyan }
+      F: { label: "Next", cc: 100, color: magenta, on_long_press: next_preset }
+    encoders:
+      Vol: { label: "Mix", cc: 11 }
+      Gain: { label: "Tone", cc: 74 }
