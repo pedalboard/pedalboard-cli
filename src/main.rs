@@ -104,11 +104,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 async fn send_sysex(
     ws: &mut (impl SinkExt<Message, Error = tokio_tungstenite::tungstenite::Error>
-          + StreamExt<Item = Result<Message, tokio_tungstenite::tungstenite::Error>>
-          + Unpin),
+              + StreamExt<Item = Result<Message, tokio_tungstenite::tungstenite::Error>>
+              + Unpin),
     msg: &[u8],
 ) -> Result<(), Box<dyn std::error::Error>> {
-    ws.send(Message::Binary(msg.to_vec().into())).await?;
+    ws.send(Message::Binary(msg.to_vec())).await?;
     // Wait for ACK with timeout
     let _ = tokio::time::timeout(std::time::Duration::from_millis(100), ws.next()).await;
     Ok(())
@@ -118,7 +118,10 @@ async fn upload(address: &str, setlist: &Setlist) -> Result<(), Box<dyn std::err
     let (mut ws, _) = connect_async(address).await?;
 
     // Handshake — must wait for ACK before sending config
-    ws.send(Message::Binary(vec![0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7].into())).await?;
+    ws.send(Message::Binary(vec![
+        0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7,
+    ]))
+    .await?;
     match tokio::time::timeout(std::time::Duration::from_secs(5), ws.next()).await {
         Ok(Some(Ok(_))) => println!("Connected."),
         _ => {
@@ -196,13 +199,13 @@ async fn pe_test(address: &str, label: &str) -> Result<(), Box<dyn std::error::E
     let msg = pedalboard_protocol::property_exchange::build_set_inquiry(
         [0x10, 0x20, 0x30, 0x40], // CLI MUID
         [0x01, 0x02, 0x03, 0x04], // device MUID
-        0x01,                      // request_id
-        0x00,                      // resource (preset 0)
+        0x01,                     // request_id
+        0x00,                     // resource (preset 0)
         label.as_bytes(),
     );
 
     println!("Sending PE Set Property: {:02X?}", msg.as_slice());
-    ws.send(Message::Binary(msg.to_vec().into())).await?;
+    ws.send(Message::Binary(msg.to_vec())).await?;
 
     match tokio::time::timeout(std::time::Duration::from_secs(2), ws.next()).await {
         Ok(Some(Ok(resp))) => println!("Reply: {:02X?}", resp.into_data()),
@@ -234,14 +237,14 @@ fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Preset
                     } else if let Some(cc) = btn.cc {
                         if btn.toggle == Some(true) {
                             let _ = on_press.push(pc::Action::CcToggle {
-                                cc: cc as u8,
+                                cc,
                                 value_a: btn.value.unwrap_or(127),
                                 value_b: 0,
                                 channel: btn.channel.unwrap_or(1),
                             });
                         } else {
                             let _ = on_press.push(pc::Action::Cc {
-                                cc: cc as u8,
+                                cc,
                                 value: btn.value.unwrap_or(127),
                                 channel: btn.channel.unwrap_or(1),
                             });
@@ -337,7 +340,10 @@ async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
     let setlist: Setlist = serde_yaml::from_str(&content)?;
     let presets = yaml_to_presets(&setlist);
 
-    println!("Uploading {} presets via Property Exchange...", presets.len());
+    println!(
+        "Uploading {} presets via Property Exchange...",
+        presets.len()
+    );
 
     let (mut ws, _) = connect_async(address).await?;
 
@@ -357,7 +363,7 @@ async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
             preset.name,
             serialized.len()
         );
-        ws.send(Message::Binary(msg.to_vec().into())).await?;
+        ws.send(Message::Binary(msg.to_vec())).await?;
 
         match tokio::time::timeout(std::time::Duration::from_secs(2), ws.next()).await {
             Ok(Some(Ok(_))) => println!("    ACK ✓"),

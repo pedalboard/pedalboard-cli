@@ -1,5 +1,4 @@
-/// SysEx encoding helpers and message builders.
-
+//! SysEx encoding helpers and message builders.
 fn split14bit(value: u16) -> (u8, u8) {
     let mut high = ((value >> 8) & 0xFF) as u8;
     let mut low = (value & 0xFF) as u8;
@@ -18,8 +17,8 @@ fn label_set_single(block: u8, section: u8, raw_index: u16, value: u8) -> Vec<u8
     let (idx_h, idx_l) = split14bit(raw_index);
     let (val_h, val_l) = split14bit(value as u16);
     vec![
-        0xF0, 0x00, 0x53, 0x44, 0x00, 0x00, 0x01, 0x00, block, section, idx_h, idx_l, val_h,
-        val_l, 0xF7,
+        0xF0, 0x00, 0x53, 0x44, 0x00, 0x00, 0x01, 0x00, block, section, idx_h, idx_l, val_h, val_l,
+        0xF7,
     ]
 }
 
@@ -28,8 +27,8 @@ fn opendeck_set_single(block: u8, section: u8, index: u16, value: u16) -> Vec<u8
     let (idx_h, idx_l) = split14bit(index);
     let (val_h, val_l) = split14bit(value);
     vec![
-        0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0x00, block, section, idx_h, idx_l, val_h,
-        val_l, 0xF7,
+        0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0x00, block, section, idx_h, idx_l, val_h, val_l,
+        0xF7,
     ]
 }
 
@@ -118,7 +117,11 @@ pub mod opendeck_set_messages {
             msgs.push(opendeck_set_single(1, 1, idx, 0x01)); // MessageType = ProgramChange
             msgs.push(opendeck_set_single(1, 2, idx, pc as u16)); // MidiId = program number
         } else if let Some(cc) = cfg.cc {
-            let msg_type = if cfg.toggle.unwrap_or(false) { 0x03 } else { 0x02 };
+            let msg_type = if cfg.toggle.unwrap_or(false) {
+                0x03
+            } else {
+                0x02
+            };
             msgs.push(opendeck_set_single(1, 1, idx, msg_type));
             msgs.push(opendeck_set_single(1, 2, idx, cc as u16));
         }
@@ -138,9 +141,13 @@ pub mod opendeck_set_messages {
         }
 
         // LED config: button A-F maps to LED index 0-5
-        if cfg.color.is_some() || cfg.note.is_some() || cfg.cc.is_some() || cfg.program_change.is_some() {
+        if cfg.color.is_some()
+            || cfg.note.is_some()
+            || cfg.cc.is_some()
+            || cfg.program_change.is_some()
+        {
             let led_idx = idx - 2; // buttons are hw 2-7, LEDs are 0-5
-            // Control type
+                                   // Control type
             let control_type = if cfg.note.is_some() {
                 if cfg.level.unwrap_or(false) {
                     LOCAL_NOTE_MULTI
