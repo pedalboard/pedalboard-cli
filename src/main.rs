@@ -65,6 +65,10 @@ struct ButtonConfig {
     channel: Option<u8>,
     #[serde(default)]
     on_long_press: Option<String>,
+    #[serde(default)]
+    values: Option<Vec<u8>>,
+    #[serde(default)]
+    reverse: Option<bool>,
 }
 
 #[derive(Deserialize)]
@@ -200,7 +204,13 @@ fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Preset
                             channel: btn.channel.unwrap_or(1),
                         });
                     } else if let Some(cc) = btn.cc {
-                        if btn.toggle == Some(true) {
+                        if btn.values.is_some() {
+                            let _ = on_press.push(pc::Action::CcCycle {
+                                cc,
+                                channel: btn.channel.unwrap_or(1),
+                                reverse: btn.reverse.unwrap_or(false),
+                            });
+                        } else if btn.toggle == Some(true) {
                             let _ = on_press.push(pc::Action::CcToggle {
                                 cc,
                                 value_a: btn.value.unwrap_or(127),
@@ -262,6 +272,15 @@ fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Preset
                             }
                             lp
                         },
+                        cycle_values: {
+                            let mut cv = heapless::Vec::new();
+                            if let Some(vals) = &btn.values {
+                                for &v in vals.iter().take(pc::MAX_CYCLE_VALUES) {
+                                    cv.push(v).ok();
+                                }
+                            }
+                            cv
+                        },
                     }
                 } else {
                     pc::ButtonConfig {
@@ -271,6 +290,7 @@ fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Preset
                         on_press: heapless::Vec::new(),
                         on_release: heapless::Vec::new(),
                         on_long_press: heapless::Vec::new(),
+                        cycle_values: heapless::Vec::new(),
                     }
                 };
                 let _ = buttons.push(btn_cfg);
