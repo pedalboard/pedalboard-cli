@@ -63,6 +63,8 @@ struct ButtonConfig {
     color: Option<String>,
     #[serde(default)]
     channel: Option<u8>,
+    #[serde(default)]
+    on_long_press: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -247,7 +249,19 @@ fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Preset
                         mode,
                         on_press,
                         on_release: heapless::Vec::new(),
-                        on_long_press: heapless::Vec::new(),
+                        on_long_press: {
+                            let mut lp = heapless::Vec::new();
+                            match btn.on_long_press.as_deref() {
+                                Some("next_preset") => {
+                                    lp.push(pc::Action::PresetNext).ok();
+                                }
+                                Some("prev_preset") => {
+                                    lp.push(pc::Action::PresetPrev).ok();
+                                }
+                                _ => {}
+                            }
+                            lp
+                        },
                     }
                 } else {
                     pc::ButtonConfig {
