@@ -28,8 +28,6 @@ enum Commands {
     PeUpload { file: PathBuf },
     /// Read back a preset from the device via PE
     PeRead { index: u8 },
-    /// PoC: send a raw string via PE
-    PeTest { label: String },
 }
 
 #[derive(Deserialize)]
@@ -98,9 +96,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Commands::PeRead { index } => {
             pe_read(&cli.address, index).await?;
-        }
-        Commands::PeTest { label } => {
-            pe_test(&cli.address, &label).await?;
         }
     }
 
@@ -181,29 +176,6 @@ async fn reset(address: &str) -> Result<(), Box<dyn std::error::Error>> {
     send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7]).await?;
     send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x44, 0xF7]).await?;
     println!("Factory reset sent. Device will reboot.");
-    Ok(())
-}
-
-async fn pe_test(address: &str, label: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let (mut ws, _) = connect_async(address).await?;
-
-    let msg = pedalboard_protocol::property_exchange::build_set_inquiry(
-        [0x10, 0x20, 0x30, 0x40], // CLI MUID
-        [0x01, 0x02, 0x03, 0x04], // device MUID
-        0x01,                     // request_id
-        0x00,                     // resource (preset 0)
-        label.as_bytes(),
-    );
-
-    println!("Sending PE Set Property: {:02X?}", msg.as_slice());
-    ws.send(Message::Binary(msg.to_vec())).await?;
-
-    match tokio::time::timeout(std::time::Duration::from_secs(2), ws.next()).await {
-        Ok(Some(Ok(resp))) => println!("Reply: {:02X?}", resp.into_data()),
-        Ok(Some(Err(e))) => eprintln!("Error: {}", e),
-        _ => eprintln!("No reply (timeout)"),
-    }
-
     Ok(())
 }
 
