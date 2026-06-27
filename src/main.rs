@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
 mod protocol;
-use protocol::{label_set_messages, opendeck_set_messages};
+use protocol::opendeck_set_messages;
 
 #[derive(Parser)]
 #[command(name = "pedalboard-cli", about = "Pedalboard configuration tool", version = concat!(env!("CARGO_PKG_VERSION"), "-", env!("GIT_HASH")))]
@@ -133,20 +133,10 @@ async fn upload(address: &str, setlist: &Setlist) -> Result<(), Box<dyn std::err
     for (preset_idx, preset) in setlist.presets.iter().enumerate() {
         println!("  Preset {}: \"{}\"", preset_idx + 1, preset.name);
 
-        // Set preset name label
-        for msg in label_set_messages::preset_name(preset_idx as u8, &preset.name) {
-            send_sysex(&mut ws, &msg).await?;
-        }
-
-        // Set button labels and MIDI config
+        // Set button MIDI config
         for (key_idx, key) in BUTTON_KEYS.iter().enumerate() {
             if let Some(btn) = preset.buttons.get(*key) {
                 let hw_idx = key_idx as u8 + BUTTON_HW_OFFSET;
-                // Label
-                for msg in label_set_messages::button(preset_idx as u8, key_idx as u8, &btn.label) {
-                    send_sysex(&mut ws, &msg).await?;
-                }
-                // MIDI config
                 for msg in opendeck_set_messages::button(preset_idx as u8, hw_idx, btn) {
                     send_sysex(&mut ws, &msg).await?;
                 }
@@ -161,13 +151,9 @@ async fn upload(address: &str, setlist: &Setlist) -> Result<(), Box<dyn std::err
             }
         }
 
-        // Set encoder labels and MIDI config
+        // Set encoder MIDI config
         for (key_idx, key) in ENCODER_KEYS.iter().enumerate() {
             if let Some(enc) = preset.encoders.get(*key) {
-                for msg in label_set_messages::encoder(preset_idx as u8, key_idx as u8, &enc.label)
-                {
-                    send_sysex(&mut ws, &msg).await?;
-                }
                 for msg in opendeck_set_messages::encoder(preset_idx as u8, key_idx as u8, enc) {
                     send_sysex(&mut ws, &msg).await?;
                 }
