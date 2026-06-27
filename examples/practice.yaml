@@ -2,10 +2,8 @@ presets:
   # Mode 1: Live Effect (Plethora board switching + pedalboard-audio bypass)
   - name: "Live FX"
     buttons:
-      # A-C, F: Plethora board select (radio group — one active at a time)
-      # GoToBoard sends: CC#102=0, CC#103=0, CC#104=0, then PC (board-1)
       A: { label: "Board 1", program_change: 0, channel: 2, color: blue }
-      B: { label: "Board 2", program_change: 1, channel: 2, color: green }
+      B: { label: "Board 2", program_change: 1, channel: 2, color: "#2E8B57" }
       C: { label: "Board 3", program_change: 2, channel: 2, color: green }
       # D: Toggle bypass on pedalboard-audio processor 1 (CC#0 toggle 127/0, ch3)
       D: { label: "Bypass", cc: 0, channel: 3, toggle: true, color: red, on_long_press: prev_preset }
