@@ -72,6 +72,8 @@ struct ButtonConfig {
     #[serde(default)]
     toggle: Option<bool>,
     #[serde(default)]
+    radio_group: Option<u8>,
+    #[serde(default)]
     level: Option<bool>,
     #[serde(default)]
     color: Option<String>,
@@ -267,6 +269,8 @@ fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Preset
 
                     let mode = if btn.toggle == Some(true) {
                         pc::ButtonMode::Toggle
+                    } else if let Some(group) = btn.radio_group {
+                        pc::ButtonMode::RadioGroup(group)
                     } else {
                         pc::ButtonMode::Momentary
                     };
