@@ -420,6 +420,7 @@ async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
     );
 
     let (mut ws, _) = connect_async(address).await?;
+    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
 
     for (idx, preset) in presets.iter().enumerate() {
         let serialized = postcard::to_allocvec(preset)?;
@@ -439,7 +440,7 @@ async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
         );
         ws.send(Message::Binary(msg.to_vec())).await?;
 
-        match tokio::time::timeout(std::time::Duration::from_secs(2), ws.next()).await {
+        match tokio::time::timeout(std::time::Duration::from_secs(5), ws.next()).await {
             Ok(Some(Ok(_))) => println!("    ACK ✓"),
             _ => eprintln!("    No reply (timeout)"),
         }
