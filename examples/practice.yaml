@@ -1,0 +1,46 @@
+presets:
+  # Mode 1: Live Effect (Plethora board switching + pedalboard-audio bypass)
+  - name: "Live FX"
+    buttons:
+      # A-C, F: Plethora board select (radio group — one active at a time)
+      # GoToBoard sends: CC#102=0, CC#103=0, CC#104=0, then PC (board-1)
+      A: { label: "Board 1", program_change: 0, channel: 2, color: blue }
+      B: { label: "Board 2", program_change: 1, channel: 2, color: green }
+      C: { label: "Board 3", program_change: 2, channel: 2, color: green }
+      # D: Toggle bypass on pedalboard-audio processor 1 (CC#0 toggle 127/0, ch3)
+      D: { label: "Bypass", cc: 0, channel: 3, toggle: true, color: red, on_long_press: prev_preset }
+      E: { label: "", color: off }
+      F: { label: "Board 4", program_change: 3, channel: 2, color: purple, on_long_press: next_preset }
+    encoders:
+      Vol: { label: "HotKnob1", cc: 107, channel: 2 }
+      Gain: { label: "HotKnob2", cc: 108, channel: 2 }
+    analog:
+      Exp2: { label: "Output", cc: 100, channel: 3 }
+
+  # Mode 2: Live Looper (RC-500 control)
+  - name: "Looper"
+    buttons:
+      A: { label: "Rhythm", cc: 4, toggle: true, color: blue }
+      B: { label: "Variat.", cc: 5, color: blue }
+      C: { label: "", color: off }
+      D: { label: "Mem+", cc: 1, color: red, on_long_press: prev_preset }
+      E: { label: "Mem-", cc: 2, color: red }
+      F: { label: "Clear", cc: 3, color: red, on_long_press: next_preset }
+    encoders:
+      Vol: { label: "Vol", cc: 7 }
+      Gain: { label: "Level", cc: 6 }
+    analog:
+      Exp2: { label: "ChLevel", cc: 6 }
+
+  # Mode 3: Setup Looper (RC-500 drum kit & pattern selection)
+  - name: "Setup RC"
+    buttons:
+      A: { label: "Pat+", cc: 7, values: [0, 2, 4, 6, 8, 11, 13, 15, 17, 19, 22, 24], color: cyan }
+      B: { label: "Pat-", cc: 7, values: [0, 2, 4, 6, 8, 11, 13, 15, 17, 19, 22, 24], reverse: true, color: cyan }
+      C: { label: "", color: off }
+      D: { label: "Kit+", cc: 8, values: [0, 8, 17, 26, 35, 43, 51, 59, 68, 76, 85], color: yellow, on_long_press: prev_preset }
+      E: { label: "Kit-", cc: 8, values: [0, 8, 17, 26, 35, 43, 51, 59, 68, 76, 85], reverse: true, color: yellow }
+      F: { label: "", color: off, on_long_press: next_preset }
+    encoders:
+      Vol: { label: "Vol", cc: 7 }
+      Gain: { label: "Level", cc: 6 }
