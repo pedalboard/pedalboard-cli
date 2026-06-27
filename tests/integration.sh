@@ -29,8 +29,26 @@ else
   exit 1
 fi
 
-# Test 3: Factory reset
-echo -n "3. Factory reset... "
+# Test 3: PE preset persistence
+echo -n "3. PE preset persistence (reset + re-check)... "
+# Wait for firmware to save to flash
+sleep 2
+# Reset firmware via OpenDeck SysEx (reboot, not factory reset)
+eval timeout 5 $CLI --address $BRIDGE/config reset 2>&1 > /dev/null || true
+sleep 5
+# Upload again — if firmware booted with presets from flash, it will ACK
+result=$(eval timeout 15 $CLI --address $BRIDGE/raw pe-upload examples/setlist.yaml 2>&1)
+acks=$(echo "$result" | grep -c "ACK ✓")
+if [[ $acks -eq 3 ]]; then
+  echo "✓ (firmware survived reboot, $acks/3 ACKs)"
+else
+  echo "✗ (firmware failed after reboot, $acks/3 ACKs)"
+  echo "$result"
+  exit 1
+fi
+
+# Test 4: Factory reset
+echo -n "4. Factory reset... "
 result=$(eval timeout 10 $CLI --address $BRIDGE/config reset 2>&1)
 if [[ "$result" == *"Factory reset sent"* ]]; then
   echo "✓"
