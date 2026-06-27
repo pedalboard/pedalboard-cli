@@ -8,7 +8,7 @@ mod protocol;
 use protocol::{label_set_messages, opendeck_set_messages};
 
 #[derive(Parser)]
-#[command(name = "pedalboard-cli", about = "Pedalboard configuration tool")]
+#[command(name = "pedalboard-cli", about = "Pedalboard configuration tool", version = env!("GIT_HASH"))]
 struct Cli {
     /// WebSocket address of the bridge
     #[arg(short, long, default_value = "ws://cm5-dev.home/config")]
