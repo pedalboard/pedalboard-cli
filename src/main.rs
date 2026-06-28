@@ -24,6 +24,8 @@ enum Commands {
     Upload { file: PathBuf },
     /// Factory reset the device
     Reset,
+    /// Reboot the device (no data loss)
+    Reboot,
     /// Upload config via MIDI-CI Property Exchange (direct model)
     PeUpload { file: PathBuf },
     /// Read back a preset from the device via PE
@@ -112,6 +114,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Commands::Reset => {
             reset(&cli.address).await?;
+        }
+        Commands::Reboot => {
+            reboot(&cli.address).await?;
         }
         Commands::PeUpload { file } => {
             pe_upload(&cli.address, &file).await?;
@@ -206,6 +211,15 @@ async fn reset(address: &str) -> Result<(), Box<dyn std::error::Error>> {
     send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7]).await?;
     send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x44, 0xF7]).await?;
     println!("Factory reset sent. Device will reboot.");
+    Ok(())
+}
+
+async fn reboot(address: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let (mut ws, _) = connect_async(address).await?;
+
+    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7]).await?;
+    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x7F, 0xF7]).await?;
+    println!("Reboot sent.");
     Ok(())
 }
 
@@ -404,7 +418,8 @@ async fn pe_read(address: &str, index: u8) -> Result<(), Box<dyn std::error::Err
             // Extract body from PE Get Reply (same layout as Set, different sub-ID2)
             if let Some(body) = pedalboard_protocol::property_exchange::extract_get_body(&data) {
                 let mut decoded_buf = [0u8; 256];
-                let dec_len = pedalboard_protocol::property_exchange::decode_mcoded7(body, &mut decoded_buf);
+                let dec_len =
+                    pedalboard_protocol::property_exchange::decode_mcoded7(body, &mut decoded_buf);
                 let body = &decoded_buf[..dec_len];
                 if body.is_empty() {
                     println!("Preset {}: not found", index);

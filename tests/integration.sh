@@ -60,8 +60,8 @@ fi
 # Test 5: Persistence (reboot + read-back without re-upload)
 echo -n "5. Persistence (reboot + read-back)... "
 sleep 2
-# Reboot via probe reset (not factory reset which erases flash)
-probe-rs reset --chip RP2040 --protocol swd 2>/dev/null || true
+# Reboot via SysEx (graceful — allows in-flight flash writes to complete)
+eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
 sleep 5
 result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
 if [[ "$result" == *"Feature Test"* ]]; then
@@ -122,7 +122,7 @@ fi
 
 # Test 9: OpenDeck + PE coexist across reboot
 echo -n "9. Coexistence survives reboot... "
-probe-rs reset --chip RP2040 --protocol swd 2>/dev/null || true
+eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
 sleep 5
 # Verify PE still readable
 result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
