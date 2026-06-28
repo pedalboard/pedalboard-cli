@@ -23,7 +23,15 @@ presets:
       C: { label: "", color: off }
       D: { label: "Mem+", cc: 1, color: red, on_long_press: prev_preset }
       E: { label: "Mem-", cc: 2, color: red }
-      F: { label: "Clear", cc: 3, color: red, on_long_press: next_preset }
+      # Clear: stop loop, wait 50ms, then send clear command
+      F:
+        label: "Clear"
+        color: red
+        on_long_press: next_preset
+        actions:
+          - { cc: 3, value: 127 }
+          - { delay: 50 }
+          - { cc: 3, value: 0 }
     encoders:
       Vol: { label: "Vol", cc: 7 }
       Gain: { label: "Level", cc: 6 }

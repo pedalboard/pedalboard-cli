@@ -1,89 +1,329 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Pedalboard Configuration",
-  "description": "Declarative configuration for the pedalboard MIDI controller",
+  "title": "Setlist",
   "type": "object",
-  "required": ["presets"],
+  "required": [
+    "presets"
+  ],
   "properties": {
     "presets": {
       "type": "array",
-      "minItems": 1,
-      "maxItems": 32,
-      "items": { "$ref": "#/$defs/preset" }
+      "items": {
+        "$ref": "#/definitions/PresetConfig"
+      }
     }
   },
-  "$defs": {
-    "preset": {
-      "type": "object",
-      "required": ["name"],
-      "properties": {
-        "name": {
-          "type": "string",
-          "maxLength": 16,
-          "description": "Preset display name"
+  "definitions": {
+    "ActionYaml": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "delay"
+          ],
+          "properties": {
+            "delay": {
+              "type": "integer",
+              "format": "uint16",
+              "minimum": 0.0
+            }
+          }
         },
-        "bpm": {
+        {
+          "type": "object",
+          "required": [
+            "cc"
+          ],
+          "properties": {
+            "cc": {
+              "type": "integer",
+              "format": "uint8",
+              "minimum": 0.0
+            },
+            "channel": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint8",
+              "minimum": 0.0
+            },
+            "value": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint8",
+              "minimum": 0.0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "program_change"
+          ],
+          "properties": {
+            "channel": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint8",
+              "minimum": 0.0
+            },
+            "program_change": {
+              "type": "integer",
+              "format": "uint8",
+              "minimum": 0.0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "note"
+          ],
+          "properties": {
+            "channel": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint8",
+              "minimum": 0.0
+            },
+            "note": {
+              "type": "integer",
+              "format": "uint8",
+              "minimum": 0.0
+            }
+          }
+        }
+      ]
+    },
+    "AnalogYamlConfig": {
+      "type": "object",
+      "required": [
+        "cc",
+        "label"
+      ],
+      "properties": {
+        "cc": {
           "type": "integer",
-          "minimum": 30,
-          "maximum": 300,
-          "description": "Tempo for MIDI clock"
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "channel": {
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "label": {
+          "type": "string"
+        },
+        "max": {
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "min": {
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        }
+      }
+    },
+    "ButtonConfig": {
+      "type": "object",
+      "required": [
+        "label"
+      ],
+      "properties": {
+        "actions": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ActionYaml"
+          }
+        },
+        "cc": {
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "channel": {
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "color": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "level": {
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "note": {
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "on_long_press": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "program_change": {
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "radio_group": {
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "reverse": {
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "toggle": {
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "value": {
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "values": {
+          "default": null,
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "minimum": 0.0
+          }
+        }
+      }
+    },
+    "EncoderConfig": {
+      "type": "object",
+      "required": [
+        "label"
+      ],
+      "properties": {
+        "cc": {
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint16",
+          "minimum": 0.0
+        },
+        "channel": {
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "PresetConfig": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "analog": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AnalogYamlConfig"
+          }
         },
         "buttons": {
           "type": "object",
-          "propertyNames": { "enum": ["A", "B", "C", "D", "E", "F"] },
-          "additionalProperties": { "$ref": "#/$defs/button" }
+          "additionalProperties": {
+            "$ref": "#/definitions/ButtonConfig"
+          }
         },
         "encoders": {
           "type": "object",
-          "propertyNames": { "enum": ["Vol", "Gain"] },
-          "additionalProperties": { "$ref": "#/$defs/encoder" }
+          "additionalProperties": {
+            "$ref": "#/definitions/EncoderConfig"
+          }
         },
-        "analogs": {
-          "type": "object",
-          "propertyNames": { "enum": ["Exp1", "Exp2"] },
-          "additionalProperties": { "$ref": "#/$defs/analog" }
+        "name": {
+          "type": "string"
         }
-      },
-      "additionalProperties": false
-    },
-    "button": {
-      "type": "object",
-      "required": ["label"],
-      "properties": {
-        "label": { "type": "string", "maxLength": 16 },
-        "note": { "type": "integer", "minimum": 0, "maximum": 127 },
-        "cc": { "type": "integer", "minimum": 0, "maximum": 127 },
-        "value": { "type": "integer", "minimum": 0, "maximum": 127, "description": "Fixed CC/note value sent on press" },
-        "toggle": { "type": "boolean", "default": false },
-        "level": { "type": "boolean", "default": false },
-        "color": { "$ref": "#/$defs/color" },
-        "channel": { "type": "integer", "minimum": 1, "maximum": 16 }
-      },
-      "additionalProperties": false
-    },
-    "encoder": {
-      "type": "object",
-      "required": ["label"],
-      "properties": {
-        "label": { "type": "string", "maxLength": 16 },
-        "cc": { "type": "integer", "minimum": 0, "maximum": 16383 },
-        "channel": { "type": "integer", "minimum": 1, "maximum": 16 }
-      },
-      "additionalProperties": false
-    },
-    "analog": {
-      "type": "object",
-      "required": ["label"],
-      "properties": {
-        "label": { "type": "string", "maxLength": 16 },
-        "cc": { "type": "integer", "minimum": 0, "maximum": 127 },
-        "channel": { "type": "integer", "minimum": 1, "maximum": 16 }
-      },
-      "additionalProperties": false
-    },
-    "color": {
-      "type": "string",
-      "enum": ["red", "green", "yellow", "blue", "magenta", "cyan", "white"]
+      }
     }
   }
 }

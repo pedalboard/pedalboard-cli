@@ -24,7 +24,7 @@ fn opendeck_set_single(block: u8, section: u8, index: u16, value: u16) -> Vec<u8
 
 pub mod opendeck_set_messages {
     use super::*;
-    use crate::{ButtonConfig, EncoderConfig};
+    use pedalboard_cli::config::{ButtonConfig, EncoderConfig};
 
     // OpenDeck Switch block=1: section 0=Type, 1=MessageType, 2=MidiId
     // OpenDeck Output block=4: section 5=ControlType, 3=ActivationId, 6=ActivationValue, 7=Channel
