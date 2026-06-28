@@ -3,12 +3,12 @@ presets:
   - name: "Live FX"
     buttons:
       A: { label: "Board 1", program_change: 0, channel: 2, color: blue, radio_group: 1 }
-      B: { label: "Board 2", program_change: 1, channel: 2, color: green, radio_group: 1 }
+      B: { label: "Board 2", program_change: 1, channel: 2, color: '#2E8B57', radio_group: 1 }
       C: { label: "Board 3", program_change: 2, channel: 2, color: green, radio_group: 1 }
       # D: Toggle bypass on pedalboard-audio processor 1 (CC#0 toggle 127/0, ch3)
       D: { label: "Bypass", cc: 0, channel: 3, toggle: true, color: red, on_long_press: prev_preset }
       E: { label: "", color: off }
-      F: { label: "Board 4", program_change: 3, channel: 2, color: purple, radio_group: 1, on_long_press: next_preset }
+      F: { label: "Board 4", program_change: 3, channel: 2, color: '#EE82EE', radio_group: 1, on_long_press: next_preset }
     encoders:
       Vol: { label: "HotKnob1", cc: 107, channel: 2 }
       Gain: { label: "HotKnob2", cc: 108, channel: 2 }
