@@ -26,6 +26,8 @@ enum Commands {
     Reset,
     /// Reboot the device (no data loss)
     Reboot,
+    /// Enter UF2 bootloader (for firmware flashing)
+    Bootloader,
     /// Upload config via MIDI-CI Property Exchange (direct model)
     PeUpload { file: PathBuf },
     /// Read back a preset from the device via PE
@@ -49,6 +51,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Commands::Reboot => {
             reboot(&cli.address).await?;
+        }
+        Commands::Bootloader => {
+            bootloader(&cli.address).await?;
         }
         Commands::PeUpload { file } => {
             pe_upload(&cli.address, &file).await?;
@@ -152,6 +157,15 @@ async fn reboot(address: &str) -> Result<(), Box<dyn std::error::Error>> {
     send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7]).await?;
     send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x7F, 0xF7]).await?;
     println!("Reboot sent.");
+    Ok(())
+}
+
+async fn bootloader(address: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let (mut ws, _) = connect_async(address).await?;
+
+    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7]).await?;
+    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x55, 0xF7]).await?;
+    println!("Bootloader entry sent.");
     Ok(())
 }
 
