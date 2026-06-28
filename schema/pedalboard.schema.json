@@ -1,12 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Setlist",
+  "description": "A setlist file containing one or more presets.",
   "type": "object",
   "required": [
     "presets"
   ],
   "properties": {
     "presets": {
+      "description": "List of presets. Each preset defines the complete button/encoder/expression layout for one song or scene.",
       "type": "array",
       "items": {
         "$ref": "#/definitions/PresetConfig"
@@ -15,14 +17,17 @@
   },
   "definitions": {
     "ActionYaml": {
+      "description": "A single action in a multi-action sequence. Exactly one type per entry.",
       "anyOf": [
         {
+          "description": "Wait between actions (milliseconds).",
           "type": "object",
           "required": [
             "delay"
           ],
           "properties": {
             "delay": {
+              "description": "Delay in milliseconds before the next action.",
               "type": "integer",
               "format": "uint16",
               "minimum": 0.0
@@ -30,17 +35,20 @@
           }
         },
         {
+          "description": "Send a Control Change message.",
           "type": "object",
           "required": [
             "cc"
           ],
           "properties": {
             "cc": {
+              "description": "CC number (0-127).",
               "type": "integer",
               "format": "uint8",
               "minimum": 0.0
             },
             "channel": {
+              "description": "MIDI channel (1-16). Inherits from button if omitted.",
               "type": [
                 "integer",
                 "null"
@@ -49,6 +57,7 @@
               "minimum": 0.0
             },
             "value": {
+              "description": "CC value (0-127). Default: 127.",
               "type": [
                 "integer",
                 "null"
@@ -59,12 +68,14 @@
           }
         },
         {
+          "description": "Send a Program Change message.",
           "type": "object",
           "required": [
             "program_change"
           ],
           "properties": {
             "channel": {
+              "description": "MIDI channel (1-16). Inherits from button if omitted.",
               "type": [
                 "integer",
                 "null"
@@ -73,6 +84,7 @@
               "minimum": 0.0
             },
             "program_change": {
+              "description": "Program number (0-127).",
               "type": "integer",
               "format": "uint8",
               "minimum": 0.0
@@ -80,12 +92,14 @@
           }
         },
         {
+          "description": "Send a Note On message (velocity 127).",
           "type": "object",
           "required": [
             "note"
           ],
           "properties": {
             "channel": {
+              "description": "MIDI channel (1-16). Inherits from button if omitted.",
               "type": [
                 "integer",
                 "null"
@@ -94,6 +108,7 @@
               "minimum": 0.0
             },
             "note": {
+              "description": "MIDI note number (0-127).",
               "type": "integer",
               "format": "uint8",
               "minimum": 0.0
@@ -103,6 +118,7 @@
       ]
     },
     "AnalogYamlConfig": {
+      "description": "Expression pedal (analog input) configuration.",
       "type": "object",
       "required": [
         "cc",
@@ -110,11 +126,13 @@
       ],
       "properties": {
         "cc": {
+          "description": "MIDI CC number to send (0-127).",
           "type": "integer",
           "format": "uint8",
           "minimum": 0.0
         },
         "channel": {
+          "description": "MIDI channel (1-16). Default: 1.",
           "default": null,
           "type": [
             "integer",
@@ -124,9 +142,11 @@
           "minimum": 0.0
         },
         "label": {
+          "description": "Display label for the expression pedal overlay.",
           "type": "string"
         },
         "max": {
+          "description": "Maximum CC value at toe position. Default: 127.",
           "default": null,
           "type": [
             "integer",
@@ -136,6 +156,7 @@
           "minimum": 0.0
         },
         "min": {
+          "description": "Minimum CC value at heel position. Default: 0.",
           "default": null,
           "type": [
             "integer",
@@ -147,12 +168,14 @@
       }
     },
     "ButtonConfig": {
+      "description": "Button configuration. Use one of: note, cc, program_change, or actions for the MIDI message.",
       "type": "object",
       "required": [
         "label"
       ],
       "properties": {
         "actions": {
+          "description": "Multi-action sequence: list of MIDI messages sent in order on press. Overrides cc/note/program_change fields.",
           "type": [
             "array",
             "null"
@@ -162,6 +185,7 @@
           }
         },
         "animation": {
+          "description": "LED animation when active. Values: solid, blink, pulse, rotate, colorcycle.",
           "default": null,
           "type": [
             "string",
@@ -169,6 +193,7 @@
           ]
         },
         "cc": {
+          "description": "Send Control Change. Combined with toggle/values for different behaviors.",
           "default": null,
           "type": [
             "integer",
@@ -178,6 +203,7 @@
           "minimum": 0.0
         },
         "channel": {
+          "description": "MIDI channel (1-16). Default: 1. Applies to all actions on this button unless overridden per-action.",
           "default": null,
           "type": [
             "integer",
@@ -187,6 +213,7 @@
           "minimum": 0.0
         },
         "color": {
+          "description": "LED ring color when active. Values: red, green, blue, yellow, cyan, magenta, white, orange, purple, off, or #RRGGBB hex.",
           "default": null,
           "type": [
             "string",
@@ -194,9 +221,11 @@
           ]
         },
         "label": {
+          "description": "Display label shown on OLED (max 16 characters).",
           "type": "string"
         },
         "level": {
+          "description": "Level mode: LED brightness reflects CC value (for multi-LED visualization).",
           "default": null,
           "type": [
             "boolean",
@@ -204,6 +233,7 @@
           ]
         },
         "note": {
+          "description": "Send Note On/Off. Button press = Note On (velocity 127), release = Note Off.",
           "default": null,
           "type": [
             "integer",
@@ -213,6 +243,7 @@
           "minimum": 0.0
         },
         "on_long_press": {
+          "description": "Action on long press (hold > 500ms). Values: next_preset, prev_preset.",
           "default": null,
           "type": [
             "string",
@@ -220,6 +251,7 @@
           ]
         },
         "program_change": {
+          "description": "Send Program Change on press.",
           "default": null,
           "type": [
             "integer",
@@ -229,6 +261,7 @@
           "minimum": 0.0
         },
         "radio_group": {
+          "description": "Radio group ID (0-255): only one button in the group can be active at a time. Pressing one deactivates others.",
           "default": null,
           "type": [
             "integer",
@@ -238,6 +271,7 @@
           "minimum": 0.0
         },
         "renderer": {
+          "description": "LED spatial renderer. Values: solid (all 12), fill (partial arc), single (one LED), dots (evenly-spaced).",
           "default": null,
           "type": [
             "string",
@@ -245,6 +279,7 @@
           ]
         },
         "renderer_param": {
+          "description": "Renderer parameter: fill count (1-12), single position (0-11), or dot count (1-6).",
           "default": null,
           "type": [
             "integer",
@@ -254,6 +289,7 @@
           "minimum": 0.0
         },
         "reverse": {
+          "description": "Reverse cycle direction (cycle values list goes backward).",
           "default": null,
           "type": [
             "boolean",
@@ -261,6 +297,7 @@
           ]
         },
         "toggle": {
+          "description": "Toggle mode: alternates between on_press (active) and on_release (inactive) on each press. LED stays lit while active.",
           "default": null,
           "type": [
             "boolean",
@@ -268,6 +305,7 @@
           ]
         },
         "value": {
+          "description": "CC value to send (default: 127). For toggle mode, this is the ON value.",
           "default": null,
           "type": [
             "integer",
@@ -277,6 +315,7 @@
           "minimum": 0.0
         },
         "values": {
+          "description": "CC cycle values: each press sends the next value in the list. Use with cc field.",
           "default": null,
           "type": [
             "array",
@@ -291,11 +330,11 @@
       }
     },
     "DefaultsConfig": {
-      "description": "Default initial state for a preset on first activation.",
+      "description": "Default initial state for a preset on first activation after upload.",
       "type": "object",
       "properties": {
         "buttons": {
-          "description": "Button keys (A-F) mapped to \"on\" or \"off\". Omitted = off.",
+          "description": "Button keys (A-F) mapped to \"on\" or \"off\". Omitted buttons default to off.",
           "default": {},
           "type": "object",
           "additionalProperties": {
@@ -303,7 +342,7 @@
           }
         },
         "encoders": {
-          "description": "Encoder keys (Vol, Gain) mapped to initial value (0-127). Omitted = 0.",
+          "description": "Encoder keys (Vol, Gain) mapped to initial value (0-127). Omitted encoders default to 0.",
           "default": {},
           "type": "object",
           "additionalProperties": {
@@ -315,12 +354,14 @@
       }
     },
     "EncoderConfig": {
+      "description": "Rotary encoder configuration.",
       "type": "object",
       "required": [
         "label"
       ],
       "properties": {
         "cc": {
+          "description": "MIDI CC number to send (0-127). Each detent click increments/decrements the value.",
           "default": null,
           "type": [
             "integer",
@@ -330,6 +371,7 @@
           "minimum": 0.0
         },
         "channel": {
+          "description": "MIDI channel (1-16). Default: 1.",
           "default": null,
           "type": [
             "integer",
@@ -339,30 +381,34 @@
           "minimum": 0.0
         },
         "label": {
+          "description": "Display label shown on OLED overlay when turning.",
           "type": "string"
         }
       }
     },
     "PresetConfig": {
+      "description": "A single preset — one song or scene in your setlist.",
       "type": "object",
       "required": [
         "name"
       ],
       "properties": {
         "analog": {
+          "description": "Expression pedal configurations keyed by jack: Exp1, Exp2.",
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/AnalogYamlConfig"
           }
         },
         "buttons": {
+          "description": "Button configurations keyed by position: A, B, C, D, E, F.",
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/ButtonConfig"
           }
         },
         "defaults": {
-          "description": "Initial state: which buttons start active and encoder starting values.",
+          "description": "Initial state on first activation after upload. Determines which toggles start ON and encoder starting positions.",
           "anyOf": [
             {
               "$ref": "#/definitions/DefaultsConfig"
@@ -373,12 +419,14 @@
           ]
         },
         "encoders": {
+          "description": "Encoder configurations keyed by position: Vol (left), Gain (right).",
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/EncoderConfig"
           }
         },
         "name": {
+          "description": "Preset name displayed on the OLED (max 16 characters).",
           "type": "string"
         }
       }

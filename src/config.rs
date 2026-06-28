@@ -1,111 +1,159 @@
 use schemars::JsonSchema;
 use serde::Deserialize;
 
+/// A setlist file containing one or more presets.
 #[derive(Deserialize, JsonSchema)]
 pub struct Setlist {
+    /// List of presets. Each preset defines the complete button/encoder/expression layout for one song or scene.
     pub presets: Vec<PresetConfig>,
 }
 
+/// A single preset — one song or scene in your setlist.
 #[derive(Deserialize, JsonSchema)]
 pub struct PresetConfig {
+    /// Preset name displayed on the OLED (max 16 characters).
     pub name: String,
+    /// Button configurations keyed by position: A, B, C, D, E, F.
     #[serde(default)]
     pub buttons: std::collections::HashMap<String, ButtonConfig>,
+    /// Encoder configurations keyed by position: Vol (left), Gain (right).
     #[serde(default)]
     pub encoders: std::collections::HashMap<String, EncoderConfig>,
+    /// Expression pedal configurations keyed by jack: Exp1, Exp2.
     #[serde(default)]
     pub analog: std::collections::HashMap<String, AnalogYamlConfig>,
-    /// Initial state: which buttons start active and encoder starting values.
+    /// Initial state on first activation after upload. Determines which toggles start ON and encoder starting positions.
     #[serde(default)]
     pub defaults: Option<DefaultsConfig>,
 }
 
-/// Default initial state for a preset on first activation.
+/// Default initial state for a preset on first activation after upload.
 #[derive(Deserialize, JsonSchema)]
 pub struct DefaultsConfig {
-    /// Button keys (A-F) mapped to "on" or "off". Omitted = off.
+    /// Button keys (A-F) mapped to "on" or "off". Omitted buttons default to off.
     #[serde(default)]
     pub buttons: std::collections::HashMap<String, String>,
-    /// Encoder keys (Vol, Gain) mapped to initial value (0-127). Omitted = 0.
+    /// Encoder keys (Vol, Gain) mapped to initial value (0-127). Omitted encoders default to 0.
     #[serde(default)]
     pub encoders: std::collections::HashMap<String, u8>,
 }
 
+/// Expression pedal (analog input) configuration.
 #[derive(Deserialize, JsonSchema)]
 pub struct AnalogYamlConfig {
+    /// Display label for the expression pedal overlay.
     pub label: String,
+    /// MIDI CC number to send (0-127).
     pub cc: u8,
+    /// MIDI channel (1-16). Default: 1.
     #[serde(default)]
     pub channel: Option<u8>,
+    /// Minimum CC value at heel position. Default: 0.
     #[serde(default)]
     pub min: Option<u8>,
+    /// Maximum CC value at toe position. Default: 127.
     #[serde(default)]
     pub max: Option<u8>,
 }
 
+/// Button configuration. Use one of: note, cc, program_change, or actions for the MIDI message.
 #[derive(Deserialize, JsonSchema)]
 pub struct ButtonConfig {
+    /// Display label shown on OLED (max 16 characters).
     pub label: String,
+    /// Send Note On/Off. Button press = Note On (velocity 127), release = Note Off.
     #[serde(default)]
     pub note: Option<u8>,
+    /// Send Control Change. Combined with toggle/values for different behaviors.
     #[serde(default)]
     pub cc: Option<u8>,
+    /// Send Program Change on press.
     #[serde(default)]
     pub program_change: Option<u8>,
+    /// CC value to send (default: 127). For toggle mode, this is the ON value.
     #[serde(default)]
     pub value: Option<u8>,
+    /// Toggle mode: alternates between on_press (active) and on_release (inactive) on each press. LED stays lit while active.
     #[serde(default)]
     pub toggle: Option<bool>,
+    /// Radio group ID (0-255): only one button in the group can be active at a time. Pressing one deactivates others.
     #[serde(default)]
     pub radio_group: Option<u8>,
+    /// Level mode: LED brightness reflects CC value (for multi-LED visualization).
     #[serde(default)]
     pub level: Option<bool>,
+    /// LED ring color when active. Values: red, green, blue, yellow, cyan, magenta, white, orange, purple, off, or #RRGGBB hex.
     #[serde(default)]
     pub color: Option<String>,
+    /// LED animation when active. Values: solid, blink, pulse, rotate, colorcycle.
     #[serde(default)]
     pub animation: Option<String>,
+    /// LED spatial renderer. Values: solid (all 12), fill (partial arc), single (one LED), dots (evenly-spaced).
     #[serde(default)]
     pub renderer: Option<String>,
+    /// Renderer parameter: fill count (1-12), single position (0-11), or dot count (1-6).
     #[serde(default)]
     pub renderer_param: Option<u8>,
+    /// MIDI channel (1-16). Default: 1. Applies to all actions on this button unless overridden per-action.
     #[serde(default)]
     pub channel: Option<u8>,
+    /// Action on long press (hold > 500ms). Values: next_preset, prev_preset.
     #[serde(default)]
     pub on_long_press: Option<String>,
+    /// CC cycle values: each press sends the next value in the list. Use with cc field.
     #[serde(default)]
     pub values: Option<Vec<u8>>,
+    /// Reverse cycle direction (cycle values list goes backward).
     #[serde(default)]
     pub reverse: Option<bool>,
+    /// Multi-action sequence: list of MIDI messages sent in order on press. Overrides cc/note/program_change fields.
     #[serde(default)]
     pub actions: Option<Vec<ActionYaml>>,
 }
 
+/// A single action in a multi-action sequence. Exactly one type per entry.
 #[derive(Deserialize, JsonSchema)]
 #[serde(untagged)]
 pub enum ActionYaml {
+    /// Wait between actions (milliseconds).
     Delay {
+        /// Delay in milliseconds before the next action.
         delay: u16,
     },
+    /// Send a Control Change message.
     Cc {
+        /// CC number (0-127).
         cc: u8,
+        /// CC value (0-127). Default: 127.
         value: Option<u8>,
+        /// MIDI channel (1-16). Inherits from button if omitted.
         channel: Option<u8>,
     },
+    /// Send a Program Change message.
     ProgramChange {
+        /// Program number (0-127).
         program_change: u8,
+        /// MIDI channel (1-16). Inherits from button if omitted.
         channel: Option<u8>,
     },
+    /// Send a Note On message (velocity 127).
     NoteOn {
+        /// MIDI note number (0-127).
         note: u8,
+        /// MIDI channel (1-16). Inherits from button if omitted.
         channel: Option<u8>,
     },
 }
 
+/// Rotary encoder configuration.
 #[derive(Deserialize, JsonSchema)]
 pub struct EncoderConfig {
+    /// Display label shown on OLED overlay when turning.
     pub label: String,
+    /// MIDI CC number to send (0-127). Each detent click increments/decrements the value.
     #[serde(default)]
     pub cc: Option<u16>,
+    /// MIDI channel (1-16). Default: 1.
     #[serde(default)]
     pub channel: Option<u8>,
 }
