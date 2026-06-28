@@ -250,6 +250,11 @@ async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
             Ok(Some(Ok(_))) => println!("    ACK ✓"),
             _ => eprintln!("    No reply (timeout)"),
         }
+
+        // Brief delay between presets to avoid overflowing firmware persist channel
+        if presets.len() > 4 {
+            tokio::time::sleep(std::time::Duration::from_millis(250)).await;
+        }
     }
 
     println!("Upload complete.");

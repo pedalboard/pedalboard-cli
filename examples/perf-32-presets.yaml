@@ -1,0 +1,1313 @@
+presets:
+- name: Perf 00
+  buttons:
+    A:
+      label: B0A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B0B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B0C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B0D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B0E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B0F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 01
+  buttons:
+    A:
+      label: B1A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B1B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B1C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B1D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B1E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B1F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 02
+  buttons:
+    A:
+      label: B2A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B2B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B2C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B2D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B2E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B2F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 03
+  buttons:
+    A:
+      label: B3A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B3B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B3C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B3D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B3E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B3F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 04
+  buttons:
+    A:
+      label: B4A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B4B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B4C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B4D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B4E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B4F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 05
+  buttons:
+    A:
+      label: B5A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B5B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B5C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B5D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B5E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B5F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 06
+  buttons:
+    A:
+      label: B6A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B6B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B6C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B6D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B6E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B6F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 07
+  buttons:
+    A:
+      label: B7A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B7B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B7C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B7D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B7E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B7F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 08
+  buttons:
+    A:
+      label: B8A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B8B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B8C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B8D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B8E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B8F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 09
+  buttons:
+    A:
+      label: B9A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B9B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B9C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B9D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B9E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B9F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 10
+  buttons:
+    A:
+      label: B10A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B10B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B10C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B10D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B10E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B10F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 11
+  buttons:
+    A:
+      label: B11A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B11B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B11C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B11D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B11E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B11F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 12
+  buttons:
+    A:
+      label: B12A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B12B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B12C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B12D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B12E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B12F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 13
+  buttons:
+    A:
+      label: B13A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B13B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B13C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B13D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B13E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B13F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 14
+  buttons:
+    A:
+      label: B14A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B14B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B14C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B14D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B14E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B14F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 15
+  buttons:
+    A:
+      label: B15A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B15B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B15C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B15D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B15E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B15F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 16
+  buttons:
+    A:
+      label: B16A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B16B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B16C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B16D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B16E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B16F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 17
+  buttons:
+    A:
+      label: B17A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B17B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B17C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B17D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B17E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B17F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 18
+  buttons:
+    A:
+      label: B18A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B18B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B18C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B18D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B18E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B18F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 19
+  buttons:
+    A:
+      label: B19A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B19B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B19C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B19D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B19E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B19F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 20
+  buttons:
+    A:
+      label: B20A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B20B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B20C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B20D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B20E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B20F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 21
+  buttons:
+    A:
+      label: B21A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B21B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B21C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B21D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B21E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B21F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 22
+  buttons:
+    A:
+      label: B22A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B22B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B22C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B22D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B22E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B22F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 23
+  buttons:
+    A:
+      label: B23A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B23B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B23C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B23D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B23E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B23F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 24
+  buttons:
+    A:
+      label: B24A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B24B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B24C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B24D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B24E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B24F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 25
+  buttons:
+    A:
+      label: B25A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B25B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B25C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B25D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B25E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B25F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 26
+  buttons:
+    A:
+      label: B26A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B26B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B26C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B26D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B26E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B26F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 27
+  buttons:
+    A:
+      label: B27A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B27B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B27C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B27D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B27E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B27F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 28
+  buttons:
+    A:
+      label: B28A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B28B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B28C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B28D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B28E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B28F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 29
+  buttons:
+    A:
+      label: B29A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B29B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B29C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B29D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B29E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B29F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 30
+  buttons:
+    A:
+      label: B30A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B30B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B30C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B30D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B30E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B30F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
+- name: Perf 31
+  buttons:
+    A:
+      label: B31A
+      cc: 1
+      channel: 1
+      color: blue
+    B:
+      label: B31B
+      cc: 2
+      channel: 1
+      color: green
+    C:
+      label: B31C
+      cc: 3
+      channel: 1
+      color: red
+    D:
+      label: B31D
+      cc: 4
+      channel: 1
+      color: yellow
+      on_long_press: prev_preset
+    E:
+      label: B31E
+      cc: 5
+      channel: 1
+      color: cyan
+    F:
+      label: B31F
+      cc: 6
+      channel: 1
+      color: magenta
+      on_long_press: next_preset
+  encoders:
+    Vol:
+      label: Vol
+      cc: 7
+    Gain:
+      label: Gain
+      cc: 11
