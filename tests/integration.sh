@@ -92,5 +92,53 @@ else
   exit 1
 fi
 
+# Test 7: OpenDeck SysEx upload succeeds
+echo -n "7. OpenDeck SysEx upload... "
+result=$(eval timeout 15 $CLI --address $BRIDGE/config upload examples/setlist.yaml 2>&1)
+if [[ "$result" == *"Upload complete"* ]]; then
+  echo "✓"
+else
+  echo "✗"
+  echo "$result"
+  exit 1
+fi
+
+# Test 8: PE presets survive OpenDeck upload
+echo -n "8. PE survives OpenDeck upload... "
+# Upload PE presets
+eval timeout 15 $CLI --address $BRIDGE/raw pe-upload examples/setlist.yaml 2>&1 > /dev/null
+# Upload OpenDeck on top
+eval timeout 15 $CLI --address $BRIDGE/config upload examples/setlist.yaml 2>&1 > /dev/null
+# Verify PE presets are still readable
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
+if [[ "$result" == *"Autumn Leaves"* ]]; then
+  echo "✓ (PE preset 0 intact after OpenDeck upload)"
+else
+  echo "✗ (PE preset 0 lost)"
+  echo "$result"
+  exit 1
+fi
+
+# Test 9: OpenDeck + PE coexist across reboot
+echo -n "9. Coexistence survives reboot... "
+probe-rs reset --chip RP2040 --protocol swd 2>/dev/null || true
+sleep 5
+# Verify PE still readable
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
+if [[ "$result" != *"Autumn Leaves"* ]]; then
+  echo "✗ (PE preset 0 lost after reboot)"
+  echo "$result"
+  exit 1
+fi
+# Verify OpenDeck handshake still works
+result=$(eval timeout 10 $CLI --address $BRIDGE/config upload examples/setlist.yaml 2>&1 | head -1)
+if [[ "$result" == "Connected." ]]; then
+  echo "✓ (PE + OpenDeck both functional after reboot)"
+else
+  echo "✗ (OpenDeck handshake failed after reboot)"
+  echo "$result"
+  exit 1
+fi
+
 echo ""
 echo "All tests passed."

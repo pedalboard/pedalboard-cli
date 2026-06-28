@@ -153,6 +153,14 @@ async fn upload(address: &str, setlist: &Setlist) -> Result<(), Box<dyn std::err
     }
 
     for (preset_idx, preset) in setlist.presets.iter().enumerate() {
+        if preset_idx > 0 {
+            println!(
+                "  Preset {}: \"{}\" (skipped — OpenDeck only supports slot 0, use PE for multi-preset)",
+                preset_idx + 1,
+                preset.name
+            );
+            continue;
+        }
         println!("  Preset {}: \"{}\"", preset_idx + 1, preset.name);
 
         // Set button MIDI config
