@@ -403,6 +403,9 @@ async fn pe_read(address: &str, index: u8) -> Result<(), Box<dyn std::error::Err
         Ok(Some(Ok(Message::Binary(data)))) => {
             // Extract body from PE Get Reply (same layout as Set, different sub-ID2)
             if let Some(body) = pedalboard_protocol::property_exchange::extract_get_body(&data) {
+                let mut decoded_buf = [0u8; 256];
+                let dec_len = pedalboard_protocol::property_exchange::decode_mcoded7(body, &mut decoded_buf);
+                let body = &decoded_buf[..dec_len];
                 if body.is_empty() {
                     println!("Preset {}: not found", index);
                 } else {
