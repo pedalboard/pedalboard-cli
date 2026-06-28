@@ -1,0 +1,18 @@
+presets:
+  - name: "LED Demo"
+    buttons:
+      # A: Solid red when active, glow when off (default)
+      A: { label: "Solid", cc: 80, toggle: true, color: red }
+      # B: Blinks blue when active
+      B: { label: "Blink", cc: 81, toggle: true, color: blue, animation: blink }
+      # C: Pulses green when active (breathing)
+      C: { label: "Pulse", cc: 82, toggle: true, color: green, animation: pulse }
+      # D: Solid yellow — press to see glow vs on contrast
+      D: { label: "On/Off", cc: 83, toggle: true, color: yellow }
+      # E: Blinks cyan when active
+      E: { label: "Blink2", cc: 84, toggle: true, color: cyan, animation: blink }
+      # F: Pulses magenta when active
+      F: { label: "Pulse2", cc: 85, toggle: true, color: magenta, animation: pulse }
+    encoders:
+      Vol: { label: "Vol", cc: 7 }
+      Gain: { label: "Gain", cc: 11 }

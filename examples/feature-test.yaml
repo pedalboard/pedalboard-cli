@@ -3,16 +3,16 @@ presets:
     buttons:
       # A: Momentary NoteOn/Off — LED green while pressed
       A: { label: "Note", note: 60, color: green }
-      # B: Toggle CC — LED blue when on, off when inactive
-      B: { label: "Toggle", cc: 80, toggle: true, color: blue }
-      # C: CcCycle — cycles through RC-500 drum kit values
-      C: { label: "Kit+", cc: 8, values: [0, 8, 17, 26, 35, 43, 51], color: cyan }
+      # B: Toggle CC — LED blue blinks when on
+      B: { label: "Toggle", cc: 80, toggle: true, color: blue, animation: blink }
+      # C: CcCycle — pulses cyan when active
+      C: { label: "Kit+", cc: 8, values: [0, 8, 17, 26, 35, 43, 51], color: cyan, animation: pulse }
       # D: Normal CC + long-press prev preset — LED yellow while pressed
       D: { label: "FX1", cc: 20, value: 127, color: yellow, on_long_press: prev_preset }
-      # E: Program Change
+      # E: Program Change — solid magenta
       E: { label: "PC 3", program_change: 3, color: magenta }
-      # F: Normal CC + long-press next preset — LED red while pressed
-      F: { label: "FX2", cc: 21, value: 127, color: red, on_long_press: next_preset }
+      # F: Normal CC + long-press next preset — LED red blinks when active
+      F: { label: "FX2", cc: 21, value: 127, color: red, animation: blink, on_long_press: next_preset }
     encoders:
       # Vol: CC#7 (standard volume)
       Vol: { label: "Vol", cc: 7 }
@@ -21,6 +21,18 @@ presets:
     analog:
       Exp1: { label: "Wah", cc: 11 }
       Exp2: { label: "Volume", cc: 7 }
+
+  - name: "LED Animations"
+    buttons:
+      A: { label: "Solid", cc: 80, toggle: true, color: red }
+      B: { label: "Blink", cc: 81, toggle: true, color: blue, animation: blink }
+      C: { label: "Pulse", cc: 82, toggle: true, color: green, animation: pulse }
+      D: { label: "Solid", cc: 83, toggle: true, color: yellow, on_long_press: prev_preset }
+      E: { label: "Blink", cc: 84, toggle: true, color: cyan, animation: blink }
+      F: { label: "Pulse", cc: 85, toggle: true, color: magenta, animation: pulse, on_long_press: next_preset }
+    encoders:
+      Vol: { label: "Vol", cc: 7 }
+      Gain: { label: "Gain", cc: 11 }
 
   - name: "Cycle Test"
     buttons:

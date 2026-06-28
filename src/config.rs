@@ -49,6 +49,8 @@ pub struct ButtonConfig {
     #[serde(default)]
     pub color: Option<String>,
     #[serde(default)]
+    pub animation: Option<String>,
+    #[serde(default)]
     pub channel: Option<u8>,
     #[serde(default)]
     pub on_long_press: Option<String>,
@@ -200,6 +202,11 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                         color: pc::LedConfig {
                             on: color,
                             off: pc::Color::Off,
+                            animation: match btn.animation.as_deref() {
+                                Some("blink") => pc::LedAnimation::Blink,
+                                Some("pulse") => pc::LedAnimation::Pulse,
+                                _ => pc::LedAnimation::Solid,
+                            },
                         },
                         mode,
                         on_press,
