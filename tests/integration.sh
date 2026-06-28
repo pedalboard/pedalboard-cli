@@ -59,7 +59,6 @@ fi
 
 # Test 5: Persistence (reboot + read-back without re-upload)
 echo -n "5. Persistence (reboot + read-back)... "
-sleep 2
 # Reboot via SysEx (graceful — allows in-flight flash writes to complete)
 eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
 sleep 5
@@ -108,7 +107,7 @@ fi
 echo -n "8. PE survives OpenDeck upload... "
 # Upload PE presets
 eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $TEST_CONFIG 2>&1 > /dev/null
-sleep 2  # let persist task flush to flash before hammering with OpenDeck writes
+sleep 1  # let persist task flush PE presets before OpenDeck writes
 # Upload OpenDeck on top
 eval timeout 15 $CLI --address $BRIDGE/config upload $TEST_CONFIG 2>&1 > /dev/null
 sleep 1  # let bridge recover from OpenDeck session before PE read
@@ -124,7 +123,6 @@ fi
 
 # Test 9: OpenDeck + PE coexist across reboot
 echo -n "9. Coexistence survives reboot... "
-sleep 5  # let persist task flush SaveBulk to flash before rebooting
 eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
 sleep 5
 # Verify PE still readable
