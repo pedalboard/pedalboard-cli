@@ -51,6 +51,10 @@ pub struct ButtonConfig {
     #[serde(default)]
     pub animation: Option<String>,
     #[serde(default)]
+    pub renderer: Option<String>,
+    #[serde(default)]
+    pub renderer_param: Option<u8>,
+    #[serde(default)]
     pub channel: Option<u8>,
     #[serde(default)]
     pub on_long_press: Option<String>,
@@ -205,8 +209,17 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                             animation: match btn.animation.as_deref() {
                                 Some("blink") => pc::LedAnimation::Blink,
                                 Some("pulse") => pc::LedAnimation::Pulse,
+                                Some("rotate") => pc::LedAnimation::Rotate,
+                                Some("colorcycle") => pc::LedAnimation::ColorCycle,
                                 _ => pc::LedAnimation::Solid,
                             },
+                            renderer: match btn.renderer.as_deref() {
+                                Some("fill") => pc::LedRenderer::Fill,
+                                Some("single") => pc::LedRenderer::Single,
+                                Some("dots") => pc::LedRenderer::Dots,
+                                _ => pc::LedRenderer::Solid,
+                            },
+                            renderer_param: btn.renderer_param.unwrap_or(0),
                         },
                         mode,
                         on_press,

@@ -24,12 +24,18 @@ presets:
 
   - name: "LED Animations"
     buttons:
-      A: { label: "Solid", cc: 80, toggle: true, color: red }
-      B: { label: "Blink", cc: 81, toggle: true, color: blue, animation: blink }
-      C: { label: "Pulse", cc: 82, toggle: true, color: green, animation: pulse }
-      D: { label: "Solid", cc: 83, toggle: true, color: yellow, on_long_press: prev_preset }
-      E: { label: "Blink", cc: 84, toggle: true, color: cyan, animation: blink }
-      F: { label: "Pulse", cc: 85, toggle: true, color: magenta, animation: pulse, on_long_press: next_preset }
+      # A: Dots (3 evenly-spaced red dots) + Rotate
+      A: { label: "Dots", cc: 80, toggle: true, color: red, renderer: dots, renderer_param: 3, animation: rotate }
+      # B: Single blue dot + Blink
+      B: { label: "Single", cc: 81, toggle: true, color: blue, renderer: single, renderer_param: 0, animation: blink }
+      # C: Color cycle (hue rotation over time, all 12 LEDs)
+      C: { label: "Colors", cc: 82, toggle: true, color: green, animation: colorcycle }
+      # D: Fill (6 LEDs arc) yellow
+      D: { label: "Fill", cc: 83, toggle: true, color: yellow, renderer: fill, renderer_param: 6, on_long_press: prev_preset }
+      # E: Dots (2 opposing cyan dots) + Pulse
+      E: { label: "Dots2", cc: 84, toggle: true, color: cyan, renderer: dots, renderer_param: 2, animation: pulse }
+      # F: Solid magenta + Blink (classic)
+      F: { label: "Blink", cc: 85, toggle: true, color: magenta, animation: blink, on_long_press: next_preset }
     encoders:
       Vol: { label: "Vol", cc: 7 }
       Gain: { label: "Gain", cc: 11 }
