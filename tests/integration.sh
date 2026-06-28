@@ -22,10 +22,10 @@ fi
 echo -n "2. PE preset upload... "
 result=$(eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $TEST_CONFIG 2>&1)
 acks=$(echo "$result" | grep -c "ACK ✓")
-if [[ $acks -eq 2 ]]; then
-  echo "✓ ($acks/2 ACKs)"
+if [[ $acks -eq 3 ]]; then
+  echo "✓ ($acks/3 ACKs)"
 else
-  echo "✗ ($acks/2 ACKs)"
+  echo "✗ ($acks/3 ACKs)"
   echo "$result"
   exit 1
 fi
@@ -72,7 +72,7 @@ else
   exit 1
 fi
 result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 1 2>&1)
-if [[ "$result" == *"Cycle Test"* ]]; then
+if [[ "$result" == *"LED Animations"* ]]; then
   echo "preset 1 ✓"
 else
   echo "✗ (preset 1 lost after reboot)"
