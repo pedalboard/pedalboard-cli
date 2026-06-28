@@ -1,5 +1,9 @@
 presets:
   - name: "Feature Test"
+    # Initial state: Toggle B starts ON, Vol at 100
+    defaults:
+      buttons: { B: "on" }
+      encoders: { Vol: 100 }
     buttons:
       # A: Momentary NoteOn/Off — LED green while pressed
       A: { label: "Note", note: 60, color: green }

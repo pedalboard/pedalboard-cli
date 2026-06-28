@@ -15,6 +15,20 @@ pub struct PresetConfig {
     pub encoders: std::collections::HashMap<String, EncoderConfig>,
     #[serde(default)]
     pub analog: std::collections::HashMap<String, AnalogYamlConfig>,
+    /// Initial state: which buttons start active and encoder starting values.
+    #[serde(default)]
+    pub defaults: Option<DefaultsConfig>,
+}
+
+/// Default initial state for a preset on first activation.
+#[derive(Deserialize, JsonSchema)]
+pub struct DefaultsConfig {
+    /// Button keys (A-F) mapped to "on" or "off". Omitted = off.
+    #[serde(default)]
+    pub buttons: std::collections::HashMap<String, String>,
+    /// Encoder keys (Vol, Gain) mapped to initial value (0-127). Omitted = 0.
+    #[serde(default)]
+    pub encoders: std::collections::HashMap<String, u8>,
 }
 
 #[derive(Deserialize, JsonSchema)]
@@ -314,6 +328,20 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                 buttons,
                 encoders,
                 analog,
+                defaults: {
+                    let mut initial = pc::InitialState::default();
+                    if let Some(ref defs) = p.defaults {
+                        for key in BUTTON_KEYS {
+                            let active = defs.buttons.get(*key).map(|v| v == "on").unwrap_or(false);
+                            initial.button_active.push(active).ok();
+                        }
+                        for key in ENCODER_KEYS {
+                            let val = defs.encoders.get(*key).copied().unwrap_or(0);
+                            initial.encoder_values.push(val).ok();
+                        }
+                    }
+                    initial
+                },
             }
         })
         .collect()
