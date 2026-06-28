@@ -355,7 +355,7 @@ fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Preset
                 let _ = encoders.push(enc_cfg);
             }
 
-            const ANALOG_KEYS: &[&str] = &["Exp1", "Exp2"];
+            const ANALOG_KEYS: &[&str] = &["Exp2", "Exp1"];
             let mut analog = heapless::Vec::new();
             for key in ANALOG_KEYS {
                 if let Some(a) = p.analog.get(*key) {
@@ -365,6 +365,15 @@ fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Preset
                         channel: a.channel.unwrap_or(1),
                         min: a.min.unwrap_or(0),
                         max: a.max.unwrap_or(127),
+                    });
+                } else if !analog.is_empty() || p.analog.values().any(|_| true) {
+                    // Push placeholder to preserve index alignment
+                    let _ = analog.push(pc::AnalogConfig {
+                        label: pc::Label::new(),
+                        cc: 0,
+                        channel: 0, // channel 0 = disabled (won't send MIDI)
+                        min: 0,
+                        max: 0,
                     });
                 }
             }

@@ -13,7 +13,7 @@ presets:
       Vol: { label: "HotKnob1", cc: 107, channel: 2 }
       Gain: { label: "HotKnob2", cc: 108, channel: 2 }
     analog:
-      Exp2: { label: "Volume", cc: 7 }
+      Exp1: { label: "Volume", cc: 7 }
 
   # Mode 2: Live Looper (RC-500 control)
   - name: "Looper"
@@ -28,7 +28,7 @@ presets:
       Vol: { label: "Vol", cc: 7 }
       Gain: { label: "Level", cc: 6 }
     analog:
-      Exp2: { label: "Volume", cc: 7 }
+      Exp1: { label: "Volume", cc: 7 }
 
   # Mode 3: Setup Looper (RC-500 drum kit & pattern selection)
   - name: "Setup RC"
@@ -43,4 +43,4 @@ presets:
       Vol: { label: "Vol", cc: 7 }
       Gain: { label: "Level", cc: 6 }
     analog:
-      Exp2: { label: "Volume", cc: 7 }
+      Exp1: { label: "Volume", cc: 7 }
