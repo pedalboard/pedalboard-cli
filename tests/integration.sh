@@ -22,10 +22,12 @@ fi
 echo -n "2. PE preset upload... "
 result=$(eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $TEST_CONFIG 2>&1)
 acks=$(echo "$result" | grep -c "ACK ✓")
-if [[ $acks -eq 3 ]]; then
-  echo "✓ ($acks/3 ACKs)"
+# feature-test.yaml has global config + 3 presets = 4 ACKs
+expected_acks=4
+if [[ $acks -eq $expected_acks ]]; then
+  echo "✓ ($acks/$expected_acks ACKs)"
 else
-  echo "✗ ($acks/3 ACKs)"
+  echo "✗ ($acks/$expected_acks ACKs)"
   echo "$result"
   exit 1
 fi
@@ -61,7 +63,7 @@ fi
 echo -n "5. Persistence (reboot + read-back)... "
 # Reboot via SysEx (graceful — allows in-flight flash writes to complete)
 eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
-sleep 5
+sleep 7
 result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
 if [[ "$result" == *"Feature Test"* ]]; then
   echo -n "preset 0 ✓ "
@@ -79,21 +81,116 @@ else
   exit 1
 fi
 
-# Test 6: Factory reset clears presets
-echo -n "6. Factory reset clears presets... "
+# Test 6: Global config upload
+echo -n "6. Global config upload... "
+GLOBAL_TEST=/tmp/pedalboard-gc-test.yaml
+cat > "$GLOBAL_TEST" << 'EOF'
+global:
+  din_enabled: true
+  din_to_usb_thru: true
+  usb_to_din_thru: false
+  midi_clock: true
+  bpm: 100
+presets:
+  - name: "GC Test"
+    buttons:
+      A: { label: "X", cc: 1, color: red }
+EOF
+result=$(eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $GLOBAL_TEST 2>&1)
+gc_ack=$(echo "$result" | grep -A1 "Global config" | grep -c "ACK" || true)
+preset_ack=$(echo "$result" | grep -A1 "Preset 0" | grep -c "ACK" || true)
+if [[ $gc_ack -eq 1 ]] && [[ $preset_ack -eq 1 ]]; then
+  echo "✓ (global + preset ACK)"
+else
+  echo "✗ (gc_ack=$gc_ack, preset_ack=$preset_ack)"
+  echo "$result"
+  rm -f "$GLOBAL_TEST"
+  exit 1
+fi
+
+# Test 7: Global config enables MIDI clock
+echo -n "7. MIDI clock active after global config... "
+sleep 1
+clock_output=$(eval timeout 2 $CLI --address $BRIDGE/monitor monitor 2>&1 || true)
+clock_count=$(echo "$clock_output" | grep -c "Clock" || true)
+if [[ $clock_count -gt 5 ]]; then
+  echo "✓ ($clock_count ticks in 2s)"
+else
+  echo "✗ (only $clock_count clock ticks)"
+  exit 1
+fi
+
+# Test 8: Global config persists across reboot
+echo -n "8. Global config persists (reboot + clock check)... "
+eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
+sleep 7
+clock_output=$(eval timeout 2 $CLI --address $BRIDGE/monitor monitor 2>&1 || true)
+clock_count=$(echo "$clock_output" | grep -c "Clock" || true)
+if [[ $clock_count -gt 5 ]]; then
+  echo "✓ (clock still running after reboot)"
+else
+  echo "✗ (clock stopped after reboot: $clock_count ticks)"
+  exit 1
+fi
+
+# Test 9: Global config disable clock
+echo -n "9. Disable MIDI clock via global config... "
+cat > "$GLOBAL_TEST" << 'EOF'
+global:
+  midi_clock: false
+presets:
+  - name: "GC Test"
+    buttons:
+      A: { label: "X", cc: 1, color: red }
+EOF
+eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $GLOBAL_TEST 2>&1 > /dev/null
+sleep 1
+clock_output=$(eval timeout 2 $CLI --address $BRIDGE/monitor monitor 2>&1 || true)
+clock_count=$(echo "$clock_output" | grep -c "Clock" || true)
+rm -f "$GLOBAL_TEST"
+if [[ $clock_count -eq 0 ]]; then
+  echo "✓ (clock stopped)"
+else
+  echo "✗ (still $clock_count clock ticks)"
+  exit 1
+fi
+
+# Test 10: Factory reset clears presets and global config
+echo -n "10. Factory reset clears presets and global config... "
+# Re-enable clock so we can verify reset clears it
+cat > "$GLOBAL_TEST" << 'EOF'
+global:
+  midi_clock: true
+  bpm: 120
+presets:
+  - name: "GC Test"
+    buttons:
+      A: { label: "X", cc: 1, color: red }
+EOF
+eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $GLOBAL_TEST 2>&1 > /dev/null
+rm -f "$GLOBAL_TEST"
+sleep 1
 eval timeout 5 $CLI --address $BRIDGE/config reset 2>&1 > /dev/null || true
-sleep 5
+sleep 7
 result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
 if [[ "$result" == *"not found"* ]] || [[ "$result" == *"no reply"* ]]; then
-  echo "✓ (preset 0 cleared)"
+  # Also verify clock stopped (global config cleared)
+  clock_output=$(eval timeout 2 $CLI --address $BRIDGE/monitor monitor 2>&1 || true)
+  clock_count=$(echo "$clock_output" | grep -c "Clock" || true)
+  if [[ $clock_count -eq 0 ]]; then
+    echo "✓ (preset cleared + clock stopped)"
+  else
+    echo "✗ (preset cleared but clock still running)"
+    exit 1
+  fi
 else
   echo "✗ (preset 0 still present after factory reset)"
   echo "$result"
   exit 1
 fi
 
-# Test 7: OpenDeck SysEx upload succeeds
-echo -n "7. OpenDeck SysEx upload... "
+# Test 11: OpenDeck SysEx upload succeeds
+echo -n "11. OpenDeck SysEx upload... "
 result=$(eval timeout 15 $CLI --address $BRIDGE/config upload $TEST_CONFIG 2>&1)
 if [[ "$result" == *"Upload complete"* ]]; then
   echo "✓"
@@ -103,8 +200,8 @@ else
   exit 1
 fi
 
-# Test 8: PE presets survive OpenDeck upload
-echo -n "8. PE survives OpenDeck upload... "
+# Test 12: PE presets survive OpenDeck upload
+echo -n "12. PE survives OpenDeck upload... "
 # Upload PE presets
 eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $TEST_CONFIG 2>&1 > /dev/null
 sleep 1  # let persist task flush PE presets before OpenDeck writes
@@ -121,10 +218,10 @@ else
   exit 1
 fi
 
-# Test 9: OpenDeck + PE coexist across reboot
-echo -n "9. Coexistence survives reboot... "
+# Test 13: OpenDeck + PE coexist across reboot
+echo -n "13. Coexistence survives reboot... "
 eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
-sleep 5
+sleep 7
 # Verify PE still readable
 result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
 if [[ "$result" != *"Feature Test"* ]]; then

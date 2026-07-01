@@ -1,12 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Setlist",
-  "description": "A setlist file containing one or more presets.",
+  "description": "A setlist file containing one or more presets and optional global config.",
   "type": "object",
   "required": [
     "presets"
   ],
   "properties": {
+    "global": {
+      "description": "Global device settings (MIDI routing, clock, etc.). Applied once on upload.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/GlobalYamlConfig"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "presets": {
       "description": "List of presets. Each preset defines the complete button/encoder/expression layout for one song or scene.",
       "type": "array",
@@ -383,6 +394,62 @@
         "label": {
           "description": "Display label shown on OLED overlay when turning.",
           "type": "string"
+        }
+      }
+    },
+    "GlobalYamlConfig": {
+      "description": "Global device configuration — system-wide settings independent of presets.",
+      "type": "object",
+      "properties": {
+        "bpm": {
+          "description": "MIDI Clock tempo in BPM (30-300). Default: 120.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint16",
+          "minimum": 0.0
+        },
+        "din_enabled": {
+          "description": "Enable DIN MIDI output for locally-generated messages. Default: true.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "din_to_usb_thru": {
+          "description": "Route incoming DIN MIDI to USB MIDI out. Default: true.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "midi_clock": {
+          "description": "Enable MIDI Clock output. Default: false.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "usb_to_din_thru": {
+          "description": "Route incoming USB MIDI to DIN MIDI out. Default: false.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "usb_to_usb_thru": {
+          "description": "Route incoming USB MIDI back to USB MIDI out (echo). Default: false.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
         }
       }
     },

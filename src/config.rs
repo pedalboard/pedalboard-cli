@@ -1,11 +1,50 @@
 use schemars::JsonSchema;
 use serde::Deserialize;
 
-/// A setlist file containing one or more presets.
+/// A setlist file containing one or more presets and optional global config.
 #[derive(Deserialize, JsonSchema)]
 pub struct Setlist {
+    /// Global device settings (MIDI routing, clock, etc.). Applied once on upload.
+    #[serde(default)]
+    pub global: Option<GlobalYamlConfig>,
     /// List of presets. Each preset defines the complete button/encoder/expression layout for one song or scene.
     pub presets: Vec<PresetConfig>,
+}
+
+/// Global device configuration — system-wide settings independent of presets.
+#[derive(Deserialize, JsonSchema)]
+pub struct GlobalYamlConfig {
+    /// Enable DIN MIDI output for locally-generated messages. Default: true.
+    #[serde(default)]
+    pub din_enabled: Option<bool>,
+    /// Route incoming DIN MIDI to USB MIDI out. Default: true.
+    #[serde(default)]
+    pub din_to_usb_thru: Option<bool>,
+    /// Route incoming USB MIDI to DIN MIDI out. Default: false.
+    #[serde(default)]
+    pub usb_to_din_thru: Option<bool>,
+    /// Route incoming USB MIDI back to USB MIDI out (echo). Default: false.
+    #[serde(default)]
+    pub usb_to_usb_thru: Option<bool>,
+    /// Enable MIDI Clock output. Default: false.
+    #[serde(default)]
+    pub midi_clock: Option<bool>,
+    /// MIDI Clock tempo in BPM (30-300). Default: 120.
+    #[serde(default)]
+    pub bpm: Option<u16>,
+}
+
+pub fn yaml_global_to_protocol(
+    yaml: &GlobalYamlConfig,
+) -> pedalboard_protocol::config::GlobalConfig {
+    pedalboard_protocol::config::GlobalConfig {
+        din_enabled: yaml.din_enabled.unwrap_or(true),
+        din_to_usb_thru: yaml.din_to_usb_thru.unwrap_or(true),
+        usb_to_din_thru: yaml.usb_to_din_thru.unwrap_or(false),
+        usb_to_usb_thru: yaml.usb_to_usb_thru.unwrap_or(false),
+        midi_clock: yaml.midi_clock.unwrap_or(false),
+        bpm: yaml.bpm.unwrap_or(120),
+    }
 }
 
 /// A single preset — one song or scene in your setlist.

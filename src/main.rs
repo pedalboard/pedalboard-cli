@@ -236,7 +236,27 @@ async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
     );
 
     let (mut ws, _) = connect_async(address).await?;
-    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+    tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+
+    // Upload global config if present
+    if let Some(ref global_yaml) = setlist.global {
+        use pedalboard_cli::config::yaml_global_to_protocol;
+        let gc = yaml_global_to_protocol(global_yaml);
+        let serialized = postcard::to_allocvec(&gc)?;
+        let msg = pedalboard_protocol::property_exchange::build_set_inquiry(
+            [0x10, 0x20, 0x30, 0x40],
+            [0x01, 0x02, 0x03, 0x04],
+            0x7F, // request_id (must be 7-bit safe)
+            pedalboard_protocol::config::GLOBAL_CONFIG_RESOURCE,
+            &serialized,
+        );
+        println!("  Global config ({} bytes)", serialized.len());
+        ws.send(Message::Binary(msg.to_vec())).await?;
+        match tokio::time::timeout(std::time::Duration::from_secs(5), ws.next()).await {
+            Ok(Some(Ok(_))) => println!("    ACK ✓"),
+            _ => eprintln!("    No reply (timeout)"),
+        }
+    }
 
     for (idx, preset) in presets.iter().enumerate() {
         let serialized = postcard::to_allocvec(preset)?;

@@ -51,3 +51,67 @@ fn all_examples_parse_successfully() {
         count
     );
 }
+
+#[test]
+fn global_config_parsed_from_yaml() {
+    use pedalboard_cli::config::yaml_global_to_protocol;
+
+    let yaml = r#"
+global:
+  din_enabled: true
+  din_to_usb_thru: false
+  usb_to_din_thru: true
+  midi_clock: true
+  bpm: 140
+presets:
+  - name: "Test"
+    buttons: {}
+"#;
+    let setlist: Setlist = serde_yaml::from_str(yaml).unwrap();
+    let global_yaml = setlist.global.expect("global section missing");
+    let gc = yaml_global_to_protocol(&global_yaml);
+
+    assert!(gc.din_enabled);
+    assert!(!gc.din_to_usb_thru);
+    assert!(gc.usb_to_din_thru);
+    assert!(!gc.usb_to_usb_thru);
+    assert!(gc.midi_clock);
+    assert_eq!(gc.bpm, 140);
+}
+
+#[test]
+fn global_config_defaults_when_omitted() {
+    let yaml = r#"
+presets:
+  - name: "Test"
+    buttons: {}
+"#;
+    let setlist: Setlist = serde_yaml::from_str(yaml).unwrap();
+    assert!(setlist.global.is_none());
+}
+
+#[test]
+fn global_config_partial_fields_use_defaults() {
+    use pedalboard_cli::config::yaml_global_to_protocol;
+
+    let yaml = r#"
+global:
+  midi_clock: true
+  bpm: 90
+presets:
+  - name: "Test"
+    buttons: {}
+"#;
+    let setlist: Setlist = serde_yaml::from_str(yaml).unwrap();
+    let global_yaml = setlist.global.expect("global section missing");
+    let gc = yaml_global_to_protocol(&global_yaml);
+
+    // Unspecified fields use defaults
+    assert!(gc.din_enabled);
+    assert!(gc.din_to_usb_thru);
+    assert!(!gc.usb_to_din_thru);
+    assert!(!gc.usb_to_usb_thru);
+    // Specified fields
+    assert!(gc.midi_clock);
+    assert_eq!(gc.bpm, 90);
+}

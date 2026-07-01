@@ -1,3 +1,8 @@
+global:
+  din_enabled: true
+  din_to_usb_thru: true
+  midi_clock: false
+
 presets:
   - name: "Feature Test"
     # Initial state: Toggle B starts ON, Vol at 100
