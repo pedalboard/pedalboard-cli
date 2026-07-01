@@ -25,6 +25,12 @@ pub struct PresetConfig {
     /// Initial state on first activation after upload. Determines which toggles start ON and encoder starting positions.
     #[serde(default)]
     pub defaults: Option<DefaultsConfig>,
+    /// MIDI messages sent automatically when this preset becomes active (on switch or boot).
+    #[serde(default)]
+    pub on_enter: Option<Vec<ActionYaml>>,
+    /// MIDI messages sent automatically when leaving this preset.
+    #[serde(default)]
+    pub on_exit: Option<Vec<ActionYaml>>,
 }
 
 /// Default initial state for a preset on first activation after upload.
@@ -160,6 +166,38 @@ pub struct EncoderConfig {
 
 pub const BUTTON_KEYS: &[&str] = &["A", "B", "C", "D", "E", "F"];
 pub const ENCODER_KEYS: &[&str] = &["Vol", "Gain"];
+
+fn convert_actions(
+    actions: &Option<Vec<ActionYaml>>,
+) -> heapless::Vec<pedalboard_protocol::config::Action, { pedalboard_protocol::config::MAX_ACTIONS }>
+{
+    use pedalboard_protocol::config as pc;
+    let mut result: heapless::Vec<pc::Action, { pc::MAX_ACTIONS }> = heapless::Vec::new();
+    if let Some(actions) = actions {
+        for action in actions {
+            let _ = match action {
+                ActionYaml::Delay { delay } => result.push(pc::Action::Delay(*delay)),
+                ActionYaml::Cc { cc, value, channel } => result.push(pc::Action::Cc {
+                    cc: *cc,
+                    value: value.unwrap_or(127),
+                    channel: channel.unwrap_or(1),
+                }),
+                ActionYaml::ProgramChange {
+                    program_change,
+                    channel,
+                } => result.push(pc::Action::ProgramChange {
+                    program: *program_change,
+                    channel: channel.unwrap_or(1),
+                }),
+                ActionYaml::NoteOn { note, channel } => result.push(pc::Action::NoteOn {
+                    note: *note,
+                    channel: channel.unwrap_or(1),
+                }),
+            };
+        }
+    }
+    result
+}
 
 pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Preset> {
     use pedalboard_protocol::config as pc;
@@ -390,6 +428,8 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                     }
                     initial
                 },
+                on_enter: convert_actions(&p.on_enter),
+                on_exit: convert_actions(&p.on_exit),
             }
         })
         .collect()

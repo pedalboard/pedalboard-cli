@@ -4,6 +4,9 @@ presets:
     defaults:
       buttons: { B: "on" }
       encoders: { Vol: 100 }
+    # Send PC 0 on channel 2 when entering this preset (e.g. select multi-effect patch)
+    on_enter:
+      - { program_change: 0, channel: 2 }
     buttons:
       # A: Momentary NoteOn/Off — LED green while pressed
       A: { label: "Note", note: 60, color: green }

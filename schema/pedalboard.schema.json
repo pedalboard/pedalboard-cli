@@ -428,6 +428,26 @@
         "name": {
           "description": "Preset name displayed on the OLED (max 16 characters).",
           "type": "string"
+        },
+        "on_enter": {
+          "description": "MIDI messages sent automatically when this preset becomes active (on switch or boot).",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ActionYaml"
+          }
+        },
+        "on_exit": {
+          "description": "MIDI messages sent automatically when leaving this preset.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ActionYaml"
+          }
         }
       }
     }
