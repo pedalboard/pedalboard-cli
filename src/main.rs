@@ -23,10 +23,10 @@ enum Commands {
     Reboot,
     /// Enter UF2 bootloader (for firmware flashing)
     Bootloader,
-    /// Upload config via MIDI-CI Property Exchange (direct model)
-    PeUpload { file: PathBuf },
-    /// Read back a preset from the device via PE
-    PeRead { index: u8 },
+    /// Upload config via MIDI-CI Property Exchange
+    Upload { file: PathBuf },
+    /// Read back a preset from the device
+    Read { index: u8 },
     /// Monitor MIDI output from the device in real-time
     Monitor,
     /// Flash a UF2 firmware file to the device (enters bootloader, uploads via bridge)
@@ -47,10 +47,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Bootloader => {
             bootloader(&cli.address).await?;
         }
-        Commands::PeUpload { file } => {
+        Commands::Upload { file } => {
             pe_upload(&cli.address, &file).await?;
         }
-        Commands::PeRead { index } => {
+        Commands::Read { index } => {
             pe_read(&cli.address, index).await?;
         }
         Commands::Monitor => {

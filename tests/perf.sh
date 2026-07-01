@@ -17,7 +17,7 @@ echo "✓"
 # Upload 32 presets and measure time
 echo -n "2. Upload 32 presets... "
 start=$(date +%s%3N)
-result=$(eval timeout 60 $CLI --address $BRIDGE/raw pe-upload $PERF_CONFIG 2>&1)
+result=$(eval timeout 60 $CLI --address $BRIDGE/raw upload $PERF_CONFIG 2>&1)
 end=$(date +%s%3N)
 elapsed=$((end - start))
 if [[ "$result" == *"Upload complete"* ]]; then
@@ -35,7 +35,7 @@ sleep 10  # persist task needs time to save all 32 presets to flash + update RAM
 start=$(date +%s%3N)
 fail=0
 for i in $(seq 0 31); do
-  result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read $i 2>&1)
+  result=$(eval timeout 5 $CLI --address $BRIDGE/raw read $i 2>&1)
   expected=$(printf "Perf %02d" $i)
   if [[ "$result" != *"$expected"* ]]; then
     echo "✗ (preset $i: expected \"$expected\")"
@@ -64,7 +64,7 @@ sleep 7
 
 persisted=0
 for i in $(seq 0 31); do
-  result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read $i 2>&1)
+  result=$(eval timeout 5 $CLI --address $BRIDGE/raw read $i 2>&1)
   expected=$(printf "Perf %02d" $i)
   if [[ "$result" == *"$expected"* ]]; then
     persisted=$((persisted + 1))
@@ -75,7 +75,7 @@ echo "$persisted/32 persisted (see #75)"
 # Re-upload to test overwrite performance
 echo -n "5. Overwrite 32 presets... "
 start=$(date +%s%3N)
-result=$(eval timeout 60 $CLI --address $BRIDGE/raw pe-upload $PERF_CONFIG 2>&1)
+result=$(eval timeout 60 $CLI --address $BRIDGE/raw upload $PERF_CONFIG 2>&1)
 end=$(date +%s%3N)
 elapsed=$((end - start))
 if [[ "$result" == *"Upload complete"* ]]; then

@@ -11,7 +11,7 @@ echo "=== Integration Tests ==="
 # Test 1: OpenDeck handshake
 # Test 1: Device reachable via PE
 echo -n "1. Device reachable... "
-result=$(eval timeout 10 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
+result=$(eval timeout 10 $CLI --address $BRIDGE/raw read 0 2>&1)
 if [[ "$result" == *"Preset 0:"* ]] || [[ "$result" == *"not found"* ]]; then
   echo "✓"
 else
@@ -21,7 +21,7 @@ fi
 
 # Test 2: PE preset upload
 echo -n "2. PE preset upload... "
-result=$(eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $TEST_CONFIG 2>&1)
+result=$(eval timeout 15 $CLI --address $BRIDGE/raw upload $TEST_CONFIG 2>&1)
 preset_acks=$(echo "$result" | grep -A1 "Preset" | grep -c "ACK" || true)
 # feature-test.yaml has 3 presets
 if [[ $preset_acks -eq 3 ]]; then
@@ -36,7 +36,7 @@ fi
 echo -n "3. PE read-back... "
 failures=0
 for i in 0 1; do
-  result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read $i 2>&1)
+  result=$(eval timeout 5 $CLI --address $BRIDGE/raw read $i 2>&1)
   if [[ "$result" != *"Preset $i:"* ]] || [[ "$result" == *"no reply"* ]] || [[ "$result" == *"not found"* ]]; then
     failures=$((failures + 1))
   fi
@@ -50,7 +50,7 @@ fi
 
 # Test 4: PE read-back content verification
 echo -n "4. Content verification... "
-result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 0 2>&1)
 if [[ "$result" == *"Feature Test"* ]] && [[ "$result" == *"Toggle"* ]] && [[ "$result" == *"Reverb"* ]]; then
   echo "✓ (preset 0: name + buttons + encoders match)"
 else
@@ -64,7 +64,7 @@ echo -n "5. Persistence (reboot + read-back)... "
 # Reboot via SysEx (graceful — allows in-flight flash writes to complete)
 eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
 sleep 7
-result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 0 2>&1)
 if [[ "$result" == *"Feature Test"* ]]; then
   echo -n "preset 0 ✓ "
 else
@@ -72,7 +72,7 @@ else
   echo "$result"
   exit 1
 fi
-result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 1 2>&1)
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 1 2>&1)
 if [[ "$result" == *"LED Animations"* ]]; then
   echo "preset 1 ✓"
 else
@@ -96,7 +96,7 @@ presets:
     buttons:
       A: { label: "X", cc: 1, color: red }
 EOF
-result=$(eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $GLOBAL_TEST 2>&1)
+result=$(eval timeout 15 $CLI --address $BRIDGE/raw upload $GLOBAL_TEST 2>&1)
 gc_ack=$(echo "$result" | grep -A1 "Global config" | grep -c "ACK" || true)
 preset_ack=$(echo "$result" | grep -A1 "Preset 0" | grep -c "ACK" || true)
 if [[ $gc_ack -eq 1 ]] && [[ $preset_ack -eq 1 ]]; then
@@ -143,7 +143,7 @@ presets:
     buttons:
       A: { label: "X", cc: 1, color: red }
 EOF
-eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $GLOBAL_TEST 2>&1 > /dev/null
+eval timeout 15 $CLI --address $BRIDGE/raw upload $GLOBAL_TEST 2>&1 > /dev/null
 sleep 1
 clock_output=$(eval timeout 2 $CLI --address $BRIDGE/monitor monitor 2>&1 || true)
 clock_count=$(echo "$clock_output" | grep -c "Clock" || true)
@@ -167,12 +167,12 @@ presets:
     buttons:
       A: { label: "X", cc: 1, color: red }
 EOF
-eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $GLOBAL_TEST 2>&1 > /dev/null
+eval timeout 15 $CLI --address $BRIDGE/raw upload $GLOBAL_TEST 2>&1 > /dev/null
 rm -f "$GLOBAL_TEST"
 sleep 1
 eval timeout 5 $CLI --address $BRIDGE/config reset 2>&1 > /dev/null || true
 sleep 7
-result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 0 2>&1)
 if [[ "$result" == *"not found"* ]] || [[ "$result" == *"no reply"* ]]; then
   # Also verify clock stopped (global config cleared)
   clock_output=$(eval timeout 2 $CLI --address $BRIDGE/monitor monitor 2>&1 || true)
@@ -191,11 +191,11 @@ fi
 
 # Test 11: PE presets survive reboot after factory reset + re-upload
 echo -n "11. PE re-upload after reset... "
-eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $TEST_CONFIG 2>&1 > /dev/null
+eval timeout 15 $CLI --address $BRIDGE/raw upload $TEST_CONFIG 2>&1 > /dev/null
 sleep 1
 eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
 sleep 7
-result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 0 2>&1)
 if [[ "$result" == *"Feature Test"* ]]; then
   echo "✓ (preset persisted after reset + re-upload + reboot)"
 else
