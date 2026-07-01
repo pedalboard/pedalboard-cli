@@ -64,42 +64,48 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-async fn send_sysex(
-    ws: &mut (impl SinkExt<Message, Error = tokio_tungstenite::tungstenite::Error>
-              + StreamExt<Item = Result<Message, tokio_tungstenite::tungstenite::Error>>
-              + Unpin),
-    msg: &[u8],
-) -> Result<(), Box<dyn std::error::Error>> {
-    ws.send(Message::Binary(msg.to_vec())).await?;
-    // Wait for ACK with timeout
-    let _ = tokio::time::timeout(std::time::Duration::from_millis(100), ws.next()).await;
-    Ok(())
-}
-
 async fn reset(address: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let (mut ws, _) = connect_async(address).await?;
-
-    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7]).await?;
-    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x44, 0xF7]).await?;
+    send_system_command(
+        address,
+        pedalboard_protocol::config::SystemCommand::FactoryReset,
+    )
+    .await?;
     println!("Factory reset sent. Device will reboot.");
     Ok(())
 }
 
 async fn reboot(address: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let (mut ws, _) = connect_async(address).await?;
-
-    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7]).await?;
-    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x7F, 0xF7]).await?;
+    send_system_command(address, pedalboard_protocol::config::SystemCommand::Reboot).await?;
     println!("Reboot sent.");
     Ok(())
 }
 
 async fn bootloader(address: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let (mut ws, _) = connect_async(address).await?;
-
-    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7]).await?;
-    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x55, 0xF7]).await?;
+    send_system_command(
+        address,
+        pedalboard_protocol::config::SystemCommand::Bootloader,
+    )
+    .await?;
     println!("Bootloader entry sent.");
+    Ok(())
+}
+
+async fn send_system_command(
+    address: &str,
+    cmd: pedalboard_protocol::config::SystemCommand,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let raw_address = address.replace("/config", "/raw");
+    let (mut ws, _) = connect_async(&raw_address).await?;
+    let msg = pedalboard_protocol::property_exchange::build_set_inquiry(
+        [0x10, 0x20, 0x30, 0x40],
+        [0x01, 0x02, 0x03, 0x04],
+        0x70, // request_id for system commands
+        pedalboard_protocol::config::SYSTEM_COMMAND_RESOURCE,
+        &[cmd as u8],
+    );
+    ws.send(Message::Binary(msg.to_vec())).await?;
+    // Don't wait for ACK — device may reboot before replying
+    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
     Ok(())
 }
 
@@ -219,23 +225,23 @@ async fn flash(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::error::
     let data = std::fs::read(file)?;
     println!("Firmware: {} ({} bytes)", file.display(), data.len());
 
-    // 1. Enter bootloader
+    // 1. Enter bootloader via PE system command
     println!("Entering bootloader...");
-    let (mut ws, _) = connect_async(address).await?;
-    ws.send(Message::Binary(vec![
-        0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7,
-    ]))
-    .await?;
-    let _ = tokio::time::timeout(std::time::Duration::from_secs(2), ws.next()).await;
-    ws.send(Message::Binary(vec![
-        0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x55, 0xF7,
-    ]))
-    .await?;
+    let raw_address = address.replace("/config", "/raw");
+    let (mut ws, _) = connect_async(&raw_address).await?;
+    let msg = pedalboard_protocol::property_exchange::build_set_inquiry(
+        [0x10, 0x20, 0x30, 0x40],
+        [0x01, 0x02, 0x03, 0x04],
+        0x70,
+        pedalboard_protocol::config::SYSTEM_COMMAND_RESOURCE,
+        &[pedalboard_protocol::config::SystemCommand::Bootloader as u8],
+    );
+    ws.send(Message::Binary(msg.to_vec())).await?;
     drop(ws);
 
     // 2. Upload UF2 via HTTP POST to bridge /flash (bridge waits for drive internally)
     println!("Uploading firmware to bridge...");
-    tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+    tokio::time::sleep(std::time::Duration::from_secs(4)).await;
 
     let base_url = address
         .replace("ws://", "http://")
