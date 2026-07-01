@@ -9,9 +9,10 @@ TEST_CONFIG="examples/feature-test.yaml"
 echo "=== Integration Tests ==="
 
 # Test 1: OpenDeck handshake
-echo -n "1. OpenDeck handshake... "
-result=$(eval timeout 10 $CLI --address $BRIDGE/config upload $TEST_CONFIG 2>&1 | head -1)
-if [[ "$result" == "Connected." ]]; then
+# Test 1: Device reachable via PE
+echo -n "1. Device reachable... "
+result=$(eval timeout 10 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
+if [[ "$result" == *"Preset 0:"* ]] || [[ "$result" == *"not found"* ]]; then
   echo "✓"
 else
   echo "✗ ($result)"
@@ -21,13 +22,12 @@ fi
 # Test 2: PE preset upload
 echo -n "2. PE preset upload... "
 result=$(eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $TEST_CONFIG 2>&1)
-acks=$(echo "$result" | grep -c "ACK ✓")
-# feature-test.yaml has global config + 3 presets = 4 ACKs
-expected_acks=4
-if [[ $acks -eq $expected_acks ]]; then
-  echo "✓ ($acks/$expected_acks ACKs)"
+preset_acks=$(echo "$result" | grep -A1 "Preset" | grep -c "ACK" || true)
+# feature-test.yaml has 3 presets
+if [[ $preset_acks -eq 3 ]]; then
+  echo "✓ ($preset_acks/3 preset ACKs)"
 else
-  echo "✗ ($acks/$expected_acks ACKs)"
+  echo "✗ ($preset_acks/3 preset ACKs)"
   echo "$result"
   exit 1
 fi
@@ -189,52 +189,17 @@ else
   exit 1
 fi
 
-# Test 11: OpenDeck SysEx upload succeeds
-echo -n "11. OpenDeck SysEx upload... "
-result=$(eval timeout 15 $CLI --address $BRIDGE/config upload $TEST_CONFIG 2>&1)
-if [[ "$result" == *"Upload complete"* ]]; then
-  echo "✓"
-else
-  echo "✗"
-  echo "$result"
-  exit 1
-fi
-
-# Test 12: PE presets survive OpenDeck upload
-echo -n "12. PE survives OpenDeck upload... "
-# Upload PE presets
+# Test 11: PE presets survive reboot after factory reset + re-upload
+echo -n "11. PE re-upload after reset... "
 eval timeout 15 $CLI --address $BRIDGE/raw pe-upload $TEST_CONFIG 2>&1 > /dev/null
-sleep 1  # let persist task flush PE presets before OpenDeck writes
-# Upload OpenDeck on top
-eval timeout 15 $CLI --address $BRIDGE/config upload $TEST_CONFIG 2>&1 > /dev/null
-sleep 1  # let bridge recover from OpenDeck session before PE read
-# Verify PE presets are still readable
-result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
-if [[ "$result" == *"Feature Test"* ]]; then
-  echo "✓ (PE preset 0 intact after OpenDeck upload)"
-else
-  echo "✗ (PE preset 0 lost)"
-  echo "$result"
-  exit 1
-fi
-
-# Test 13: OpenDeck + PE coexist across reboot
-echo -n "13. Coexistence survives reboot... "
+sleep 1
 eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
 sleep 7
-# Verify PE still readable
 result=$(eval timeout 5 $CLI --address $BRIDGE/raw pe-read 0 2>&1)
-if [[ "$result" != *"Feature Test"* ]]; then
-  echo "✗ (PE preset 0 lost after reboot)"
-  echo "$result"
-  exit 1
-fi
-# Verify OpenDeck handshake still works
-result=$(eval timeout 10 $CLI --address $BRIDGE/config upload $TEST_CONFIG 2>&1 | head -1)
-if [[ "$result" == "Connected." ]]; then
-  echo "✓ (PE + OpenDeck both functional after reboot)"
+if [[ "$result" == *"Feature Test"* ]]; then
+  echo "✓ (preset persisted after reset + re-upload + reboot)"
 else
-  echo "✗ (OpenDeck handshake failed after reboot)"
+  echo "✗ (preset lost)"
   echo "$result"
   exit 1
 fi

@@ -1,11 +1,8 @@
 use clap::{Parser, Subcommand};
 use futures_util::{SinkExt, StreamExt};
+use pedalboard_cli::config::{yaml_to_presets, Setlist};
 use std::path::PathBuf;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
-
-mod protocol;
-use pedalboard_cli::config::{yaml_to_presets, Setlist, BUTTON_KEYS, ENCODER_KEYS};
-use protocol::opendeck_set_messages;
 
 #[derive(Parser)]
 #[command(name = "pedalboard-cli", about = "Pedalboard configuration tool", version = concat!(env!("CARGO_PKG_VERSION"), "-", env!("GIT_HASH")))]
@@ -20,8 +17,6 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Upload a setlist configuration file (legacy OpenDeck SysEx)
-    Upload { file: PathBuf },
     /// Factory reset the device
     Reset,
     /// Reboot the device (no data loss)
@@ -38,18 +33,11 @@ enum Commands {
     Flash { file: PathBuf },
 }
 
-const BUTTON_HW_OFFSET: u8 = 2; // A=2, B=3, ..., F=7 (0-1 are encoder buttons)
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Upload { file } => {
-            let content = std::fs::read_to_string(&file)?;
-            let setlist: Setlist = serde_yaml::from_str(&content)?;
-            upload(&cli.address, &setlist).await?;
-        }
         Commands::Reset => {
             reset(&cli.address).await?;
         }
@@ -85,70 +73,6 @@ async fn send_sysex(
     ws.send(Message::Binary(msg.to_vec())).await?;
     // Wait for ACK with timeout
     let _ = tokio::time::timeout(std::time::Duration::from_millis(100), ws.next()).await;
-    Ok(())
-}
-
-async fn upload(address: &str, setlist: &Setlist) -> Result<(), Box<dyn std::error::Error>> {
-    let (mut ws, _) = connect_async(address).await?;
-
-    // Handshake — must wait for ACK before sending config
-    ws.send(Message::Binary(vec![
-        0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7,
-    ]))
-    .await?;
-    match tokio::time::timeout(std::time::Duration::from_secs(5), ws.next()).await {
-        Ok(Some(Ok(_))) => println!("Connected."),
-        _ => {
-            eprintln!("Handshake failed — no response from device");
-            return Ok(());
-        }
-    }
-
-    for (preset_idx, preset) in setlist.presets.iter().enumerate() {
-        if preset_idx > 0 {
-            println!(
-                "  Preset {}: \"{}\" (skipped — OpenDeck only supports slot 0, use PE for multi-preset)",
-                preset_idx + 1,
-                preset.name
-            );
-            continue;
-        }
-        println!("  Preset {}: \"{}\"", preset_idx + 1, preset.name);
-
-        // Set button MIDI config
-        for (key_idx, key) in BUTTON_KEYS.iter().enumerate() {
-            if let Some(btn) = preset.buttons.get(*key) {
-                let hw_idx = key_idx as u8 + BUTTON_HW_OFFSET;
-                for msg in opendeck_set_messages::button(preset_idx as u8, hw_idx, btn) {
-                    send_sysex(&mut ws, &msg).await?;
-                }
-                print!("    {}: {} ", key, btn.label);
-                if let Some(n) = btn.note {
-                    print!("(Note {})", n);
-                }
-                if let Some(c) = btn.cc {
-                    print!("(CC {})", c);
-                }
-                println!();
-            }
-        }
-
-        // Set encoder MIDI config
-        for (key_idx, key) in ENCODER_KEYS.iter().enumerate() {
-            if let Some(enc) = preset.encoders.get(*key) {
-                for msg in opendeck_set_messages::encoder(preset_idx as u8, key_idx as u8, enc) {
-                    send_sysex(&mut ws, &msg).await?;
-                }
-                println!("    {}: {} (CC {:?})", key, enc.label, enc.cc);
-            }
-        }
-    }
-
-    println!("Upload complete.");
-
-    // Close SysEx session so device returns to normal MIDI operation
-    send_sysex(&mut ws, &[0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x00, 0xF7]).await?;
-
     Ok(())
 }
 
