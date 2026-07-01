@@ -34,6 +34,8 @@ enum Commands {
     PeRead { index: u8 },
     /// Monitor MIDI output from the device in real-time
     Monitor,
+    /// Flash a UF2 firmware file to the device (enters bootloader, uploads via bridge)
+    Flash { file: PathBuf },
 }
 
 const BUTTON_HW_OFFSET: u8 = 2; // A=2, B=3, ..., F=7 (0-1 are encoder buttons)
@@ -65,6 +67,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Commands::Monitor => {
             monitor(&cli.address).await?;
+        }
+        Commands::Flash { file } => {
+            flash(&cli.address, &file).await?;
         }
     }
 
@@ -263,6 +268,51 @@ async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
     }
 
     println!("Upload complete.");
+    Ok(())
+}
+
+async fn flash(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+    let data = std::fs::read(file)?;
+    println!("Firmware: {} ({} bytes)", file.display(), data.len());
+
+    // 1. Enter bootloader
+    println!("Entering bootloader...");
+    let (mut ws, _) = connect_async(address).await?;
+    ws.send(Message::Binary(vec![
+        0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x01, 0xF7,
+    ]))
+    .await?;
+    let _ = tokio::time::timeout(std::time::Duration::from_secs(2), ws.next()).await;
+    ws.send(Message::Binary(vec![
+        0xF0, 0x00, 0x53, 0x43, 0x00, 0x00, 0x55, 0xF7,
+    ]))
+    .await?;
+    drop(ws);
+
+    // 2. Upload UF2 via HTTP POST to bridge /flash (bridge waits for drive internally)
+    println!("Uploading firmware to bridge...");
+    tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+
+    let base_url = address
+        .replace("ws://", "http://")
+        .replace("/config", "/flash");
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(30))
+        .build()?;
+    let form = reqwest::multipart::Form::new().part(
+        "firmware",
+        reqwest::multipart::Part::bytes(data).file_name("firmware.uf2"),
+    );
+    let resp = client.post(&base_url).multipart(form).send().await?;
+    if resp.status().is_success() {
+        let body = resp.text().await?;
+        println!("{}", body.trim());
+        println!("Device will reboot. Bridge will auto-reconnect.");
+    } else {
+        let status = resp.status();
+        let body = resp.text().await?;
+        eprintln!("Flash failed ({}): {}", status, body.trim());
+    }
     Ok(())
 }
 
