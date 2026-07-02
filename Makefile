@@ -11,7 +11,7 @@ install: build ## install to ~/.cargo/bin
 	cp target/release/pedalboard-cli ~/.cargo/bin/
 
 docs: ## regenerate config-reference.md from schema
-	mise exec -- generate-schema-doc schema/pedalboard.schema.json docs/config-reference.md
+	mise exec -- generate-schema-doc --config template_name=md schema/pedalboard.schema.json docs/config-reference.md
 
 lint: ## lint source code
 	cargo clippy --all-features $(PROTOCOL_PATCH)
