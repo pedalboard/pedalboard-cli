@@ -1,3 +1,12 @@
+# Feature test preset: exercises all button modes, action types, encoders, analog,
+# defaults, on_enter, and LED renderers/animations. Used by integration.sh to verify
+# the full PE upload → persist → read-back → content verification pipeline.
+#
+# Preset 0: All button modes (momentary, toggle, cycle, PC, long-press), defaults,
+#            on_enter PC, encoders, and expression pedals.
+# Preset 1: LED renderers (dots, single, fill) and animations (rotate, blink, pulse, colorcycle).
+# Preset 2: CC cycle forward/reverse, note on, program change — verifies cycle state.
+
 global:
   din_enabled: true
   din_to_usb_thru: true

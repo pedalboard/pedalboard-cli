@@ -1,3 +1,8 @@
+# Performance/stress test: 32 presets filling the entire flash capacity.
+# Each preset has 6 buttons with unique CC numbers to verify preset switching,
+# flash persistence across all 32 slots, and memory usage under full load.
+# Used to check for stack overflows or flash wear-leveling issues.
+
 presets:
 - name: Perf 00
   buttons:

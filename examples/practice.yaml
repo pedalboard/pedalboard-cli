@@ -1,3 +1,14 @@
+# Practice/rehearsal setlist: real-world config for home studio use.
+# Hardware: TC Electronic Plethora X (ch2), Boss RC-500 looper (ch1),
+#           pedalboard-audio soundcard (ch3).
+#
+# Preset 0 "Live FX": Radio group board switching + bypass toggle + hot knobs.
+# Preset 1 "Looper": RC-500 rhythm/variation toggles, memory scroll, clear action sequence.
+# Preset 2 "Setup RC": Drum kit & pattern cycle selection with single-LED position indicator.
+#
+# Also tests: expression pedal calibration, custom hex colors, radio groups,
+# action sequences with delays, and encoder CC on non-default channels.
+
 global:
   din_enabled: true
   din_to_usb_thru: true

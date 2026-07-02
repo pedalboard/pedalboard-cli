@@ -1,3 +1,7 @@
+# LED demo: minimal preset to visually test LED ring animations.
+# All 6 buttons are toggles with different colors and animations.
+# Use for quick visual verification after LED driver or animation changes.
+
 presets:
   - name: "LED Demo"
     buttons:
