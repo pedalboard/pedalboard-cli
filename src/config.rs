@@ -207,6 +207,23 @@ pub struct ButtonConfig {
     /// Multi-action sequence: list of MIDI messages sent in order on press. Overrides cc/note/program_change fields.
     #[serde(default)]
     pub actions: Option<Vec<ActionYaml>>,
+    /// Reactive LED: ring shows heatmap proportional to incoming CC value. Format: { cc: N, channel: N }
+    #[serde(default)]
+    pub listen_cc: Option<ListenCcYaml>,
+}
+
+/// Reactive CC binding for LED visualization.
+#[derive(Deserialize, JsonSchema)]
+pub struct ListenCcYaml {
+    /// MIDI CC number to listen for (0-127).
+    pub cc: u8,
+    /// MIDI channel to listen on (1-16). Default: 1.
+    #[serde(default = "default_channel")]
+    pub channel: u8,
+}
+
+fn default_channel() -> u8 {
+    1
 }
 
 /// A single action in a multi-action sequence. Exactly one type per entry.
@@ -450,6 +467,10 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                             }
                             cv
                         },
+                        listen_cc: btn.listen_cc.as_ref().map(|l| pc::ListenCc {
+                            cc: l.cc,
+                            channel: l.channel,
+                        }),
                     }
                 } else {
                     pc::ButtonConfig {
@@ -460,6 +481,7 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                         on_release: heapless::Vec::new(),
                         on_long_press: heapless::Vec::new(),
                         cycle_values: heapless::Vec::new(),
+                        listen_cc: None,
                     }
                 };
                 let _ = buttons.push(btn_cfg);
