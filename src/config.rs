@@ -220,6 +220,12 @@ pub struct ListenCcYaml {
     /// MIDI channel to listen on (1-16). Default: 1.
     #[serde(default = "default_channel")]
     pub channel: u8,
+    /// Visualization mode: "heatmap" (default) or "trigger".
+    #[serde(default)]
+    pub mode: Option<String>,
+    /// Threshold for trigger mode (0-127). Value ≥ threshold = on. Default: 64.
+    #[serde(default)]
+    pub threshold: Option<u8>,
 }
 
 fn default_channel() -> u8 {
@@ -319,6 +325,8 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                 let btn_cfg = if let Some(btn) = p.buttons.get(*key) {
                     let mut on_press: heapless::Vec<pc::Action, { pc::MAX_ACTIONS }> =
                         heapless::Vec::new();
+                    let mut on_release: heapless::Vec<pc::Action, { pc::MAX_ACTIONS }> =
+                        heapless::Vec::new();
 
                     if let Some(actions) = &btn.actions {
                         for action in actions {
@@ -368,7 +376,7 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                                 reverse: btn.reverse.unwrap_or(false),
                             });
                         } else if btn.toggle == Some(true) {
-                            // Toggle shorthand: on_press sends value_a, on_release sends value_b (0)
+                            // Toggle shorthand: on_press sends value, on_release sends 0
                             let _ = on_press.push(
                                 pc::Action::cc(
                                     cc,
@@ -377,6 +385,12 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                                 )
                                 .expect("invalid CC: value or channel out of range"),
                             );
+                            on_release
+                                .push(
+                                    pc::Action::cc(cc, 0, btn.channel.unwrap_or(1))
+                                        .expect("invalid CC: channel out of range"),
+                                )
+                                .ok();
                         } else {
                             let _ = on_press.push(
                                 pc::Action::cc(
@@ -444,7 +458,7 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                         },
                         mode,
                         on_press,
-                        on_release: heapless::Vec::new(),
+                        on_release,
                         on_long_press: {
                             let mut lp = heapless::Vec::new();
                             match btn.on_long_press.as_deref() {
@@ -470,6 +484,11 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                         listen_cc: btn.listen_cc.as_ref().map(|l| pc::ListenCc {
                             cc: l.cc,
                             channel: l.channel,
+                            mode: match l.mode.as_deref() {
+                                Some("trigger") => pc::ListenMode::Trigger,
+                                _ => pc::ListenMode::Heatmap,
+                            },
+                            threshold: l.threshold.unwrap_or(64),
                         }),
                     }
                 } else {
