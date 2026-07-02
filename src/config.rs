@@ -269,22 +269,21 @@ fn convert_actions(
         for action in actions {
             let _ = match action {
                 ActionYaml::Delay { delay } => result.push(pc::Action::Delay(*delay)),
-                ActionYaml::Cc { cc, value, channel } => result.push(pc::Action::Cc {
-                    cc: *cc,
-                    value: value.unwrap_or(127),
-                    channel: channel.unwrap_or(1),
-                }),
+                ActionYaml::Cc { cc, value, channel } => result.push(pc::Action::cc(
+                    *cc,
+                    value.unwrap_or(127),
+                    channel.unwrap_or(1),
+                )),
                 ActionYaml::ProgramChange {
                     program_change,
                     channel,
-                } => result.push(pc::Action::ProgramChange {
-                    program: *program_change,
-                    channel: channel.unwrap_or(1),
-                }),
-                ActionYaml::NoteOn { note, channel } => result.push(pc::Action::NoteOn {
-                    note: *note,
-                    channel: channel.unwrap_or(1),
-                }),
+                } => result.push(pc::Action::program_change(
+                    *program_change,
+                    channel.unwrap_or(1),
+                )),
+                ActionYaml::NoteOn { note, channel } => {
+                    result.push(pc::Action::note_on(*note, channel.unwrap_or(1)))
+                }
             };
         }
     }
@@ -311,32 +310,30 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                                     on_press.push(pc::Action::Delay(*delay))
                                 }
                                 ActionYaml::Cc { cc, value, channel } => {
-                                    on_press.push(pc::Action::Cc {
-                                        cc: *cc,
-                                        value: value.unwrap_or(127),
-                                        channel: channel.or(btn.channel).unwrap_or(1),
-                                    })
+                                    on_press.push(pc::Action::cc(
+                                        *cc,
+                                        value.unwrap_or(127),
+                                        channel.or(btn.channel).unwrap_or(1),
+                                    ))
                                 }
                                 ActionYaml::ProgramChange {
                                     program_change,
                                     channel,
-                                } => on_press.push(pc::Action::ProgramChange {
-                                    program: *program_change,
-                                    channel: channel.or(btn.channel).unwrap_or(1),
-                                }),
+                                } => on_press.push(pc::Action::program_change(
+                                    *program_change,
+                                    channel.or(btn.channel).unwrap_or(1),
+                                )),
                                 ActionYaml::NoteOn { note, channel } => {
-                                    on_press.push(pc::Action::NoteOn {
-                                        note: *note,
-                                        channel: channel.or(btn.channel).unwrap_or(1),
-                                    })
+                                    on_press.push(pc::Action::note_on(
+                                        *note,
+                                        channel.or(btn.channel).unwrap_or(1),
+                                    ))
                                 }
                             };
                         }
                     } else if let Some(prog) = btn.program_change {
-                        let _ = on_press.push(pc::Action::ProgramChange {
-                            program: prog,
-                            channel: btn.channel.unwrap_or(1),
-                        });
+                        let _ = on_press
+                            .push(pc::Action::program_change(prog, btn.channel.unwrap_or(1)));
                     } else if let Some(cc) = btn.cc {
                         if btn.values.is_some() {
                             let _ = on_press.push(pc::Action::CcCycle {
@@ -345,24 +342,21 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                                 reverse: btn.reverse.unwrap_or(false),
                             });
                         } else if btn.toggle == Some(true) {
-                            let _ = on_press.push(pc::Action::CcToggle {
+                            // Toggle shorthand: on_press sends value_a, on_release sends value_b (0)
+                            let _ = on_press.push(pc::Action::cc(
                                 cc,
-                                value_a: btn.value.unwrap_or(127),
-                                value_b: 0,
-                                channel: btn.channel.unwrap_or(1),
-                            });
+                                btn.value.unwrap_or(127),
+                                btn.channel.unwrap_or(1),
+                            ));
                         } else {
-                            let _ = on_press.push(pc::Action::Cc {
+                            let _ = on_press.push(pc::Action::cc(
                                 cc,
-                                value: btn.value.unwrap_or(127),
-                                channel: btn.channel.unwrap_or(1),
-                            });
+                                btn.value.unwrap_or(127),
+                                btn.channel.unwrap_or(1),
+                            ));
                         }
                     } else if let Some(note) = btn.note {
-                        let _ = on_press.push(pc::Action::NoteOn {
-                            note,
-                            channel: btn.channel.unwrap_or(1),
-                        });
+                        let _ = on_press.push(pc::Action::note_on(note, btn.channel.unwrap_or(1)));
                     }
 
                     let color = match btn.color.as_deref() {
