@@ -10,10 +10,13 @@ build: ## build
 install: build ## install to ~/.cargo/bin
 	cp target/release/pedalboard-cli ~/.cargo/bin/
 
+docs: ## regenerate config-reference.md from schema
+	mise exec -- generate-schema-doc schema/pedalboard.schema.json docs/config-reference.md
+
 lint: ## lint source code
 	cargo clippy --all-features $(PROTOCOL_PATCH)
 
-test: ## run unit tests
+test: docs ## run unit tests
 	cargo test --all $(PROTOCOL_PATCH)
 
 integration: ## run integration tests (requires device connected)
