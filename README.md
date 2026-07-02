@@ -1,30 +1,46 @@
 # pedalboard-cli
 
-CLI tool for uploading configuration to the Pedalboard MIDI controller.
+CLI tool for configuring the Pedalboard MIDI controller.
 
 ## Usage
 
 ```sh
-pedalboard-cli pe-upload <config.yaml>
-pedalboard-cli pe-read <index>
-pedalboard-cli reboot
-pedalboard-cli bootloader
-pedalboard-cli reset
+pedalboard-cli upload <setlist.yaml>    # upload presets + global config
+pedalboard-cli read <index>             # read back a preset
+pedalboard-cli monitor                  # real-time MIDI output display
+pedalboard-cli flash <firmware.uf2>     # flash firmware
+pedalboard-cli reboot                   # reboot device
+pedalboard-cli reset                    # factory reset
+pedalboard-cli bootloader               # enter UF2 bootloader
 ```
 
-The default WebSocket address is `ws://cm5-dev.home/config`. Override it with `--address`:
+The default WebSocket address is `ws://cm5-dev.home/config`. Override with `--address`:
 
 ```sh
-pedalboard-cli --address ws://myhost:8080/config pe-upload <setlist.yaml>
+pedalboard-cli --address ws://myhost:8080/config upload <setlist.yaml>
+```
+
+## Install
+
+```sh
+make install   # builds release and copies to ~/.cargo/bin/
 ```
 
 ## Configuration
 
-Presets are defined in YAML. See [docs/config-reference.md](docs/config-reference.md) for the full schema reference.
-
-Quick example:
+Setlists are defined in YAML with an optional `global:` section and one or more presets.
 
 ```yaml
+global:
+  din_enabled: true
+  din_to_usb_thru: true
+  usb_to_din_thru: false
+  midi_clock: false
+  bpm: 120
+  calibration:
+    exp1: { min: 180, max: 3700 }
+    exp2: { min: 200, max: 3750 }
+
 presets:
   - name: "My Song"
     defaults:
@@ -41,6 +57,7 @@ presets:
       Exp1: { label: "Wah", cc: 11 }
 ```
 
+See [schema/pedalboard.schema.json](schema/pedalboard.schema.json) for the full JSON Schema reference.
 More examples in [examples/](examples/).
 
 ## License
