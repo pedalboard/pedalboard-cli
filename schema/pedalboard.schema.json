@@ -340,6 +340,34 @@
         }
       }
     },
+    "CalibrationYaml": {
+      "description": "ADC calibration for expression pedals.",
+      "type": "object",
+      "properties": {
+        "exp1": {
+          "description": "Expression pedal 1 calibration.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ExpCalibration"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exp2": {
+          "description": "Expression pedal 2 calibration.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ExpCalibration"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
     "DefaultsConfig": {
       "description": "Default initial state for a preset on first activation after upload.",
       "type": "object",
@@ -397,6 +425,26 @@
         }
       }
     },
+    "ExpCalibration": {
+      "description": "Min/max ADC values for a single expression pedal (0-4095).",
+      "type": "object",
+      "properties": {
+        "max": {
+          "description": "ADC value at toe (full) position. Default: 3750.",
+          "default": 3750,
+          "type": "integer",
+          "format": "uint16",
+          "minimum": 0.0
+        },
+        "min": {
+          "description": "ADC value at heel (rest) position. Default: 0.",
+          "default": 0,
+          "type": "integer",
+          "format": "uint16",
+          "minimum": 0.0
+        }
+      }
+    },
     "GlobalYamlConfig": {
       "description": "Global device configuration — system-wide settings independent of presets.",
       "type": "object",
@@ -410,6 +458,17 @@
           ],
           "format": "uint16",
           "minimum": 0.0
+        },
+        "calibration": {
+          "description": "Expression pedal ADC calibration values.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CalibrationYaml"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "din_enabled": {
           "description": "Enable DIN MIDI output for locally-generated messages. Default: true.",

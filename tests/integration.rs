@@ -115,3 +115,71 @@ presets:
     assert!(gc.midi_clock);
     assert_eq!(gc.bpm, 90);
 }
+
+#[test]
+fn global_config_calibration_parsed() {
+    use pedalboard_cli::config::yaml_global_to_protocol;
+
+    let yaml = r#"
+global:
+  calibration:
+    exp1: { min: 180, max: 3700 }
+    exp2: { min: 200, max: 3600 }
+presets:
+  - name: "Test"
+    buttons: {}
+"#;
+    let setlist: Setlist = serde_yaml::from_str(yaml).unwrap();
+    let global_yaml = setlist.global.expect("global section missing");
+    let gc = yaml_global_to_protocol(&global_yaml);
+
+    assert_eq!(gc.exp1_min, 180);
+    assert_eq!(gc.exp1_max, 3700);
+    assert_eq!(gc.exp2_min, 200);
+    assert_eq!(gc.exp2_max, 3600);
+}
+
+#[test]
+fn global_config_calibration_defaults_when_omitted() {
+    use pedalboard_cli::config::yaml_global_to_protocol;
+
+    let yaml = r#"
+global:
+  midi_clock: false
+presets:
+  - name: "Test"
+    buttons: {}
+"#;
+    let setlist: Setlist = serde_yaml::from_str(yaml).unwrap();
+    let global_yaml = setlist.global.expect("global section missing");
+    let gc = yaml_global_to_protocol(&global_yaml);
+
+    assert_eq!(gc.exp1_min, 0);
+    assert_eq!(gc.exp1_max, 3750);
+    assert_eq!(gc.exp2_min, 0);
+    assert_eq!(gc.exp2_max, 3750);
+}
+
+#[test]
+fn global_config_calibration_partial() {
+    use pedalboard_cli::config::yaml_global_to_protocol;
+
+    let yaml = r#"
+global:
+  calibration:
+    exp1: { min: 100, max: 3800 }
+presets:
+  - name: "Test"
+    buttons: {}
+"#;
+    let setlist: Setlist = serde_yaml::from_str(yaml).unwrap();
+    let global_yaml = setlist.global.expect("global section missing");
+    let gc = yaml_global_to_protocol(&global_yaml);
+
+    // exp1 set explicitly
+    assert_eq!(gc.exp1_min, 100);
+    assert_eq!(gc.exp1_max, 3800);
+    // exp2 uses defaults
+    assert_eq!(gc.exp2_min, 0);
+    assert_eq!(gc.exp2_max, 3750);
+}

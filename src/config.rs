@@ -32,6 +32,35 @@ pub struct GlobalYamlConfig {
     /// MIDI Clock tempo in BPM (30-300). Default: 120.
     #[serde(default)]
     pub bpm: Option<u16>,
+    /// Expression pedal ADC calibration values.
+    #[serde(default)]
+    pub calibration: Option<CalibrationYaml>,
+}
+
+/// ADC calibration for expression pedals.
+#[derive(Deserialize, JsonSchema)]
+pub struct CalibrationYaml {
+    /// Expression pedal 1 calibration.
+    #[serde(default)]
+    pub exp1: Option<ExpCalibration>,
+    /// Expression pedal 2 calibration.
+    #[serde(default)]
+    pub exp2: Option<ExpCalibration>,
+}
+
+/// Min/max ADC values for a single expression pedal (0-4095).
+#[derive(Deserialize, JsonSchema)]
+pub struct ExpCalibration {
+    /// ADC value at heel (rest) position. Default: 0.
+    #[serde(default)]
+    pub min: u16,
+    /// ADC value at toe (full) position. Default: 3750.
+    #[serde(default = "default_adc_max")]
+    pub max: u16,
+}
+
+fn default_adc_max() -> u16 {
+    3750
 }
 
 pub fn yaml_global_to_protocol(
@@ -44,6 +73,30 @@ pub fn yaml_global_to_protocol(
         usb_to_usb_thru: yaml.usb_to_usb_thru.unwrap_or(false),
         midi_clock: yaml.midi_clock.unwrap_or(false),
         bpm: yaml.bpm.unwrap_or(120),
+        exp1_min: yaml
+            .calibration
+            .as_ref()
+            .and_then(|c| c.exp1.as_ref())
+            .map(|e| e.min)
+            .unwrap_or(0),
+        exp1_max: yaml
+            .calibration
+            .as_ref()
+            .and_then(|c| c.exp1.as_ref())
+            .map(|e| e.max)
+            .unwrap_or(3750),
+        exp2_min: yaml
+            .calibration
+            .as_ref()
+            .and_then(|c| c.exp2.as_ref())
+            .map(|e| e.min)
+            .unwrap_or(0),
+        exp2_max: yaml
+            .calibration
+            .as_ref()
+            .and_then(|c| c.exp2.as_ref())
+            .map(|e| e.max)
+            .unwrap_or(3750),
     }
 }
 

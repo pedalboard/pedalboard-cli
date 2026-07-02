@@ -4,6 +4,9 @@ global:
   usb_to_din_thru: false
   midi_clock: false
   bpm: 120
+  calibration:
+    exp1: { min: 180, max: 3700 }
+    exp2: { min: 200, max: 3750 }
 
 presets:
   # Mode 1: Live Effect (Plethora board switching + pedalboard-audio bypass)
