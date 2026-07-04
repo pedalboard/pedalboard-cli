@@ -368,6 +368,15 @@ pub enum ActionYaml {
         /// MIDI channel (1-16). Inherits from button if omitted.
         channel: Option<u8>,
     },
+    /// Set the button's LED ring color and animation mid-sequence.
+    /// Useful for visual feedback during multi-step actions.
+    SetLed {
+        /// LED color name or #RRGGBB hex.
+        color: String,
+        /// Animation: solid, blink, pulse, rotate, colorcycle. Default: solid.
+        #[serde(default)]
+        animation: Option<String>,
+    },
 }
 
 /// Rotary encoder configuration.
@@ -410,6 +419,29 @@ pub struct EncoderConfig {
 pub const BUTTON_KEYS: &[&str] = &["A", "B", "C", "D", "E", "F"];
 pub const ENCODER_KEYS: &[&str] = &["Vol", "Gain"];
 
+fn parse_color(s: &str) -> pedalboard_protocol::config::Color {
+    use pedalboard_protocol::config::Color;
+    match s {
+        "red" => Color::Red,
+        "green" => Color::Green,
+        "blue" => Color::Blue,
+        "yellow" => Color::Yellow,
+        "cyan" => Color::Cyan,
+        "magenta" => Color::Magenta,
+        "white" => Color::White,
+        "orange" => Color::Orange,
+        "purple" => Color::Purple,
+        "off" => Color::Off,
+        hex if hex.starts_with('#') && hex.len() == 7 => {
+            let r = u8::from_str_radix(&hex[1..3], 16).unwrap_or(0);
+            let g = u8::from_str_radix(&hex[3..5], 16).unwrap_or(0);
+            let b = u8::from_str_radix(&hex[5..7], 16).unwrap_or(0);
+            Color::Custom(r, g, b)
+        }
+        _ => Color::Off,
+    }
+}
+
 fn convert_actions(
     actions: &Option<Vec<ActionYaml>>,
 ) -> heapless::Vec<pedalboard_protocol::config::Action, { pedalboard_protocol::config::MAX_ACTIONS }>
@@ -435,6 +467,20 @@ fn convert_actions(
                     pc::Action::note_on(*note, channel.unwrap_or(1))
                         .expect("invalid Note On: note or channel out of range"),
                 ),
+                ActionYaml::SetLed { color, animation } => {
+                    let c = parse_color(color);
+                    let a = match animation.as_deref() {
+                        Some("blink") => pc::LedAnimation::Blink,
+                        Some("pulse") => pc::LedAnimation::Pulse,
+                        Some("rotate") => pc::LedAnimation::Rotate,
+                        Some("colorcycle") => pc::LedAnimation::ColorCycle,
+                        _ => pc::LedAnimation::Solid,
+                    };
+                    result.push(pc::Action::SetLed {
+                        color: c,
+                        animation: a,
+                    })
+                }
             };
         }
     }
@@ -555,6 +601,20 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                                     )
                                     .expect("invalid Note On: note or channel out of range"),
                                 ),
+                                ActionYaml::SetLed { color, animation } => {
+                                    let c = parse_color(color);
+                                    let a = match animation.as_deref() {
+                                        Some("blink") => pc::LedAnimation::Blink,
+                                        Some("pulse") => pc::LedAnimation::Pulse,
+                                        Some("rotate") => pc::LedAnimation::Rotate,
+                                        Some("colorcycle") => pc::LedAnimation::ColorCycle,
+                                        _ => pc::LedAnimation::Solid,
+                                    };
+                                    on_press.push(pc::Action::SetLed {
+                                        color: c,
+                                        animation: a,
+                                    })
+                                }
                             };
                         }
                     } else if let Some(prog) = btn.program_change {
@@ -602,25 +662,11 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                         );
                     }
 
-                    let color = match btn.color.as_deref() {
-                        Some("red") => pc::Color::Red,
-                        Some("green") => pc::Color::Green,
-                        Some("blue") => pc::Color::Blue,
-                        Some("yellow") => pc::Color::Yellow,
-                        Some("cyan") => pc::Color::Cyan,
-                        Some("magenta") => pc::Color::Magenta,
-                        Some("white") => pc::Color::White,
-                        Some("orange") => pc::Color::Orange,
-                        Some("purple") => pc::Color::Purple,
-                        Some("off") => pc::Color::Off,
-                        Some(hex) if hex.starts_with('#') && hex.len() == 7 => {
-                            let r = u8::from_str_radix(&hex[1..3], 16).unwrap_or(0);
-                            let g = u8::from_str_radix(&hex[3..5], 16).unwrap_or(0);
-                            let b = u8::from_str_radix(&hex[5..7], 16).unwrap_or(0);
-                            pc::Color::Custom(r, g, b)
-                        }
-                        _ => pc::Color::Off,
-                    };
+                    let color = btn
+                        .color
+                        .as_deref()
+                        .map(parse_color)
+                        .unwrap_or(pc::Color::Off);
 
                     let mode = if btn.toggle == Some(true) {
                         pc::ButtonMode::Toggle

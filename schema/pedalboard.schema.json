@@ -132,6 +132,27 @@
               "minimum": 0.0
             }
           }
+        },
+        {
+          "description": "Set the button's LED ring color and animation mid-sequence. Useful for visual feedback during multi-step actions.",
+          "type": "object",
+          "required": [
+            "color"
+          ],
+          "properties": {
+            "animation": {
+              "description": "Animation: solid, blink, pulse, rotate, colorcycle. Default: solid.",
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "color": {
+              "description": "LED color name or #RRGGBB hex.",
+              "type": "string"
+            }
+          }
         }
       ]
     },
