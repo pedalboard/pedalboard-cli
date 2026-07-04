@@ -279,14 +279,21 @@ async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
                 &[], // empty body = delete
             );
             ws.send(Message::Binary(msg.to_vec())).await?;
-            // Drain ACK
-            tokio::time::timeout(std::time::Duration::from_millis(500), ws.next())
-                .await
-                .ok();
             cleared += 1;
+        }
+        // Drain all ACKs with a single bulk timeout (not per-message)
+        for _ in 0..cleared {
+            if tokio::time::timeout(std::time::Duration::from_millis(100), ws.next())
+                .await
+                .is_err()
+            {
+                break; // stop draining if no more replies
+            }
         }
         if cleared > 0 {
             println!("  Cleared {} stale preset slot(s).", cleared);
+            // Allow firmware persist queue to drain
+            tokio::time::sleep(std::time::Duration::from_millis(500)).await;
         }
     }
 
