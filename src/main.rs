@@ -265,6 +265,31 @@ async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
         }
     }
 
+    // Clear any stale presets beyond the uploaded count (send empty body = delete)
+    let max_presets: u8 = 32;
+    let uploaded_count = presets.len() as u8;
+    if uploaded_count < max_presets {
+        let mut cleared = 0u8;
+        for idx in uploaded_count..max_presets {
+            let msg = pedalboard_protocol::property_exchange::build_set_inquiry(
+                [0x10, 0x20, 0x30, 0x40],
+                [0x01, 0x02, 0x03, 0x04],
+                idx + 1,
+                idx,
+                &[], // empty body = delete
+            );
+            ws.send(Message::Binary(msg.to_vec())).await?;
+            // Drain ACK
+            tokio::time::timeout(std::time::Duration::from_millis(500), ws.next())
+                .await
+                .ok();
+            cleared += 1;
+        }
+        if cleared > 0 {
+            println!("  Cleared {} stale preset slot(s).", cleared);
+        }
+    }
+
     println!("Upload complete.");
     Ok(())
 }
