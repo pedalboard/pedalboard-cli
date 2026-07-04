@@ -411,14 +411,14 @@
       }
     },
     "EncoderConfig": {
-      "description": "Rotary encoder configuration.\n\nSends absolute CC (0-127) that increments/decrements with each detent click. Values are clamped at both ends (min 0, max 127). Fast turning (acceleration) skips multiple steps but sends a single message with the final value. Encoder values persist across preset switches and power cycles via EEPROM. A large value overlay appears on the OLED briefly when turning.",
+      "description": "Rotary encoder configuration.\n\nThree modes: - **cc** (default): Absolute CC (0-127), increments/decrements per detent click. Clamped at min/max. Acceleration sends a single message with the final value. - **relative**: Sends fixed increment/decrement values (for gear expecting relative CC encoding). - **preset_scroll**: No MIDI output. Scrolls through presets (CW = next, CCW = prev).\n\nEncoder values persist across preset switches and power cycles via EEPROM. A large value overlay appears on the OLED briefly when turning.",
       "type": "object",
       "required": [
         "label"
       ],
       "properties": {
         "cc": {
-          "description": "MIDI CC number to send (0-127). Each detent click increments/decrements the value.",
+          "description": "MIDI CC number to send (0-127). Used in cc and relative modes.",
           "default": null,
           "type": [
             "integer",
@@ -428,7 +428,27 @@
           "minimum": 0.0
         },
         "channel": {
-          "description": "MIDI channel (1-16). Default: 1.",
+          "description": "MIDI channel (1-16). Default: 1. Used in cc and relative modes.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "decrement": {
+          "description": "Value sent on counter-clockwise turn. Only for relative mode. Default: 63.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "increment": {
+          "description": "Value sent on clockwise turn. Only for relative mode. Default: 65.",
           "default": null,
           "type": [
             "integer",
@@ -440,6 +460,34 @@
         "label": {
           "description": "Display label shown on OLED overlay when turning.",
           "type": "string"
+        },
+        "max": {
+          "description": "Maximum CC value (default: 127). Only for cc mode.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "min": {
+          "description": "Minimum CC value (default: 0). Only for cc mode.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "mode": {
+          "description": "Encoder mode: \"cc\" (default), \"relative\", or \"preset_scroll\".",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },

@@ -70,5 +70,7 @@ presets:
       E: { label: "PC 0", program_change: 0, color: cyan }
       F: { label: "Next", cc: 100, color: magenta, on_long_press: next_preset }
     encoders:
-      Vol: { label: "Mix", cc: 11 }
-      Gain: { label: "Tone", cc: 74 }
+      # Relative CC mode (sends fixed inc/dec values)
+      Vol: { label: "FX Knob", mode: relative, cc: 16, channel: 1, increment: 65, decrement: 63 }
+      # Preset scroll mode (no MIDI, scrolls presets)
+      Gain: { label: "Bank", mode: preset_scroll }

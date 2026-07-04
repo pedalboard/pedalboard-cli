@@ -372,21 +372,39 @@ pub enum ActionYaml {
 
 /// Rotary encoder configuration.
 ///
-/// Sends absolute CC (0-127) that increments/decrements with each detent click.
-/// Values are clamped at both ends (min 0, max 127). Fast turning (acceleration)
-/// skips multiple steps but sends a single message with the final value.
+/// Three modes:
+/// - **cc** (default): Absolute CC (0-127), increments/decrements per detent click.
+///   Clamped at min/max. Acceleration sends a single message with the final value.
+/// - **relative**: Sends fixed increment/decrement values (for gear expecting relative CC encoding).
+/// - **preset_scroll**: No MIDI output. Scrolls through presets (CW = next, CCW = prev).
+///
 /// Encoder values persist across preset switches and power cycles via EEPROM.
 /// A large value overlay appears on the OLED briefly when turning.
 #[derive(Deserialize, JsonSchema)]
 pub struct EncoderConfig {
     /// Display label shown on OLED overlay when turning.
     pub label: String,
-    /// MIDI CC number to send (0-127). Each detent click increments/decrements the value.
+    /// Encoder mode: "cc" (default), "relative", or "preset_scroll".
+    #[serde(default)]
+    pub mode: Option<String>,
+    /// MIDI CC number to send (0-127). Used in cc and relative modes.
     #[serde(default)]
     pub cc: Option<u16>,
-    /// MIDI channel (1-16). Default: 1.
+    /// MIDI channel (1-16). Default: 1. Used in cc and relative modes.
     #[serde(default)]
     pub channel: Option<u8>,
+    /// Minimum CC value (default: 0). Only for cc mode.
+    #[serde(default)]
+    pub min: Option<u8>,
+    /// Maximum CC value (default: 127). Only for cc mode.
+    #[serde(default)]
+    pub max: Option<u8>,
+    /// Value sent on clockwise turn. Only for relative mode. Default: 65.
+    #[serde(default)]
+    pub increment: Option<u8>,
+    /// Value sent on counter-clockwise turn. Only for relative mode. Default: 63.
+    #[serde(default)]
+    pub decrement: Option<u8>,
 }
 
 pub const BUTTON_KEYS: &[&str] = &["A", "B", "C", "D", "E", "F"];
@@ -685,14 +703,24 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
             let mut encoders = heapless::Vec::new();
             for key in ENCODER_KEYS {
                 let enc_cfg = if let Some(enc) = p.encoders.get(*key) {
-                    pc::EncoderConfig {
-                        label: pc::Label::try_from(enc.label.as_str()).unwrap_or_default(),
-                        action: pc::EncoderAction::Cc {
+                    let action = match enc.mode.as_deref() {
+                        Some("relative") => pc::EncoderAction::CcRelative {
+                            cc: enc.cc.unwrap_or(0) as u8,
+                            channel: enc.channel.unwrap_or(1),
+                            increment: enc.increment.unwrap_or(65),
+                            decrement: enc.decrement.unwrap_or(63),
+                        },
+                        Some("preset_scroll") => pc::EncoderAction::PresetScroll,
+                        _ => pc::EncoderAction::Cc {
                             cc: enc.cc.unwrap_or(0),
                             channel: enc.channel.unwrap_or(1),
-                            min: 0,
-                            max: 127,
+                            min: enc.min.unwrap_or(0),
+                            max: enc.max.unwrap_or(127),
                         },
+                    };
+                    pc::EncoderConfig {
+                        label: pc::Label::try_from(enc.label.as_str()).unwrap_or_default(),
+                        action,
                     }
                 } else {
                     pc::EncoderConfig {

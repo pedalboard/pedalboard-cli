@@ -231,23 +231,58 @@ buttons:
 
 ## Encoders
 
-Two rotary encoders: `Vol` (left) and `Gain` (right). Each click sends an incremented/decremented CC value.
+Two rotary encoders: `Vol` (left) and `Gain` (right). Three modes available.
+
+### Absolute CC (default)
+
+Each click increments/decrements the value by 1. Sends a single CC message with the current value.
 
 ```yaml
 encoders:
   Vol: { label: "Vol", cc: 7 }
-  Gain: { label: "Reverb", cc: 91, channel: 2 }
+  Gain: { label: "Reverb", cc: 91, channel: 2, min: 20, max: 100 }
 ```
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `label` | string | **Required.** Shown on OLED overlay when turning. |
-| `cc` | 0-127 | CC number to send. Each detent increments/decrements the value by 1. |
+| `cc` | 0-127 | CC number to send. |
 | `channel` | 1-16 | MIDI channel (default: 1). |
+| `min` | 0-127 | Minimum CC value, clamps at bottom (default: 0). |
+| `max` | 0-127 | Maximum CC value, clamps at top (default: 127). |
 
-**Behavior:** Encoder values are absolute (0-127), clamped at both ends. Turning clockwise sends the new value; turning fast (acceleration) skips multiple steps but still sends a single message with the final value. Encoder values persist across preset switches and power cycles.
+### Relative CC
 
-The OLED shows a large value overlay briefly on each turn.
+Sends a fixed increment or decrement value on each click. For gear that expects relative encoding (e.g., Ableton, some multi-FX units).
+
+```yaml
+encoders:
+  Vol: { label: "FX Knob", mode: relative, cc: 16, increment: 65, decrement: 63 }
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `mode` | `"relative"` | **Required** to select this mode. |
+| `cc` | 0-127 | CC number to send. |
+| `channel` | 1-16 | MIDI channel (default: 1). |
+| `increment` | 0-127 | Value sent on clockwise turn (default: 65). |
+| `decrement` | 0-127 | Value sent on counter-clockwise turn (default: 63). |
+
+### Preset Scroll
+
+No MIDI output. Clockwise = next preset, counter-clockwise = previous preset.
+
+```yaml
+encoders:
+  Gain: { label: "Bank", mode: preset_scroll }
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `mode` | `"preset_scroll"` | **Required** to select this mode. |
+| `label` | string | Shown on OLED overlay during scroll. |
+
+**Behavior:** Encoder values persist across preset switches and power cycles via EEPROM. Fast turning (acceleration) skips multiple steps but sends a single message with the final value. The OLED shows a large value overlay briefly on each turn.
 
 ---
 
