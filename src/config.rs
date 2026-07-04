@@ -1,14 +1,25 @@
 use schemars::JsonSchema;
 use serde::Deserialize;
 
+/// Current setlist schema version. Bump major on breaking changes, minor on additions.
+pub const SCHEMA_VERSION: u8 = 1;
+
 /// A setlist file containing one or more presets and optional global config.
 #[derive(Deserialize, JsonSchema)]
 pub struct Setlist {
+    /// Schema version (currently 1). Tools use this to determine compatibility.
+    /// Omit for v1 (assumed). Required from v2 onward.
+    #[serde(default = "default_schema_version")]
+    pub version: u8,
     /// Global device settings (MIDI routing, clock, etc.). Applied once on upload.
     #[serde(default)]
     pub global: Option<GlobalYamlConfig>,
     /// List of presets. Each preset defines the complete button/encoder/expression layout for one song or scene.
     pub presets: Vec<PresetConfig>,
+}
+
+fn default_schema_version() -> u8 {
+    1
 }
 
 /// Global device configuration — system-wide settings independent of presets.

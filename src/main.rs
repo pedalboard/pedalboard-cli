@@ -122,7 +122,26 @@ async fn pe_read(address: &str, index: u8) -> Result<(), Box<dyn std::error::Err
 
     match tokio::time::timeout(std::time::Duration::from_secs(2), ws.next()).await {
         Ok(Some(Ok(Message::Binary(data)))) => {
-            // Extract body from PE Get Reply (same layout as Set, different sub-ID2)
+            // Check reply status
+            let status = pedalboard_protocol::property_exchange::extract_reply_status(&data);
+            if let Some(s) = status {
+                if !s.is_ok() {
+                    use pedalboard_protocol::property_exchange::PeStatus;
+                    match s {
+                        PeStatus::NotFound => println!("Preset {}: not found", index),
+                        PeStatus::FormatError => {
+                            println!("Preset {}: format error (re-upload setlist)", index)
+                        }
+                        PeStatus::VersionMismatch => println!(
+                            "Preset {}: version mismatch (re-upload setlist after firmware update)",
+                            index
+                        ),
+                        _ => println!("Preset {}: error ({:?})", index, s),
+                    }
+                    return Ok(());
+                }
+            }
+            // Extract body from PE Get Reply
             if let Some(body) = pedalboard_protocol::property_exchange::extract_get_body(&data) {
                 let mut decoded_buf = [0u8; 256];
                 let dec_len =
@@ -158,6 +177,17 @@ async fn pe_read(address: &str, index: u8) -> Result<(), Box<dyn std::error::Err
 async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     let content = std::fs::read_to_string(file)?;
     let setlist: Setlist = serde_yaml::from_str(&content)?;
+
+    if setlist.version > pedalboard_cli::config::SCHEMA_VERSION {
+        eprintln!(
+            "Error: setlist requires schema version {}, but this CLI supports up to version {}.",
+            setlist.version,
+            pedalboard_cli::config::SCHEMA_VERSION
+        );
+        eprintln!("Upgrade pedalboard-cli to use this setlist file.");
+        std::process::exit(1);
+    }
+
     let presets = yaml_to_presets(&setlist);
 
     println!(
@@ -183,7 +213,16 @@ async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
         println!("  Global config ({} bytes)", serialized.len());
         ws.send(Message::Binary(msg.to_vec())).await?;
         match tokio::time::timeout(std::time::Duration::from_secs(5), ws.next()).await {
-            Ok(Some(Ok(_))) => println!("    ACK ✓"),
+            Ok(Some(Ok(msg))) => {
+                let data = msg.into_data();
+                match pedalboard_protocol::property_exchange::extract_reply_status(&data) {
+                    Some(pedalboard_protocol::property_exchange::PeStatus::Ok) => {
+                        println!("    ACK ✓")
+                    }
+                    Some(status) => eprintln!("    Error: {:?}", status),
+                    None => println!("    ACK ✓"),
+                }
+            }
             _ => eprintln!("    No reply (timeout)"),
         }
     }
@@ -207,7 +246,16 @@ async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
         ws.send(Message::Binary(msg.to_vec())).await?;
 
         match tokio::time::timeout(std::time::Duration::from_secs(5), ws.next()).await {
-            Ok(Some(Ok(_))) => println!("    ACK ✓"),
+            Ok(Some(Ok(msg))) => {
+                let data = msg.into_data();
+                match pedalboard_protocol::property_exchange::extract_reply_status(&data) {
+                    Some(pedalboard_protocol::property_exchange::PeStatus::Ok) => {
+                        println!("    ACK ✓")
+                    }
+                    Some(status) => eprintln!("    Error: {:?}", status),
+                    None => println!("    ACK ✓"),
+                }
+            }
             _ => eprintln!("    No reply (timeout)"),
         }
 

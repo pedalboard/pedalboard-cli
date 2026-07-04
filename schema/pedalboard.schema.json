@@ -24,6 +24,13 @@
       "items": {
         "$ref": "#/definitions/PresetConfig"
       }
+    },
+    "version": {
+      "description": "Schema version (currently 1). Tools use this to determine compatibility. Omit for v1 (assumed). Required from v2 onward.",
+      "default": 1,
+      "type": "integer",
+      "format": "uint8",
+      "minimum": 0.0
     }
   },
   "definitions": {
