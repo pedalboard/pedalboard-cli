@@ -58,7 +58,14 @@ presets:
 ```
 
 See [schema/pedalboard.schema.json](schema/pedalboard.schema.json) for the full JSON Schema reference.
+See [docs/config-reference.md](docs/config-reference.md) for the human-readable configuration guide.
 More examples in [examples/](examples/).
+
+## Development
+
+When extending the config schema (new actions, fields, button modes), follow the
+[contributing guide](https://github.com/pedalboard/pedalboard-protocol/blob/main/CONTRIBUTING.md)
+to keep protocol, CLI, and firmware in sync.
 
 ## License
 
