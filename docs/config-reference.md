@@ -5,6 +5,8 @@ A setlist YAML file defines everything your pedalboard does: button behavior, en
 ## File Structure
 
 ```yaml
+version: 1      # Optional. Schema version for tool compatibility (default: 1).
+
 global:         # Optional. Device-wide settings (MIDI routing, clock, calibration).
   ...
 
