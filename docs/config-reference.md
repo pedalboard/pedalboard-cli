@@ -1,1193 +1,410 @@
-# Setlist
-
-- [1. Property `Setlist > global`](#global)
-  - [1.1. Property `Setlist > global > anyOf > GlobalYamlConfig`](#global_anyOf_i0)
-    - [1.1.1. Property `Setlist > global > anyOf > item 0 > bpm`](#global_anyOf_i0_bpm)
-    - [1.1.2. Property `Setlist > global > anyOf > item 0 > calibration`](#global_anyOf_i0_calibration)
-      - [1.1.2.1. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > CalibrationYaml`](#global_anyOf_i0_calibration_anyOf_i0)
-        - [1.1.2.1.1. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp1`](#global_anyOf_i0_calibration_anyOf_i0_exp1)
-          - [1.1.2.1.1.1. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp1 > anyOf > ExpCalibration`](#global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i0)
-            - [1.1.2.1.1.1.1. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp1 > anyOf > item 0 > max`](#global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i0_max)
-            - [1.1.2.1.1.1.2. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp1 > anyOf > item 0 > min`](#global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i0_min)
-          - [1.1.2.1.1.2. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp1 > anyOf > item 1`](#global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i1)
-        - [1.1.2.1.2. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp2`](#global_anyOf_i0_calibration_anyOf_i0_exp2)
-          - [1.1.2.1.2.1. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp2 > anyOf > ExpCalibration`](#global_anyOf_i0_calibration_anyOf_i0_exp2_anyOf_i0)
-          - [1.1.2.1.2.2. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp2 > anyOf > item 1`](#global_anyOf_i0_calibration_anyOf_i0_exp2_anyOf_i1)
-      - [1.1.2.2. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 1`](#global_anyOf_i0_calibration_anyOf_i1)
-    - [1.1.3. Property `Setlist > global > anyOf > item 0 > din_enabled`](#global_anyOf_i0_din_enabled)
-    - [1.1.4. Property `Setlist > global > anyOf > item 0 > din_to_usb_thru`](#global_anyOf_i0_din_to_usb_thru)
-    - [1.1.5. Property `Setlist > global > anyOf > item 0 > midi_clock`](#global_anyOf_i0_midi_clock)
-    - [1.1.6. Property `Setlist > global > anyOf > item 0 > usb_to_din_thru`](#global_anyOf_i0_usb_to_din_thru)
-    - [1.1.7. Property `Setlist > global > anyOf > item 0 > usb_to_usb_thru`](#global_anyOf_i0_usb_to_usb_thru)
-  - [1.2. Property `Setlist > global > anyOf > item 1`](#global_anyOf_i1)
-- [2. Property `Setlist > presets`](#presets)
-  - [2.1. Setlist > presets > PresetConfig](#presets_items)
-    - [2.1.1. Property `Setlist > presets > presets items > analog`](#presets_items_analog)
-      - [2.1.1.1. Property `Setlist > presets > presets items > analog > AnalogYamlConfig`](#presets_items_analog_additionalProperties)
-        - [2.1.1.1.1. Property `Setlist > presets > presets items > analog > additionalProperties > cc`](#presets_items_analog_additionalProperties_cc)
-        - [2.1.1.1.2. Property `Setlist > presets > presets items > analog > additionalProperties > channel`](#presets_items_analog_additionalProperties_channel)
-        - [2.1.1.1.3. Property `Setlist > presets > presets items > analog > additionalProperties > label`](#presets_items_analog_additionalProperties_label)
-        - [2.1.1.1.4. Property `Setlist > presets > presets items > analog > additionalProperties > max`](#presets_items_analog_additionalProperties_max)
-        - [2.1.1.1.5. Property `Setlist > presets > presets items > analog > additionalProperties > min`](#presets_items_analog_additionalProperties_min)
-    - [2.1.2. Property `Setlist > presets > presets items > buttons`](#presets_items_buttons)
-      - [2.1.2.1. Property `Setlist > presets > presets items > buttons > ButtonConfig`](#presets_items_buttons_additionalProperties)
-        - [2.1.2.1.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions`](#presets_items_buttons_additionalProperties_actions)
-          - [2.1.2.1.1.1. Setlist > presets > presets items > buttons > additionalProperties > actions > ActionYaml](#presets_items_buttons_additionalProperties_actions_items)
-            - [2.1.2.1.1.1.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 0`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i0)
-              - [2.1.2.1.1.1.1.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 0 > delay`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i0_delay)
-            - [2.1.2.1.1.1.2. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 1`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i1)
-              - [2.1.2.1.1.1.2.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 1 > cc`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i1_cc)
-              - [2.1.2.1.1.1.2.2. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 1 > channel`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i1_channel)
-              - [2.1.2.1.1.1.2.3. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 1 > value`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i1_value)
-            - [2.1.2.1.1.1.3. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 2`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i2)
-              - [2.1.2.1.1.1.3.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 2 > channel`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i2_channel)
-              - [2.1.2.1.1.1.3.2. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 2 > program_change`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i2_program_change)
-            - [2.1.2.1.1.1.4. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 3`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i3)
-              - [2.1.2.1.1.1.4.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 3 > channel`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i3_channel)
-              - [2.1.2.1.1.1.4.2. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 3 > note`](#presets_items_buttons_additionalProperties_actions_items_anyOf_i3_note)
-        - [2.1.2.1.2. Property `Setlist > presets > presets items > buttons > additionalProperties > animation`](#presets_items_buttons_additionalProperties_animation)
-        - [2.1.2.1.3. Property `Setlist > presets > presets items > buttons > additionalProperties > cc`](#presets_items_buttons_additionalProperties_cc)
-        - [2.1.2.1.4. Property `Setlist > presets > presets items > buttons > additionalProperties > channel`](#presets_items_buttons_additionalProperties_channel)
-        - [2.1.2.1.5. Property `Setlist > presets > presets items > buttons > additionalProperties > color`](#presets_items_buttons_additionalProperties_color)
-        - [2.1.2.1.6. Property `Setlist > presets > presets items > buttons > additionalProperties > label`](#presets_items_buttons_additionalProperties_label)
-        - [2.1.2.1.7. Property `Setlist > presets > presets items > buttons > additionalProperties > level`](#presets_items_buttons_additionalProperties_level)
-        - [2.1.2.1.8. Property `Setlist > presets > presets items > buttons > additionalProperties > note`](#presets_items_buttons_additionalProperties_note)
-        - [2.1.2.1.9. Property `Setlist > presets > presets items > buttons > additionalProperties > on_long_press`](#presets_items_buttons_additionalProperties_on_long_press)
-        - [2.1.2.1.10. Property `Setlist > presets > presets items > buttons > additionalProperties > program_change`](#presets_items_buttons_additionalProperties_program_change)
-        - [2.1.2.1.11. Property `Setlist > presets > presets items > buttons > additionalProperties > radio_group`](#presets_items_buttons_additionalProperties_radio_group)
-        - [2.1.2.1.12. Property `Setlist > presets > presets items > buttons > additionalProperties > renderer`](#presets_items_buttons_additionalProperties_renderer)
-        - [2.1.2.1.13. Property `Setlist > presets > presets items > buttons > additionalProperties > renderer_param`](#presets_items_buttons_additionalProperties_renderer_param)
-        - [2.1.2.1.14. Property `Setlist > presets > presets items > buttons > additionalProperties > reverse`](#presets_items_buttons_additionalProperties_reverse)
-        - [2.1.2.1.15. Property `Setlist > presets > presets items > buttons > additionalProperties > toggle`](#presets_items_buttons_additionalProperties_toggle)
-        - [2.1.2.1.16. Property `Setlist > presets > presets items > buttons > additionalProperties > value`](#presets_items_buttons_additionalProperties_value)
-        - [2.1.2.1.17. Property `Setlist > presets > presets items > buttons > additionalProperties > values`](#presets_items_buttons_additionalProperties_values)
-          - [2.1.2.1.17.1. Setlist > presets > presets items > buttons > additionalProperties > values > values items](#presets_items_buttons_additionalProperties_values_items)
-    - [2.1.3. Property `Setlist > presets > presets items > defaults`](#presets_items_defaults)
-      - [2.1.3.1. Property `Setlist > presets > presets items > defaults > anyOf > DefaultsConfig`](#presets_items_defaults_anyOf_i0)
-        - [2.1.3.1.1. Property `Setlist > presets > presets items > defaults > anyOf > item 0 > buttons`](#presets_items_defaults_anyOf_i0_buttons)
-          - [2.1.3.1.1.1. Property `Setlist > presets > presets items > defaults > anyOf > item 0 > buttons > additionalProperties`](#presets_items_defaults_anyOf_i0_buttons_additionalProperties)
-        - [2.1.3.1.2. Property `Setlist > presets > presets items > defaults > anyOf > item 0 > encoders`](#presets_items_defaults_anyOf_i0_encoders)
-          - [2.1.3.1.2.1. Property `Setlist > presets > presets items > defaults > anyOf > item 0 > encoders > additionalProperties`](#presets_items_defaults_anyOf_i0_encoders_additionalProperties)
-      - [2.1.3.2. Property `Setlist > presets > presets items > defaults > anyOf > item 1`](#presets_items_defaults_anyOf_i1)
-    - [2.1.4. Property `Setlist > presets > presets items > encoders`](#presets_items_encoders)
-      - [2.1.4.1. Property `Setlist > presets > presets items > encoders > EncoderConfig`](#presets_items_encoders_additionalProperties)
-        - [2.1.4.1.1. Property `Setlist > presets > presets items > encoders > additionalProperties > cc`](#presets_items_encoders_additionalProperties_cc)
-        - [2.1.4.1.2. Property `Setlist > presets > presets items > encoders > additionalProperties > channel`](#presets_items_encoders_additionalProperties_channel)
-        - [2.1.4.1.3. Property `Setlist > presets > presets items > encoders > additionalProperties > label`](#presets_items_encoders_additionalProperties_label)
-    - [2.1.5. Property `Setlist > presets > presets items > name`](#presets_items_name)
-    - [2.1.6. Property `Setlist > presets > presets items > on_enter`](#presets_items_on_enter)
-      - [2.1.6.1. Setlist > presets > presets items > on_enter > ActionYaml](#presets_items_on_enter_items)
-    - [2.1.7. Property `Setlist > presets > presets items > on_exit`](#presets_items_on_exit)
-      - [2.1.7.1. Setlist > presets > presets items > on_exit > ActionYaml](#presets_items_on_exit_items)
-
-**Title:** Setlist
-
-|                           |                  |
-| ------------------------- | ---------------- |
-| **Type**                  | `object`         |
-| **Required**              | No               |
-| **Additional properties** | Any type allowed |
-
-**Description:** A setlist file containing one or more presets and optional global config.
-
-| Property               | Pattern | Type        | Deprecated | Definition | Title/Description                                                                                         |
-| ---------------------- | ------- | ----------- | ---------- | ---------- | --------------------------------------------------------------------------------------------------------- |
-| - [global](#global )   | No      | Combination | No         | -          | Global device settings (MIDI routing, clock, etc.). Applied once on upload.                               |
-| + [presets](#presets ) | No      | array       | No         | -          | List of presets. Each preset defines the complete button/encoder/expression layout for one song or scene. |
-
-## <a name="global"></a>1. Property `Setlist > global`
-
-|                           |                  |
-| ------------------------- | ---------------- |
-| **Type**                  | `combining`      |
-| **Required**              | No               |
-| **Additional properties** | Any type allowed |
-
-**Description:** Global device settings (MIDI routing, clock, etc.). Applied once on upload.
-
-| Any of(Option)                       |
-| ------------------------------------ |
-| [GlobalYamlConfig](#global_anyOf_i0) |
-| [item 1](#global_anyOf_i1)           |
-
-### <a name="global_anyOf_i0"></a>1.1. Property `Setlist > global > anyOf > GlobalYamlConfig`
-
-|                           |                                |
-| ------------------------- | ------------------------------ |
-| **Type**                  | `object`                       |
-| **Required**              | No                             |
-| **Additional properties** | Any type allowed               |
-| **Defined in**            | #/definitions/GlobalYamlConfig |
-
-**Description:** Global device configuration — system-wide settings independent of presets.
-
-| Property                                               | Pattern | Type            | Deprecated | Definition | Title/Description                                                     |
-| ------------------------------------------------------ | ------- | --------------- | ---------- | ---------- | --------------------------------------------------------------------- |
-| - [bpm](#global_anyOf_i0_bpm )                         | No      | integer or null | No         | -          | MIDI Clock tempo in BPM (30-300). Default: 120.                       |
-| - [calibration](#global_anyOf_i0_calibration )         | No      | Combination     | No         | -          | Expression pedal ADC calibration values.                              |
-| - [din_enabled](#global_anyOf_i0_din_enabled )         | No      | boolean or null | No         | -          | Enable DIN MIDI output for locally-generated messages. Default: true. |
-| - [din_to_usb_thru](#global_anyOf_i0_din_to_usb_thru ) | No      | boolean or null | No         | -          | Route incoming DIN MIDI to USB MIDI out. Default: true.               |
-| - [midi_clock](#global_anyOf_i0_midi_clock )           | No      | boolean or null | No         | -          | Enable MIDI Clock output. Default: false.                             |
-| - [usb_to_din_thru](#global_anyOf_i0_usb_to_din_thru ) | No      | boolean or null | No         | -          | Route incoming USB MIDI to DIN MIDI out. Default: false.              |
-| - [usb_to_usb_thru](#global_anyOf_i0_usb_to_usb_thru ) | No      | boolean or null | No         | -          | Route incoming USB MIDI back to USB MIDI out (echo). Default: false.  |
-
-#### <a name="global_anyOf_i0_bpm"></a>1.1.1. Property `Setlist > global > anyOf > item 0 > bpm`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint16`          |
-| **Default**  | `null`            |
-
-**Description:** MIDI Clock tempo in BPM (30-300). Default: 120.
+# Setlist Configuration Reference
+
+A setlist YAML file defines everything your pedalboard does: button behavior, encoder mapping, expression pedal routing, LED appearance, and MIDI routing. Upload it with `pedalboard-cli upload setlist.yaml`.
+
+## File Structure
+
+```yaml
+global:         # Optional. Device-wide settings (MIDI routing, clock, calibration).
+  ...
+
+presets:        # Required. List of presets (max 32).
+  - name: "..."
+    buttons: { ... }
+    encoders: { ... }
+    analog: { ... }
+    defaults: { ... }
+    on_enter: [ ... ]
+    on_exit: [ ... ]
+    triggers: [ ... ]
+```
+
+---
+
+## Global Config
+
+System-wide settings independent of presets. Applied once on upload.
+
+```yaml
+global:
+  din_enabled: true       # DIN MIDI output for locally-generated messages (default: true)
+  din_to_usb_thru: true   # Route DIN MIDI input → USB MIDI out (default: true)
+  usb_to_din_thru: false  # Route USB MIDI input → DIN MIDI out (default: false)
+  usb_to_usb_thru: false  # Echo USB MIDI input back to USB out (default: false)
+  midi_clock: false       # Enable MIDI Clock output at 24 PPQ (default: false)
+  bpm: 120                # Clock tempo, 30-300 BPM (default: 120)
+  calibration:            # Expression pedal ADC calibration
+    exp1:
+      min: 0              # ADC value at heel/rest position (default: 0)
+      max: 3750           # ADC value at toe/full position (default: 3750)
+    exp2:
+      min: 0
+      max: 3750
+```
+
+All fields are optional. Omitted values use defaults.
+
+---
+
+## Presets
+
+Each preset defines the complete button/encoder/expression layout for one song or scene. Switching presets changes everything at once.
+
+```yaml
+presets:
+  - name: "My Preset"    # Required. Shown on OLED (max 16 chars).
+    buttons: { ... }
+    encoders: { ... }
+    analog: { ... }
+```
+
+---
+
+## Buttons
+
+Six buttons (A–F) with configurable MIDI output, LED appearance, and behavior mode.
+
+Keys: `A`, `B`, `C`, `D`, `E`, `F`
+
+### Simple Shortcuts
+
+For common single-message buttons, use the shorthand fields:
+
+```yaml
+buttons:
+  A: { label: "Drive", cc: 80, color: green }              # CC#80 = 127 on press
+  B: { label: "Amp 2", program_change: 5, color: blue }    # PC 5 on press
+  C: { label: "Tap", note: 64, color: yellow }             # Note On press, Note Off release
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `label` | string | **Required.** OLED display label (max 16 chars). Empty string = hidden. |
+| `cc` | 0-127 | Send CC on press. Combine with `toggle`, `values`, or `value`. |
+| `note` | 0-127 | Send Note On (vel 127) on press, Note Off on release. Implies momentary. |
+| `program_change` | 0-127 | Send Program Change on press. |
+| `value` | 0-127 | CC value to send (default: 127). For toggle, this is the ON value. |
+| `channel` | 1-16 | MIDI channel (default: 1). Applies to all actions on this button. |
+
+### Button Modes
+
+| Mode | YAML | Behavior |
+|------|------|----------|
+| **Momentary** | (default) | Active while pressed. LED on during press. Fires `on_press` on press, `on_release` on release. |
+| **Toggle** | `toggle: true` | Alternates active/inactive on each press. LED stays lit while active. Press when inactive → fires `on_press`. Press when active → fires `on_release`. |
+| **Radio Group** | `radio_group: N` | Only one button in group N can be active. Pressing one deactivates others (silently — no `on_release` for deactivated buttons). |
+
+```yaml
+buttons:
+  # Toggle: CC#80=127 when activated, CC#80=0 when deactivated
+  A: { label: "Drive", cc: 80, toggle: true, color: green }
+
+  # Radio group: only one board active at a time
+  B: { label: "Board 1", program_change: 0, color: blue, radio_group: 1 }
+  C: { label: "Board 2", program_change: 1, color: green, radio_group: 1 }
+  D: { label: "Board 3", program_change: 2, color: cyan, radio_group: 1 }
+```
+
+### CC Cycle
+
+Send a different CC value on each press, cycling through a list:
+
+```yaml
+buttons:
+  A:
+    label: "Kit+"
+    cc: 8
+    values: [0, 8, 17, 26, 35, 43, 51]   # Cycles forward through these values
+    color: cyan
+  B:
+    label: "Kit-"
+    cc: 8
+    values: [0, 8, 17, 26, 35, 43, 51]
+    reverse: true                           # Cycles backward
+    color: red
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `values` | list of 0-127 | CC values to cycle through (max 12). Requires `cc` field. |
+| `reverse` | bool | Cycle backward through the list (default: false). |
+
+**Behavior:** First press sends `values[0]`, advances index. Second press sends `values[1]`, etc. After the last value, wraps to the beginning. With `reverse: true`, the index decrements (wrapping from 0 to the last entry). Cycle state persists across power cycles via EEPROM.
+
+### Long Press
+
+Hold a button for >500ms to trigger a secondary action. Short press still fires the normal action.
+
+```yaml
+buttons:
+  A:
+    label: "FX1"
+    cc: 20
+    color: yellow
+    on_long_press: next_preset    # Hold > 500ms → switch to next preset
+```
+
+| Value | Action |
+|-------|--------|
+| `next_preset` | Switch to the next preset |
+| `prev_preset` | Switch to the previous preset |
+
+When a button has `on_long_press`, the normal `on_press` is deferred until release (if released before 500ms). If held past 500ms, only the long-press action fires.
+
+### Multi-Action Sequences
+
+For complex button behavior, use `actions` — a list of MIDI messages executed in order:
+
+```yaml
+buttons:
+  F:
+    label: "Clear"
+    color: red
+    actions:
+      - { cc: 3, value: 127 }     # CC#3 = 127
+      - { delay: 50 }             # Wait 50ms
+      - { cc: 3, value: 0 }       # CC#3 = 0
+```
+
+`actions` overrides the simple `cc`/`note`/`program_change` fields.
+
+#### Action Types
+
+| Action | Fields | Description |
+|--------|--------|-------------|
+| CC | `cc`, `value?`, `channel?` | Send Control Change (value default: 127) |
+| Program Change | `program_change`, `channel?` | Send Program Change |
+| Note On | `note`, `channel?` | Send Note On (velocity 127) |
+| Delay | `delay` | Wait N milliseconds before next action |
+
+Per-action `channel` overrides the button-level `channel`. If both omitted, defaults to channel 1.
+
+### LED Configuration
+
+```yaml
+buttons:
+  A:
+    label: "FX"
+    cc: 80
+    toggle: true
+    color: green          # Color when active
+    animation: pulse      # Animation when active
+    renderer: dots        # Spatial pattern
+    renderer_param: 3     # 3 evenly-spaced dots
+```
+
+| Field | Values | Description |
+|-------|--------|-------------|
+| `color` | `red`, `green`, `blue`, `yellow`, `cyan`, `magenta`, `white`, `orange`, `purple`, `off`, or `#RRGGBB` | LED color when active |
+| `animation` | `solid`, `blink`, `pulse`, `rotate`, `colorcycle` | Temporal animation (default: solid) |
+| `renderer` | `solid`, `fill`, `single`, `dots` | Spatial pattern across 12 LEDs (default: solid) |
+| `renderer_param` | integer | Fill count (1-12), single position (0-11), or dot count (1-6) |
+
+LED is off when the button is inactive. For momentary buttons, the LED is on only while pressed.
+
+### Reactive LED (listen_cc)
+
+Make a button's LED ring respond to incoming MIDI CC (from external gear):
+
+```yaml
+buttons:
+  A:
+    label: "Gain"
+    cc: 80
+    toggle: true
+    color: green
+    listen_cc:
+      cc: 100             # React to incoming CC#100
+      channel: 1          # On channel 1 (default: 1)
+      mode: heatmap       # "heatmap" (fill proportional to value) or "trigger" (on/off)
+      threshold: 64       # For trigger mode: value ≥ 64 = on (default: 64)
+```
 
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
+| Mode | Behavior |
+|------|----------|
+| `heatmap` | LED ring fill level proportional to CC value (0=off, 127=all 12 LEDs) |
+| `trigger` | LED on (with button's color/animation) when value ≥ threshold, off below |
 
-#### <a name="global_anyOf_i0_calibration"></a>1.1.2. Property `Setlist > global > anyOf > item 0 > calibration`
+---
 
-|                           |                  |
-| ------------------------- | ---------------- |
-| **Type**                  | `combining`      |
-| **Required**              | No               |
-| **Additional properties** | Any type allowed |
+## Encoders
 
-**Description:** Expression pedal ADC calibration values.
+Two rotary encoders: `Vol` (left) and `Gain` (right). Each click sends an incremented/decremented CC value.
 
-| Any of(Option)                                           |
-| -------------------------------------------------------- |
-| [CalibrationYaml](#global_anyOf_i0_calibration_anyOf_i0) |
-| [item 1](#global_anyOf_i0_calibration_anyOf_i1)          |
+```yaml
+encoders:
+  Vol: { label: "Vol", cc: 7 }
+  Gain: { label: "Reverb", cc: 91, channel: 2 }
+```
 
-##### <a name="global_anyOf_i0_calibration_anyOf_i0"></a>1.1.2.1. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > CalibrationYaml`
+| Field | Type | Description |
+|-------|------|-------------|
+| `label` | string | **Required.** Shown on OLED overlay when turning. |
+| `cc` | 0-127 | CC number to send. Each detent increments/decrements the value by 1. |
+| `channel` | 1-16 | MIDI channel (default: 1). |
 
-|                           |                               |
-| ------------------------- | ----------------------------- |
-| **Type**                  | `object`                      |
-| **Required**              | No                            |
-| **Additional properties** | Any type allowed              |
-| **Defined in**            | #/definitions/CalibrationYaml |
+**Behavior:** Encoder values are absolute (0-127), clamped at both ends. Turning clockwise sends the new value; turning fast (acceleration) skips multiple steps but still sends a single message with the final value. Encoder values persist across preset switches and power cycles.
 
-**Description:** ADC calibration for expression pedals.
+The OLED shows a large value overlay briefly on each turn.
 
-| Property                                              | Pattern | Type        | Deprecated | Definition | Title/Description               |
-| ----------------------------------------------------- | ------- | ----------- | ---------- | ---------- | ------------------------------- |
-| - [exp1](#global_anyOf_i0_calibration_anyOf_i0_exp1 ) | No      | Combination | No         | -          | Expression pedal 1 calibration. |
-| - [exp2](#global_anyOf_i0_calibration_anyOf_i0_exp2 ) | No      | Combination | No         | -          | Expression pedal 2 calibration. |
+---
 
-###### <a name="global_anyOf_i0_calibration_anyOf_i0_exp1"></a>1.1.2.1.1. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp1`
+## Expression Pedals (Analog)
 
-|                           |                  |
-| ------------------------- | ---------------- |
-| **Type**                  | `combining`      |
-| **Required**              | No               |
-| **Additional properties** | Any type allowed |
+Two expression pedal inputs: `Exp1` and `Exp2`. Send continuous CC based on pedal position.
 
-**Description:** Expression pedal 1 calibration.
+```yaml
+analog:
+  Exp1: { label: "Wah", cc: 11 }
+  Exp2: { label: "Volume", cc: 7, min: 0, max: 100 }
+```
 
-| Any of(Option)                                                        |
-| --------------------------------------------------------------------- |
-| [ExpCalibration](#global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i0) |
-| [item 1](#global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i1)         |
+| Field | Type | Description |
+|-------|------|-------------|
+| `label` | string | **Required.** Shown on OLED overlay when moving. |
+| `cc` | 0-127 | **Required.** CC number to send. |
+| `channel` | 1-16 | MIDI channel (default: 1). |
+| `min` | 0-127 | CC value at heel/rest position (default: 0). |
+| `max` | 0-127 | CC value at toe/full position (default: 127). |
 
-###### <a name="global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i0"></a>1.1.2.1.1.1. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp1 > anyOf > ExpCalibration`
+**Behavior:** The raw ADC reading is clamped to the calibrated range (from `global.calibration`), then linearly mapped to the `min`–`max` CC range. Values below `adc_min` produce `min`; values above `adc_max` produce `max`.
 
-|                           |                              |
-| ------------------------- | ---------------------------- |
-| **Type**                  | `object`                     |
-| **Required**              | No                           |
-| **Additional properties** | Any type allowed             |
-| **Defined in**            | #/definitions/ExpCalibration |
+---
 
-**Description:** Min/max ADC values for a single expression pedal (0-4095).
+## Defaults (Initial State)
 
-| Property                                                          | Pattern | Type    | Deprecated | Definition | Title/Description                                |
-| ----------------------------------------------------------------- | ------- | ------- | ---------- | ---------- | ------------------------------------------------ |
-| - [max](#global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i0_max ) | No      | integer | No         | -          | ADC value at toe (full) position. Default: 3750. |
-| - [min](#global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i0_min ) | No      | integer | No         | -          | ADC value at heel (rest) position. Default: 0.   |
+Set the starting state for toggles and encoders when a preset is first activated after upload:
 
-###### <a name="global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i0_max"></a>1.1.2.1.1.1.1. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp1 > anyOf > item 0 > max`
-
-|              |           |
-| ------------ | --------- |
-| **Type**     | `integer` |
-| **Required** | No        |
-| **Format**   | `uint16`  |
-| **Default**  | `3750`    |
-
-**Description:** ADC value at toe (full) position. Default: 3750.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i0_min"></a>1.1.2.1.1.1.2. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp1 > anyOf > item 0 > min`
-
-|              |           |
-| ------------ | --------- |
-| **Type**     | `integer` |
-| **Required** | No        |
-| **Format**   | `uint16`  |
-| **Default**  | `0`       |
-
-**Description:** ADC value at heel (rest) position. Default: 0.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i1"></a>1.1.2.1.1.2. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp1 > anyOf > item 1`
-
-|              |        |
-| ------------ | ------ |
-| **Type**     | `null` |
-| **Required** | No     |
-
-###### <a name="global_anyOf_i0_calibration_anyOf_i0_exp2"></a>1.1.2.1.2. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp2`
-
-|                           |                  |
-| ------------------------- | ---------------- |
-| **Type**                  | `combining`      |
-| **Required**              | No               |
-| **Additional properties** | Any type allowed |
-
-**Description:** Expression pedal 2 calibration.
-
-| Any of(Option)                                                        |
-| --------------------------------------------------------------------- |
-| [ExpCalibration](#global_anyOf_i0_calibration_anyOf_i0_exp2_anyOf_i0) |
-| [item 1](#global_anyOf_i0_calibration_anyOf_i0_exp2_anyOf_i1)         |
-
-###### <a name="global_anyOf_i0_calibration_anyOf_i0_exp2_anyOf_i0"></a>1.1.2.1.2.1. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp2 > anyOf > ExpCalibration`
-
-|                           |                                                                                                           |
-| ------------------------- | --------------------------------------------------------------------------------------------------------- |
-| **Type**                  | `object`                                                                                                  |
-| **Required**              | No                                                                                                        |
-| **Additional properties** | Any type allowed                                                                                          |
-| **Same definition as**    | [global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i0](#global_anyOf_i0_calibration_anyOf_i0_exp1_anyOf_i0) |
-
-**Description:** Min/max ADC values for a single expression pedal (0-4095).
-
-###### <a name="global_anyOf_i0_calibration_anyOf_i0_exp2_anyOf_i1"></a>1.1.2.1.2.2. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 0 > exp2 > anyOf > item 1`
-
-|              |        |
-| ------------ | ------ |
-| **Type**     | `null` |
-| **Required** | No     |
-
-##### <a name="global_anyOf_i0_calibration_anyOf_i1"></a>1.1.2.2. Property `Setlist > global > anyOf > item 0 > calibration > anyOf > item 1`
-
-|              |        |
-| ------------ | ------ |
-| **Type**     | `null` |
-| **Required** | No     |
-
-#### <a name="global_anyOf_i0_din_enabled"></a>1.1.3. Property `Setlist > global > anyOf > item 0 > din_enabled`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `boolean or null` |
-| **Required** | No                |
-| **Default**  | `null`            |
-
-**Description:** Enable DIN MIDI output for locally-generated messages. Default: true.
-
-#### <a name="global_anyOf_i0_din_to_usb_thru"></a>1.1.4. Property `Setlist > global > anyOf > item 0 > din_to_usb_thru`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `boolean or null` |
-| **Required** | No                |
-| **Default**  | `null`            |
-
-**Description:** Route incoming DIN MIDI to USB MIDI out. Default: true.
-
-#### <a name="global_anyOf_i0_midi_clock"></a>1.1.5. Property `Setlist > global > anyOf > item 0 > midi_clock`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `boolean or null` |
-| **Required** | No                |
-| **Default**  | `null`            |
-
-**Description:** Enable MIDI Clock output. Default: false.
-
-#### <a name="global_anyOf_i0_usb_to_din_thru"></a>1.1.6. Property `Setlist > global > anyOf > item 0 > usb_to_din_thru`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `boolean or null` |
-| **Required** | No                |
-| **Default**  | `null`            |
-
-**Description:** Route incoming USB MIDI to DIN MIDI out. Default: false.
-
-#### <a name="global_anyOf_i0_usb_to_usb_thru"></a>1.1.7. Property `Setlist > global > anyOf > item 0 > usb_to_usb_thru`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `boolean or null` |
-| **Required** | No                |
-| **Default**  | `null`            |
-
-**Description:** Route incoming USB MIDI back to USB MIDI out (echo). Default: false.
-
-### <a name="global_anyOf_i1"></a>1.2. Property `Setlist > global > anyOf > item 1`
-
-|              |        |
-| ------------ | ------ |
-| **Type**     | `null` |
-| **Required** | No     |
-
-## <a name="presets"></a>2. Property `Setlist > presets`
-
-|              |         |
-| ------------ | ------- |
-| **Type**     | `array` |
-| **Required** | Yes     |
-
-**Description:** List of presets. Each preset defines the complete button/encoder/expression layout for one song or scene.
-
-|                      | Array restrictions |
-| -------------------- | ------------------ |
-| **Min items**        | N/A                |
-| **Max items**        | N/A                |
-| **Items unicity**    | False              |
-| **Additional items** | False              |
-| **Tuple validation** | See below          |
-
-| Each item of this array must be | Description                                          |
-| ------------------------------- | ---------------------------------------------------- |
-| [PresetConfig](#presets_items)  | A single preset — one song or scene in your setlist. |
-
-### <a name="presets_items"></a>2.1. Setlist > presets > PresetConfig
-
-|                           |                            |
-| ------------------------- | -------------------------- |
-| **Type**                  | `object`                   |
-| **Required**              | No                         |
-| **Additional properties** | Any type allowed           |
-| **Defined in**            | #/definitions/PresetConfig |
-
-**Description:** A single preset — one song or scene in your setlist.
-
-| Property                               | Pattern | Type          | Deprecated | Definition | Title/Description                                                                                                 |
-| -------------------------------------- | ------- | ------------- | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
-| - [analog](#presets_items_analog )     | No      | object        | No         | -          | Expression pedal configurations keyed by jack: Exp1, Exp2.                                                        |
-| - [buttons](#presets_items_buttons )   | No      | object        | No         | -          | Button configurations keyed by position: A, B, C, D, E, F.                                                        |
-| - [defaults](#presets_items_defaults ) | No      | Combination   | No         | -          | Initial state on first activation after upload. Determines which toggles start ON and encoder starting positions. |
-| - [encoders](#presets_items_encoders ) | No      | object        | No         | -          | Encoder configurations keyed by position: Vol (left), Gain (right).                                               |
-| + [name](#presets_items_name )         | No      | string        | No         | -          | Preset name displayed on the OLED (max 16 characters).                                                            |
-| - [on_enter](#presets_items_on_enter ) | No      | array or null | No         | -          | MIDI messages sent automatically when this preset becomes active (on switch or boot).                             |
-| - [on_exit](#presets_items_on_exit )   | No      | array or null | No         | -          | MIDI messages sent automatically when leaving this preset.                                                        |
-
-#### <a name="presets_items_analog"></a>2.1.1. Property `Setlist > presets > presets items > analog`
-
-|                           |                                                                                                   |
-| ------------------------- | ------------------------------------------------------------------------------------------------- |
-| **Type**                  | `object`                                                                                          |
-| **Required**              | No                                                                                                |
-| **Additional properties** | [Each additional property must conform to the schema](#presets_items_analog_additionalProperties) |
-
-**Description:** Expression pedal configurations keyed by jack: Exp1, Exp2.
-
-| Property                                          | Pattern | Type   | Deprecated | Definition                        | Title/Description                              |
-| ------------------------------------------------- | ------- | ------ | ---------- | --------------------------------- | ---------------------------------------------- |
-| - [](#presets_items_analog_additionalProperties ) | No      | object | No         | In #/definitions/AnalogYamlConfig | Expression pedal (analog input) configuration. |
-
-##### <a name="presets_items_analog_additionalProperties"></a>2.1.1.1. Property `Setlist > presets > presets items > analog > AnalogYamlConfig`
-
-|                           |                                |
-| ------------------------- | ------------------------------ |
-| **Type**                  | `object`                       |
-| **Required**              | No                             |
-| **Additional properties** | Any type allowed               |
-| **Defined in**            | #/definitions/AnalogYamlConfig |
-
-**Description:** Expression pedal (analog input) configuration.
-
-| Property                                                         | Pattern | Type            | Deprecated | Definition | Title/Description                               |
-| ---------------------------------------------------------------- | ------- | --------------- | ---------- | ---------- | ----------------------------------------------- |
-| + [cc](#presets_items_analog_additionalProperties_cc )           | No      | integer         | No         | -          | MIDI CC number to send (0-127).                 |
-| - [channel](#presets_items_analog_additionalProperties_channel ) | No      | integer or null | No         | -          | MIDI channel (1-16). Default: 1.                |
-| + [label](#presets_items_analog_additionalProperties_label )     | No      | string          | No         | -          | Display label for the expression pedal overlay. |
-| - [max](#presets_items_analog_additionalProperties_max )         | No      | integer or null | No         | -          | Maximum CC value at toe position. Default: 127. |
-| - [min](#presets_items_analog_additionalProperties_min )         | No      | integer or null | No         | -          | Minimum CC value at heel position. Default: 0.  |
-
-###### <a name="presets_items_analog_additionalProperties_cc"></a>2.1.1.1.1. Property `Setlist > presets > presets items > analog > additionalProperties > cc`
-
-|              |           |
-| ------------ | --------- |
-| **Type**     | `integer` |
-| **Required** | Yes       |
-| **Format**   | `uint8`   |
-
-**Description:** MIDI CC number to send (0-127).
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_analog_additionalProperties_channel"></a>2.1.1.1.2. Property `Setlist > presets > presets items > analog > additionalProperties > channel`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-| **Default**  | `null`            |
-
-**Description:** MIDI channel (1-16). Default: 1.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_analog_additionalProperties_label"></a>2.1.1.1.3. Property `Setlist > presets > presets items > analog > additionalProperties > label`
-
-|              |          |
-| ------------ | -------- |
-| **Type**     | `string` |
-| **Required** | Yes      |
-
-**Description:** Display label for the expression pedal overlay.
-
-###### <a name="presets_items_analog_additionalProperties_max"></a>2.1.1.1.4. Property `Setlist > presets > presets items > analog > additionalProperties > max`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-| **Default**  | `null`            |
-
-**Description:** Maximum CC value at toe position. Default: 127.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_analog_additionalProperties_min"></a>2.1.1.1.5. Property `Setlist > presets > presets items > analog > additionalProperties > min`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-| **Default**  | `null`            |
-
-**Description:** Minimum CC value at heel position. Default: 0.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-#### <a name="presets_items_buttons"></a>2.1.2. Property `Setlist > presets > presets items > buttons`
-
-|                           |                                                                                                    |
-| ------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Type**                  | `object`                                                                                           |
-| **Required**              | No                                                                                                 |
-| **Additional properties** | [Each additional property must conform to the schema](#presets_items_buttons_additionalProperties) |
-
-**Description:** Button configurations keyed by position: A, B, C, D, E, F.
-
-| Property                                           | Pattern | Type   | Deprecated | Definition                    | Title/Description                                                                            |
-| -------------------------------------------------- | ------- | ------ | ---------- | ----------------------------- | -------------------------------------------------------------------------------------------- |
-| - [](#presets_items_buttons_additionalProperties ) | No      | object | No         | In #/definitions/ButtonConfig | Button configuration. Use one of: note, cc, program_change, or actions for the MIDI message. |
-
-##### <a name="presets_items_buttons_additionalProperties"></a>2.1.2.1. Property `Setlist > presets > presets items > buttons > ButtonConfig`
-
-|                           |                            |
-| ------------------------- | -------------------------- |
-| **Type**                  | `object`                   |
-| **Required**              | No                         |
-| **Additional properties** | Any type allowed           |
-| **Defined in**            | #/definitions/ButtonConfig |
-
-**Description:** Button configuration. Use one of: note, cc, program_change, or actions for the MIDI message.
-
-| Property                                                                        | Pattern | Type                     | Deprecated | Definition | Title/Description                                                                                                        |
-| ------------------------------------------------------------------------------- | ------- | ------------------------ | ---------- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
-| - [actions](#presets_items_buttons_additionalProperties_actions )               | No      | array or null            | No         | -          | Multi-action sequence: list of MIDI messages sent in order on press. Overrides cc/note/program_change fields.            |
-| - [animation](#presets_items_buttons_additionalProperties_animation )           | No      | string or null           | No         | -          | LED animation when active. Values: solid, blink, pulse, rotate, colorcycle.                                              |
-| - [cc](#presets_items_buttons_additionalProperties_cc )                         | No      | integer or null          | No         | -          | Send Control Change. Combined with toggle/values for different behaviors.                                                |
-| - [channel](#presets_items_buttons_additionalProperties_channel )               | No      | integer or null          | No         | -          | MIDI channel (1-16). Default: 1. Applies to all actions on this button unless overridden per-action.                     |
-| - [color](#presets_items_buttons_additionalProperties_color )                   | No      | string or null           | No         | -          | LED ring color when active. Values: red, green, blue, yellow, cyan, magenta, white, orange, purple, off, or #RRGGBB hex. |
-| + [label](#presets_items_buttons_additionalProperties_label )                   | No      | string                   | No         | -          | Display label shown on OLED (max 16 characters).                                                                         |
-| - [level](#presets_items_buttons_additionalProperties_level )                   | No      | boolean or null          | No         | -          | Level mode: LED brightness reflects CC value (for multi-LED visualization).                                              |
-| - [note](#presets_items_buttons_additionalProperties_note )                     | No      | integer or null          | No         | -          | Send Note On/Off. Button press = Note On (velocity 127), release = Note Off.                                             |
-| - [on_long_press](#presets_items_buttons_additionalProperties_on_long_press )   | No      | string or null           | No         | -          | Action on long press (hold > 500ms). Values: next_preset, prev_preset.                                                   |
-| - [program_change](#presets_items_buttons_additionalProperties_program_change ) | No      | integer or null          | No         | -          | Send Program Change on press.                                                                                            |
-| - [radio_group](#presets_items_buttons_additionalProperties_radio_group )       | No      | integer or null          | No         | -          | Radio group ID (0-255): only one button in the group can be active at a time. Pressing one deactivates others.           |
-| - [renderer](#presets_items_buttons_additionalProperties_renderer )             | No      | string or null           | No         | -          | LED spatial renderer. Values: solid (all 12), fill (partial arc), single (one LED), dots (evenly-spaced).                |
-| - [renderer_param](#presets_items_buttons_additionalProperties_renderer_param ) | No      | integer or null          | No         | -          | Renderer parameter: fill count (1-12), single position (0-11), or dot count (1-6).                                       |
-| - [reverse](#presets_items_buttons_additionalProperties_reverse )               | No      | boolean or null          | No         | -          | Reverse cycle direction (cycle values list goes backward).                                                               |
-| - [toggle](#presets_items_buttons_additionalProperties_toggle )                 | No      | boolean or null          | No         | -          | Toggle mode: alternates between on_press (active) and on_release (inactive) on each press. LED stays lit while active.   |
-| - [value](#presets_items_buttons_additionalProperties_value )                   | No      | integer or null          | No         | -          | CC value to send (default: 127). For toggle mode, this is the ON value.                                                  |
-| - [values](#presets_items_buttons_additionalProperties_values )                 | No      | array of integer or null | No         | -          | CC cycle values: each press sends the next value in the list. Use with cc field.                                         |
-
-###### <a name="presets_items_buttons_additionalProperties_actions"></a>2.1.2.1.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions`
-
-|              |                 |
-| ------------ | --------------- |
-| **Type**     | `array or null` |
-| **Required** | No              |
-
-**Description:** Multi-action sequence: list of MIDI messages sent in order on press. Overrides cc/note/program_change fields.
-
-|                      | Array restrictions |
-| -------------------- | ------------------ |
-| **Min items**        | N/A                |
-| **Max items**        | N/A                |
-| **Items unicity**    | False              |
-| **Additional items** | False              |
-| **Tuple validation** | See below          |
-
-| Each item of this array must be                                         | Description                                                             |
-| ----------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| [ActionYaml](#presets_items_buttons_additionalProperties_actions_items) | A single action in a multi-action sequence. Exactly one type per entry. |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items"></a>2.1.2.1.1.1. Setlist > presets > presets items > buttons > additionalProperties > actions > ActionYaml
-
-|                           |                          |
-| ------------------------- | ------------------------ |
-| **Type**                  | `combining`              |
-| **Required**              | No                       |
-| **Additional properties** | Any type allowed         |
-| **Defined in**            | #/definitions/ActionYaml |
-
-**Description:** A single action in a multi-action sequence. Exactly one type per entry.
-
-| Any of(Option)                                                               |
-| ---------------------------------------------------------------------------- |
-| [item 0](#presets_items_buttons_additionalProperties_actions_items_anyOf_i0) |
-| [item 1](#presets_items_buttons_additionalProperties_actions_items_anyOf_i1) |
-| [item 2](#presets_items_buttons_additionalProperties_actions_items_anyOf_i2) |
-| [item 3](#presets_items_buttons_additionalProperties_actions_items_anyOf_i3) |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i0"></a>2.1.2.1.1.1.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 0`
-
-|                           |                  |
-| ------------------------- | ---------------- |
-| **Type**                  | `object`         |
-| **Required**              | No               |
-| **Additional properties** | Any type allowed |
-
-**Description:** Wait between actions (milliseconds).
-
-| Property                                                                             | Pattern | Type    | Deprecated | Definition | Title/Description                             |
-| ------------------------------------------------------------------------------------ | ------- | ------- | ---------- | ---------- | --------------------------------------------- |
-| + [delay](#presets_items_buttons_additionalProperties_actions_items_anyOf_i0_delay ) | No      | integer | No         | -          | Delay in milliseconds before the next action. |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i0_delay"></a>2.1.2.1.1.1.1.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 0 > delay`
-
-|              |           |
-| ------------ | --------- |
-| **Type**     | `integer` |
-| **Required** | Yes       |
-| **Format**   | `uint16`  |
-
-**Description:** Delay in milliseconds before the next action.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i1"></a>2.1.2.1.1.1.2. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 1`
-
-|                           |                  |
-| ------------------------- | ---------------- |
-| **Type**                  | `object`         |
-| **Required**              | No               |
-| **Additional properties** | Any type allowed |
-
-**Description:** Send a Control Change message.
-
-| Property                                                                                 | Pattern | Type            | Deprecated | Definition | Title/Description                                     |
-| ---------------------------------------------------------------------------------------- | ------- | --------------- | ---------- | ---------- | ----------------------------------------------------- |
-| + [cc](#presets_items_buttons_additionalProperties_actions_items_anyOf_i1_cc )           | No      | integer         | No         | -          | CC number (0-127).                                    |
-| - [channel](#presets_items_buttons_additionalProperties_actions_items_anyOf_i1_channel ) | No      | integer or null | No         | -          | MIDI channel (1-16). Inherits from button if omitted. |
-| - [value](#presets_items_buttons_additionalProperties_actions_items_anyOf_i1_value )     | No      | integer or null | No         | -          | CC value (0-127). Default: 127.                       |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i1_cc"></a>2.1.2.1.1.1.2.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 1 > cc`
-
-|              |           |
-| ------------ | --------- |
-| **Type**     | `integer` |
-| **Required** | Yes       |
-| **Format**   | `uint8`   |
-
-**Description:** CC number (0-127).
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i1_channel"></a>2.1.2.1.1.1.2.2. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 1 > channel`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-
-**Description:** MIDI channel (1-16). Inherits from button if omitted.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i1_value"></a>2.1.2.1.1.1.2.3. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 1 > value`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-
-**Description:** CC value (0-127). Default: 127.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i2"></a>2.1.2.1.1.1.3. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 2`
-
-|                           |                  |
-| ------------------------- | ---------------- |
-| **Type**                  | `object`         |
-| **Required**              | No               |
-| **Additional properties** | Any type allowed |
-
-**Description:** Send a Program Change message.
-
-| Property                                                                                               | Pattern | Type            | Deprecated | Definition | Title/Description                                     |
-| ------------------------------------------------------------------------------------------------------ | ------- | --------------- | ---------- | ---------- | ----------------------------------------------------- |
-| - [channel](#presets_items_buttons_additionalProperties_actions_items_anyOf_i2_channel )               | No      | integer or null | No         | -          | MIDI channel (1-16). Inherits from button if omitted. |
-| + [program_change](#presets_items_buttons_additionalProperties_actions_items_anyOf_i2_program_change ) | No      | integer         | No         | -          | Program number (0-127).                               |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i2_channel"></a>2.1.2.1.1.1.3.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 2 > channel`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-
-**Description:** MIDI channel (1-16). Inherits from button if omitted.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i2_program_change"></a>2.1.2.1.1.1.3.2. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 2 > program_change`
-
-|              |           |
-| ------------ | --------- |
-| **Type**     | `integer` |
-| **Required** | Yes       |
-| **Format**   | `uint8`   |
-
-**Description:** Program number (0-127).
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i3"></a>2.1.2.1.1.1.4. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 3`
-
-|                           |                  |
-| ------------------------- | ---------------- |
-| **Type**                  | `object`         |
-| **Required**              | No               |
-| **Additional properties** | Any type allowed |
-
-**Description:** Send a Note On message (velocity 127).
-
-| Property                                                                                 | Pattern | Type            | Deprecated | Definition | Title/Description                                     |
-| ---------------------------------------------------------------------------------------- | ------- | --------------- | ---------- | ---------- | ----------------------------------------------------- |
-| - [channel](#presets_items_buttons_additionalProperties_actions_items_anyOf_i3_channel ) | No      | integer or null | No         | -          | MIDI channel (1-16). Inherits from button if omitted. |
-| + [note](#presets_items_buttons_additionalProperties_actions_items_anyOf_i3_note )       | No      | integer         | No         | -          | MIDI note number (0-127).                             |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i3_channel"></a>2.1.2.1.1.1.4.1. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 3 > channel`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-
-**Description:** MIDI channel (1-16). Inherits from button if omitted.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_actions_items_anyOf_i3_note"></a>2.1.2.1.1.1.4.2. Property `Setlist > presets > presets items > buttons > additionalProperties > actions > actions items > anyOf > item 3 > note`
-
-|              |           |
-| ------------ | --------- |
-| **Type**     | `integer` |
-| **Required** | Yes       |
-| **Format**   | `uint8`   |
-
-**Description:** MIDI note number (0-127).
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_animation"></a>2.1.2.1.2. Property `Setlist > presets > presets items > buttons > additionalProperties > animation`
-
-|              |                  |
-| ------------ | ---------------- |
-| **Type**     | `string or null` |
-| **Required** | No               |
-| **Default**  | `null`           |
-
-**Description:** LED animation when active. Values: solid, blink, pulse, rotate, colorcycle.
-
-###### <a name="presets_items_buttons_additionalProperties_cc"></a>2.1.2.1.3. Property `Setlist > presets > presets items > buttons > additionalProperties > cc`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-| **Default**  | `null`            |
-
-**Description:** Send Control Change. Combined with toggle/values for different behaviors.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_channel"></a>2.1.2.1.4. Property `Setlist > presets > presets items > buttons > additionalProperties > channel`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-| **Default**  | `null`            |
-
-**Description:** MIDI channel (1-16). Default: 1. Applies to all actions on this button unless overridden per-action.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_color"></a>2.1.2.1.5. Property `Setlist > presets > presets items > buttons > additionalProperties > color`
-
-|              |                  |
-| ------------ | ---------------- |
-| **Type**     | `string or null` |
-| **Required** | No               |
-| **Default**  | `null`           |
-
-**Description:** LED ring color when active. Values: red, green, blue, yellow, cyan, magenta, white, orange, purple, off, or #RRGGBB hex.
-
-###### <a name="presets_items_buttons_additionalProperties_label"></a>2.1.2.1.6. Property `Setlist > presets > presets items > buttons > additionalProperties > label`
-
-|              |          |
-| ------------ | -------- |
-| **Type**     | `string` |
-| **Required** | Yes      |
-
-**Description:** Display label shown on OLED (max 16 characters).
-
-###### <a name="presets_items_buttons_additionalProperties_level"></a>2.1.2.1.7. Property `Setlist > presets > presets items > buttons > additionalProperties > level`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `boolean or null` |
-| **Required** | No                |
-| **Default**  | `null`            |
-
-**Description:** Level mode: LED brightness reflects CC value (for multi-LED visualization).
-
-###### <a name="presets_items_buttons_additionalProperties_note"></a>2.1.2.1.8. Property `Setlist > presets > presets items > buttons > additionalProperties > note`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-| **Default**  | `null`            |
-
-**Description:** Send Note On/Off. Button press = Note On (velocity 127), release = Note Off.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_on_long_press"></a>2.1.2.1.9. Property `Setlist > presets > presets items > buttons > additionalProperties > on_long_press`
-
-|              |                  |
-| ------------ | ---------------- |
-| **Type**     | `string or null` |
-| **Required** | No               |
-| **Default**  | `null`           |
-
-**Description:** Action on long press (hold > 500ms). Values: next_preset, prev_preset.
-
-###### <a name="presets_items_buttons_additionalProperties_program_change"></a>2.1.2.1.10. Property `Setlist > presets > presets items > buttons > additionalProperties > program_change`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-| **Default**  | `null`            |
-
-**Description:** Send Program Change on press.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_radio_group"></a>2.1.2.1.11. Property `Setlist > presets > presets items > buttons > additionalProperties > radio_group`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-| **Default**  | `null`            |
-
-**Description:** Radio group ID (0-255): only one button in the group can be active at a time. Pressing one deactivates others.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_renderer"></a>2.1.2.1.12. Property `Setlist > presets > presets items > buttons > additionalProperties > renderer`
-
-|              |                  |
-| ------------ | ---------------- |
-| **Type**     | `string or null` |
-| **Required** | No               |
-| **Default**  | `null`           |
-
-**Description:** LED spatial renderer. Values: solid (all 12), fill (partial arc), single (one LED), dots (evenly-spaced).
-
-###### <a name="presets_items_buttons_additionalProperties_renderer_param"></a>2.1.2.1.13. Property `Setlist > presets > presets items > buttons > additionalProperties > renderer_param`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-| **Default**  | `null`            |
-
-**Description:** Renderer parameter: fill count (1-12), single position (0-11), or dot count (1-6).
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_reverse"></a>2.1.2.1.14. Property `Setlist > presets > presets items > buttons > additionalProperties > reverse`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `boolean or null` |
-| **Required** | No                |
-| **Default**  | `null`            |
-
-**Description:** Reverse cycle direction (cycle values list goes backward).
-
-###### <a name="presets_items_buttons_additionalProperties_toggle"></a>2.1.2.1.15. Property `Setlist > presets > presets items > buttons > additionalProperties > toggle`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `boolean or null` |
-| **Required** | No                |
-| **Default**  | `null`            |
-
-**Description:** Toggle mode: alternates between on_press (active) and on_release (inactive) on each press. LED stays lit while active.
-
-###### <a name="presets_items_buttons_additionalProperties_value"></a>2.1.2.1.16. Property `Setlist > presets > presets items > buttons > additionalProperties > value`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-| **Default**  | `null`            |
-
-**Description:** CC value to send (default: 127). For toggle mode, this is the ON value.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_buttons_additionalProperties_values"></a>2.1.2.1.17. Property `Setlist > presets > presets items > buttons > additionalProperties > values`
-
-|              |                            |
-| ------------ | -------------------------- |
-| **Type**     | `array of integer or null` |
-| **Required** | No                         |
-| **Default**  | `null`                     |
-
-**Description:** CC cycle values: each press sends the next value in the list. Use with cc field.
-
-|                      | Array restrictions |
-| -------------------- | ------------------ |
-| **Min items**        | N/A                |
-| **Max items**        | N/A                |
-| **Items unicity**    | False              |
-| **Additional items** | False              |
-| **Tuple validation** | See below          |
-
-| Each item of this array must be                                          | Description |
-| ------------------------------------------------------------------------ | ----------- |
-| [values items](#presets_items_buttons_additionalProperties_values_items) | -           |
-
-###### <a name="presets_items_buttons_additionalProperties_values_items"></a>2.1.2.1.17.1. Setlist > presets > presets items > buttons > additionalProperties > values > values items
-
-|              |           |
-| ------------ | --------- |
-| **Type**     | `integer` |
-| **Required** | No        |
-| **Format**   | `uint8`   |
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-#### <a name="presets_items_defaults"></a>2.1.3. Property `Setlist > presets > presets items > defaults`
-
-|                           |                  |
-| ------------------------- | ---------------- |
-| **Type**                  | `combining`      |
-| **Required**              | No               |
-| **Additional properties** | Any type allowed |
-
-**Description:** Initial state on first activation after upload. Determines which toggles start ON and encoder starting positions.
-
-| Any of(Option)                                     |
-| -------------------------------------------------- |
-| [DefaultsConfig](#presets_items_defaults_anyOf_i0) |
-| [item 1](#presets_items_defaults_anyOf_i1)         |
-
-##### <a name="presets_items_defaults_anyOf_i0"></a>2.1.3.1. Property `Setlist > presets > presets items > defaults > anyOf > DefaultsConfig`
-
-|                           |                              |
-| ------------------------- | ---------------------------- |
-| **Type**                  | `object`                     |
-| **Required**              | No                           |
-| **Additional properties** | Any type allowed             |
-| **Defined in**            | #/definitions/DefaultsConfig |
-
-**Description:** Default initial state for a preset on first activation after upload.
-
-| Property                                                 | Pattern | Type   | Deprecated | Definition | Title/Description                                                                        |
-| -------------------------------------------------------- | ------- | ------ | ---------- | ---------- | ---------------------------------------------------------------------------------------- |
-| - [buttons](#presets_items_defaults_anyOf_i0_buttons )   | No      | object | No         | -          | Button keys (A-F) mapped to "on" or "off". Omitted buttons default to off.               |
-| - [encoders](#presets_items_defaults_anyOf_i0_encoders ) | No      | object | No         | -          | Encoder keys (Vol, Gain) mapped to initial value (0-127). Omitted encoders default to 0. |
-
-###### <a name="presets_items_defaults_anyOf_i0_buttons"></a>2.1.3.1.1. Property `Setlist > presets > presets items > defaults > anyOf > item 0 > buttons`
-
-|                           |                                                                                                                      |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Type**                  | `object`                                                                                                             |
-| **Required**              | No                                                                                                                   |
-| **Additional properties** | [Each additional property must conform to the schema](#presets_items_defaults_anyOf_i0_buttons_additionalProperties) |
-| **Default**               | `{}`                                                                                                                 |
-
-**Description:** Button keys (A-F) mapped to "on" or "off". Omitted buttons default to off.
-
-| Property                                                             | Pattern | Type   | Deprecated | Definition | Title/Description |
-| -------------------------------------------------------------------- | ------- | ------ | ---------- | ---------- | ----------------- |
-| - [](#presets_items_defaults_anyOf_i0_buttons_additionalProperties ) | No      | string | No         | -          | -                 |
-
-###### <a name="presets_items_defaults_anyOf_i0_buttons_additionalProperties"></a>2.1.3.1.1.1. Property `Setlist > presets > presets items > defaults > anyOf > item 0 > buttons > additionalProperties`
-
-|              |          |
-| ------------ | -------- |
-| **Type**     | `string` |
-| **Required** | No       |
-
-###### <a name="presets_items_defaults_anyOf_i0_encoders"></a>2.1.3.1.2. Property `Setlist > presets > presets items > defaults > anyOf > item 0 > encoders`
-
-|                           |                                                                                                                       |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Type**                  | `object`                                                                                                              |
-| **Required**              | No                                                                                                                    |
-| **Additional properties** | [Each additional property must conform to the schema](#presets_items_defaults_anyOf_i0_encoders_additionalProperties) |
-| **Default**               | `{}`                                                                                                                  |
-
-**Description:** Encoder keys (Vol, Gain) mapped to initial value (0-127). Omitted encoders default to 0.
-
-| Property                                                              | Pattern | Type    | Deprecated | Definition | Title/Description |
-| --------------------------------------------------------------------- | ------- | ------- | ---------- | ---------- | ----------------- |
-| - [](#presets_items_defaults_anyOf_i0_encoders_additionalProperties ) | No      | integer | No         | -          | -                 |
-
-###### <a name="presets_items_defaults_anyOf_i0_encoders_additionalProperties"></a>2.1.3.1.2.1. Property `Setlist > presets > presets items > defaults > anyOf > item 0 > encoders > additionalProperties`
-
-|              |           |
-| ------------ | --------- |
-| **Type**     | `integer` |
-| **Required** | No        |
-| **Format**   | `uint8`   |
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-##### <a name="presets_items_defaults_anyOf_i1"></a>2.1.3.2. Property `Setlist > presets > presets items > defaults > anyOf > item 1`
-
-|              |        |
-| ------------ | ------ |
-| **Type**     | `null` |
-| **Required** | No     |
-
-#### <a name="presets_items_encoders"></a>2.1.4. Property `Setlist > presets > presets items > encoders`
-
-|                           |                                                                                                     |
-| ------------------------- | --------------------------------------------------------------------------------------------------- |
-| **Type**                  | `object`                                                                                            |
-| **Required**              | No                                                                                                  |
-| **Additional properties** | [Each additional property must conform to the schema](#presets_items_encoders_additionalProperties) |
-
-**Description:** Encoder configurations keyed by position: Vol (left), Gain (right).
-
-| Property                                            | Pattern | Type   | Deprecated | Definition                     | Title/Description             |
-| --------------------------------------------------- | ------- | ------ | ---------- | ------------------------------ | ----------------------------- |
-| - [](#presets_items_encoders_additionalProperties ) | No      | object | No         | In #/definitions/EncoderConfig | Rotary encoder configuration. |
-
-##### <a name="presets_items_encoders_additionalProperties"></a>2.1.4.1. Property `Setlist > presets > presets items > encoders > EncoderConfig`
-
-|                           |                             |
-| ------------------------- | --------------------------- |
-| **Type**                  | `object`                    |
-| **Required**              | No                          |
-| **Additional properties** | Any type allowed            |
-| **Defined in**            | #/definitions/EncoderConfig |
-
-**Description:** Rotary encoder configuration.
-
-| Property                                                           | Pattern | Type            | Deprecated | Definition | Title/Description                                                                  |
-| ------------------------------------------------------------------ | ------- | --------------- | ---------- | ---------- | ---------------------------------------------------------------------------------- |
-| - [cc](#presets_items_encoders_additionalProperties_cc )           | No      | integer or null | No         | -          | MIDI CC number to send (0-127). Each detent click increments/decrements the value. |
-| - [channel](#presets_items_encoders_additionalProperties_channel ) | No      | integer or null | No         | -          | MIDI channel (1-16). Default: 1.                                                   |
-| + [label](#presets_items_encoders_additionalProperties_label )     | No      | string          | No         | -          | Display label shown on OLED overlay when turning.                                  |
-
-###### <a name="presets_items_encoders_additionalProperties_cc"></a>2.1.4.1.1. Property `Setlist > presets > presets items > encoders > additionalProperties > cc`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint16`          |
-| **Default**  | `null`            |
-
-**Description:** MIDI CC number to send (0-127). Each detent click increments/decrements the value.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_encoders_additionalProperties_channel"></a>2.1.4.1.2. Property `Setlist > presets > presets items > encoders > additionalProperties > channel`
-
-|              |                   |
-| ------------ | ----------------- |
-| **Type**     | `integer or null` |
-| **Required** | No                |
-| **Format**   | `uint8`           |
-| **Default**  | `null`            |
-
-**Description:** MIDI channel (1-16). Default: 1.
-
-| Restrictions |     |
-| ------------ | --- |
-| **Minimum**  | N/A |
-
-###### <a name="presets_items_encoders_additionalProperties_label"></a>2.1.4.1.3. Property `Setlist > presets > presets items > encoders > additionalProperties > label`
-
-|              |          |
-| ------------ | -------- |
-| **Type**     | `string` |
-| **Required** | Yes      |
-
-**Description:** Display label shown on OLED overlay when turning.
-
-#### <a name="presets_items_name"></a>2.1.5. Property `Setlist > presets > presets items > name`
-
-|              |          |
-| ------------ | -------- |
-| **Type**     | `string` |
-| **Required** | Yes      |
-
-**Description:** Preset name displayed on the OLED (max 16 characters).
-
-#### <a name="presets_items_on_enter"></a>2.1.6. Property `Setlist > presets > presets items > on_enter`
-
-|              |                 |
-| ------------ | --------------- |
-| **Type**     | `array or null` |
-| **Required** | No              |
-
-**Description:** MIDI messages sent automatically when this preset becomes active (on switch or boot).
-
-|                      | Array restrictions |
-| -------------------- | ------------------ |
-| **Min items**        | N/A                |
-| **Max items**        | N/A                |
-| **Items unicity**    | False              |
-| **Additional items** | False              |
-| **Tuple validation** | See below          |
-
-| Each item of this array must be             | Description                                                             |
-| ------------------------------------------- | ----------------------------------------------------------------------- |
-| [ActionYaml](#presets_items_on_enter_items) | A single action in a multi-action sequence. Exactly one type per entry. |
-
-##### <a name="presets_items_on_enter_items"></a>2.1.6.1. Setlist > presets > presets items > on_enter > ActionYaml
-
-|                           |                                                                                                                       |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Type**                  | `combining`                                                                                                           |
-| **Required**              | No                                                                                                                    |
-| **Additional properties** | Any type allowed                                                                                                      |
-| **Same definition as**    | [presets_items_buttons_additionalProperties_actions_items](#presets_items_buttons_additionalProperties_actions_items) |
-
-**Description:** A single action in a multi-action sequence. Exactly one type per entry.
-
-#### <a name="presets_items_on_exit"></a>2.1.7. Property `Setlist > presets > presets items > on_exit`
-
-|              |                 |
-| ------------ | --------------- |
-| **Type**     | `array or null` |
-| **Required** | No              |
-
-**Description:** MIDI messages sent automatically when leaving this preset.
-
-|                      | Array restrictions |
-| -------------------- | ------------------ |
-| **Min items**        | N/A                |
-| **Max items**        | N/A                |
-| **Items unicity**    | False              |
-| **Additional items** | False              |
-| **Tuple validation** | See below          |
-
-| Each item of this array must be            | Description                                                             |
-| ------------------------------------------ | ----------------------------------------------------------------------- |
-| [ActionYaml](#presets_items_on_exit_items) | A single action in a multi-action sequence. Exactly one type per entry. |
-
-##### <a name="presets_items_on_exit_items"></a>2.1.7.1. Setlist > presets > presets items > on_exit > ActionYaml
-
-|                           |                                                                                                                       |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Type**                  | `combining`                                                                                                           |
-| **Required**              | No                                                                                                                    |
-| **Additional properties** | Any type allowed                                                                                                      |
-| **Same definition as**    | [presets_items_buttons_additionalProperties_actions_items](#presets_items_buttons_additionalProperties_actions_items) |
-
-**Description:** A single action in a multi-action sequence. Exactly one type per entry.
-
-----------------------------------------------------------------------------------------------------------------------------
-Generated using [json-schema-for-humans](https://github.com/coveooss/json-schema-for-humans) on 2026-07-02 at 08:30:27 +0200
+```yaml
+defaults:
+  buttons:
+    B: "on"       # Button B starts active (LED on, as if pressed once)
+    D: "on"
+  encoders:
+    Vol: 100      # Vol encoder starts at CC value 100
+    Gain: 64
+```
+
+Omitted buttons default to off. Omitted encoders default to 0. After initial activation, runtime state is preserved in EEPROM across power cycles.
+
+---
+
+## on_enter / on_exit
+
+MIDI messages sent automatically on preset transitions:
+
+```yaml
+on_enter:                            # Fired when this preset becomes active
+  - { program_change: 0, channel: 2 }
+  - { cc: 7, value: 100 }
+
+on_exit:                             # Fired when leaving this preset
+  - { cc: 123, value: 0 }           # All Notes Off
+```
+
+Uses the same action format as button `actions`. Fired in order, supports delays.
+
+`on_enter` fires on:
+- Switching to this preset (via encoder scroll, long-press, or trigger)
+- Boot (for the active preset at power-on)
+
+`on_exit` fires before switching away to another preset.
+
+---
+
+## Triggers
+
+React to incoming MIDI messages by changing button state or switching presets. Useful for bidirectional sync with external gear.
+
+```yaml
+triggers:
+  # When multi-FX sends CC#100 ≥ 64 on ch1, light up button A
+  - match: { cc: 100, channel: 1, value_gte: 64 }
+    action: { activate: "A" }
+
+  # When CC#100 < 64, turn off button A
+  - match: { cc: 100, channel: 1, value_gte: 0, value_lt: 64 }
+    action: { deactivate: "A" }
+
+  # When receiving PC 5 on ch1, switch to preset 2
+  - match: { program_change: 5, channel: 1 }
+    action: { preset_select: 2 }
+
+  # When receiving Note On 60 on ch1, fire button C's on_press actions
+  - match: { note: 60, channel: 1 }
+    action: { execute: "C" }
+```
+
+### Match Patterns
+
+| Pattern | Fields | Description |
+|---------|--------|-------------|
+| CC | `cc`, `channel`, `value_gte?`, `value_lt?` | Match Control Change. Optional value range (default: 0-127). |
+| Program Change | `program_change`, `channel` | Match Program Change number. |
+| Note On | `note`, `channel` | Match Note On (velocity > 0 only; velocity 0 = Note Off, not matched). |
+
+`value_gte` = value must be ≥ this (default: 0). `value_lt` = value must be < this (default: 128, i.e., ≤ 127).
+
+### Actions
+
+| Action | Format | Description |
+|--------|--------|-------------|
+| Activate | `{ activate: "A" }` | Set button active (LED on). No outgoing MIDI. |
+| Deactivate | `{ deactivate: "B" }` | Set button inactive (LED off). No outgoing MIDI. |
+| Preset Select | `{ preset_select: 0 }` | Switch to preset by index (0-based). |
+| Execute | `{ execute: "C" }` | Fire the button's `on_press` actions as if physically pressed. |
+
+Multiple triggers can match the same incoming message — all matching triggers fire.
+
+---
+
+## Complete Example
+
+```yaml
+global:
+  din_enabled: true
+  midi_clock: false
+  calibration:
+    exp1: { min: 180, max: 3700 }
+
+presets:
+  - name: "Live FX"
+    defaults:
+      buttons: { A: "on" }
+      encoders: { Vol: 100 }
+    on_enter:
+      - { program_change: 0, channel: 2 }
+    buttons:
+      A: { label: "Board 1", program_change: 0, channel: 2, color: blue, radio_group: 1 }
+      B: { label: "Board 2", program_change: 1, channel: 2, color: green, radio_group: 1 }
+      C: { label: "Bypass", cc: 0, channel: 3, toggle: true, color: red, animation: blink }
+      D: { label: "Drive", cc: 80, toggle: true, color: green, on_long_press: prev_preset }
+      E: { label: "", color: off }
+      F: { label: "Next", cc: 99, color: magenta, on_long_press: next_preset }
+    encoders:
+      Vol: { label: "HotKnob1", cc: 107, channel: 2 }
+      Gain: { label: "HotKnob2", cc: 108, channel: 2 }
+    analog:
+      Exp1: { label: "Volume", cc: 7 }
+    triggers:
+      - match: { cc: 80, channel: 1, value_gte: 64 }
+        action: { activate: "D" }
+      - match: { cc: 80, channel: 1, value_lt: 64 }
+        action: { deactivate: "D" }
+```
+
+---
+
+## Limits
+
+| Item | Maximum |
+|------|---------|
+| Presets | 32 |
+| Buttons per preset | 6 (A–F) |
+| Encoders per preset | 2 (Vol, Gain) |
+| Expression pedals | 2 (Exp1, Exp2) |
+| Actions per button | 8 |
+| Cycle values per button | 12 |
+| Triggers per preset | 8 |
+| Label length | 16 characters |
+| Preset name length | 16 characters |

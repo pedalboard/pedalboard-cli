@@ -129,7 +129,7 @@
       ]
     },
     "AnalogYamlConfig": {
-      "description": "Expression pedal (analog input) configuration.",
+      "description": "Expression pedal (analog input) configuration.\n\nThe raw ADC reading is clamped to the calibrated range (from global.calibration), then linearly mapped to the min–max CC range. Values below adc_min produce `min`; values above adc_max produce `max`. A value overlay appears on the OLED when moving.",
       "type": "object",
       "required": [
         "cc",
@@ -179,14 +179,14 @@
       }
     },
     "ButtonConfig": {
-      "description": "Button configuration. Use one of: note, cc, program_change, or actions for the MIDI message.",
+      "description": "Button configuration. Use one of: note, cc, program_change, or actions for the MIDI message.\n\n**Modes:** - Momentary (default): active while pressed. Fires on_press on press, on_release on release. - Toggle (`toggle: true`): alternates active/inactive each press. Press when OFF → fires on_press. Press when ON → fires on_release (deactivation). LED stays lit while active. - RadioGroup (`radio_group: N`): only one button in group N active at a time. Pressing one silently deactivates others (no on_release fired for deactivated buttons).\n\n**CcCycle** (`cc` + `values`): each press sends the next value in the list, wrapping around. With `reverse: true`, cycles backward. Cycle index persists in EEPROM across power cycles.\n\n**Long press** (`on_long_press`): hold >500ms for secondary action. When configured, the normal on_press is deferred until release (if released before 500ms threshold).",
       "type": "object",
       "required": [
         "label"
       ],
       "properties": {
         "actions": {
-          "description": "Multi-action sequence: list of MIDI messages sent in order on press. Overrides cc/note/program_change fields.",
+          "description": "Multi-action sequence: list of MIDI messages sent in order on press (max 8). Supports CC, Program Change, Note On, and Delay between actions. Overrides cc/note/program_change shorthand fields.",
           "type": [
             "array",
             "null"
@@ -243,6 +243,17 @@
             "null"
           ]
         },
+        "listen_cc": {
+          "description": "Reactive LED: ring shows heatmap proportional to incoming CC value. Format: { cc: N, channel: N }",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ListenCcYaml"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "note": {
           "description": "Send Note On/Off. Button press = Note On (velocity 127), release = Note Off.",
           "default": null,
@@ -254,7 +265,7 @@
           "minimum": 0.0
         },
         "on_long_press": {
-          "description": "Action on long press (hold > 500ms). Values: next_preset, prev_preset.",
+          "description": "Action on long press (hold > 500ms). Values: next_preset, prev_preset. When configured, the normal on_press is deferred until release — if released before 500ms, fires on_press; if held past 500ms, fires only the long-press action.",
           "default": null,
           "type": [
             "string",
@@ -272,7 +283,7 @@
           "minimum": 0.0
         },
         "radio_group": {
-          "description": "Radio group ID (0-255): only one button in the group can be active at a time. Pressing one deactivates others.",
+          "description": "Radio group ID (0-255): only one button in the group can be active at a time. Pressing one deactivates others silently (no on_release MIDI sent for deactivated buttons).",
           "default": null,
           "type": [
             "integer",
@@ -300,7 +311,7 @@
           "minimum": 0.0
         },
         "reverse": {
-          "description": "Reverse cycle direction (cycle values list goes backward).",
+          "description": "Reverse cycle direction: index decrements on each press, wrapping from 0 to last entry.",
           "default": null,
           "type": [
             "boolean",
@@ -308,7 +319,7 @@
           ]
         },
         "toggle": {
-          "description": "Toggle mode: alternates between on_press (active) and on_release (inactive) on each press. LED stays lit while active.",
+          "description": "Toggle mode: alternates between on_press (active) and on_release (inactive) on each press. LED stays lit while active. First press activates (sends CC=value), second press deactivates (sends CC=0 for the shorthand form, or fires on_release actions).",
           "default": null,
           "type": [
             "boolean",
@@ -326,7 +337,7 @@
           "minimum": 0.0
         },
         "values": {
-          "description": "CC cycle values: each press sends the next value in the list. Use with cc field.",
+          "description": "CC cycle values: each press sends the next value in the list (max 12). Use with cc field. First press sends values[0], second sends values[1], etc. Wraps around after the last value. Cycle index persists in EEPROM across power cycles.",
           "default": null,
           "type": [
             "array",
@@ -369,7 +380,7 @@
       }
     },
     "DefaultsConfig": {
-      "description": "Default initial state for a preset on first activation after upload.",
+      "description": "Default initial state for a preset on first activation after upload.\n\nDetermines which toggles start ON and encoder starting positions. After initial activation, runtime state is preserved in EEPROM across power cycles and takes precedence over these defaults.",
       "type": "object",
       "properties": {
         "buttons": {
@@ -393,7 +404,7 @@
       }
     },
     "EncoderConfig": {
-      "description": "Rotary encoder configuration.",
+      "description": "Rotary encoder configuration.\n\nSends absolute CC (0-127) that increments/decrements with each detent click. Values are clamped at both ends (min 0, max 127). Fast turning (acceleration) skips multiple steps but sends a single message with the final value. Encoder values persist across preset switches and power cycles via EEPROM. A large value overlay appears on the OLED briefly when turning.",
       "type": "object",
       "required": [
         "label"
@@ -512,6 +523,46 @@
         }
       }
     },
+    "ListenCcYaml": {
+      "description": "Reactive CC binding for LED visualization.\n\nMakes the button's LED ring respond to incoming MIDI CC from external gear. In heatmap mode, ring fill is proportional to CC value (0=off, 127=all 12 LEDs). In trigger mode, LED turns on (with button's color/animation) when value ≥ threshold.",
+      "type": "object",
+      "required": [
+        "cc"
+      ],
+      "properties": {
+        "cc": {
+          "description": "MIDI CC number to listen for (0-127).",
+          "type": "integer",
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "channel": {
+          "description": "MIDI channel to listen on (1-16). Default: 1.",
+          "default": 1,
+          "type": "integer",
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "mode": {
+          "description": "Visualization mode: \"heatmap\" (default) or \"trigger\".",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "threshold": {
+          "description": "Threshold for trigger mode (0-127). Value ≥ threshold = on. Default: 64.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        }
+      }
+    },
     "PresetConfig": {
       "description": "A single preset — one song or scene in your setlist.",
       "type": "object",
@@ -556,7 +607,7 @@
           "type": "string"
         },
         "on_enter": {
-          "description": "MIDI messages sent automatically when this preset becomes active (on switch or boot).",
+          "description": "MIDI messages sent automatically when this preset becomes active (on switch or boot). Fires on: preset switch (encoder scroll, long-press, or trigger), and boot (for the active preset).",
           "type": [
             "array",
             "null"
@@ -566,7 +617,7 @@
           }
         },
         "on_exit": {
-          "description": "MIDI messages sent automatically when leaving this preset.",
+          "description": "MIDI messages sent automatically when leaving this preset (before switching to another).",
           "type": [
             "array",
             "null"
@@ -574,6 +625,173 @@
           "items": {
             "$ref": "#/definitions/ActionYaml"
           }
+        },
+        "triggers": {
+          "description": "Incoming MIDI triggers: react to external messages by changing button state or switching presets.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/TriggerYaml"
+          }
+        }
+      }
+    },
+    "TriggerActionYaml": {
+      "description": "Action to perform when a trigger matches.\n\n- Activate: set button LED on (no outgoing MIDI). - Deactivate: set button LED off (no outgoing MIDI). - PresetSelect: switch to preset by 0-based index. - Execute: fire the button's on_press actions as if physically pressed.",
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "activate"
+          ],
+          "properties": {
+            "activate": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "deactivate"
+          ],
+          "properties": {
+            "deactivate": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "preset_select"
+          ],
+          "properties": {
+            "preset_select": {
+              "type": "integer",
+              "format": "uint8",
+              "minimum": 0.0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "execute"
+          ],
+          "properties": {
+            "execute": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "TriggerMatchYaml": {
+      "description": "MIDI message pattern to match.\n\nCC: matches Control Change with optional value range (value_gte/value_lt). ProgramChange: matches exact program number on channel. NoteOn: matches Note On with velocity > 0 only (velocity 0 = Note Off, not matched).",
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "cc",
+            "channel"
+          ],
+          "properties": {
+            "cc": {
+              "type": "integer",
+              "format": "uint8",
+              "minimum": 0.0
+            },
+            "channel": {
+              "type": "integer",
+              "format": "uint8",
+              "minimum": 0.0
+            },
+            "value_gte": {
+              "default": null,
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint8",
+              "minimum": 0.0
+            },
+            "value_lt": {
+              "default": null,
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint8",
+              "minimum": 0.0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "channel",
+            "program_change"
+          ],
+          "properties": {
+            "channel": {
+              "type": "integer",
+              "format": "uint8",
+              "minimum": 0.0
+            },
+            "program_change": {
+              "type": "integer",
+              "format": "uint8",
+              "minimum": 0.0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "channel",
+            "note"
+          ],
+          "properties": {
+            "channel": {
+              "type": "integer",
+              "format": "uint8",
+              "minimum": 0.0
+            },
+            "note": {
+              "type": "integer",
+              "format": "uint8",
+              "minimum": 0.0
+            }
+          }
+        }
+      ]
+    },
+    "TriggerYaml": {
+      "description": "A trigger that reacts to incoming MIDI.\n\nMultiple triggers can match the same incoming message — all matching triggers fire. Triggers only affect LED state and system actions; they don't generate outgoing MIDI unless using Execute (which fires a button's on_press actions).",
+      "type": "object",
+      "required": [
+        "action",
+        "match"
+      ],
+      "properties": {
+        "action": {
+          "description": "Action to perform. One of: { activate: \"A\" }, { deactivate: \"B\" }, { preset_select: 0 }, { execute: \"C\" }",
+          "allOf": [
+            {
+              "$ref": "#/definitions/TriggerActionYaml"
+            }
+          ]
+        },
+        "match": {
+          "description": "What MIDI message to match. One of: { cc, channel, value_gte?, value_lt? }, { program_change, channel }, { note, channel }",
+          "allOf": [
+            {
+              "$ref": "#/definitions/TriggerMatchYaml"
+            }
+          ]
         }
       }
     }

@@ -118,14 +118,77 @@ pub struct PresetConfig {
     #[serde(default)]
     pub defaults: Option<DefaultsConfig>,
     /// MIDI messages sent automatically when this preset becomes active (on switch or boot).
+    /// Fires on: preset switch (encoder scroll, long-press, or trigger), and boot (for the active preset).
     #[serde(default)]
     pub on_enter: Option<Vec<ActionYaml>>,
-    /// MIDI messages sent automatically when leaving this preset.
+    /// MIDI messages sent automatically when leaving this preset (before switching to another).
     #[serde(default)]
     pub on_exit: Option<Vec<ActionYaml>>,
+    /// Incoming MIDI triggers: react to external messages by changing button state or switching presets.
+    #[serde(default)]
+    pub triggers: Option<Vec<TriggerYaml>>,
+}
+
+/// A trigger that reacts to incoming MIDI.
+///
+/// Multiple triggers can match the same incoming message — all matching triggers fire.
+/// Triggers only affect LED state and system actions; they don't generate outgoing MIDI
+/// unless using Execute (which fires a button's on_press actions).
+#[derive(Deserialize, JsonSchema)]
+pub struct TriggerYaml {
+    /// What MIDI message to match. One of: { cc, channel, value_gte?, value_lt? }, { program_change, channel }, { note, channel }
+    #[serde(rename = "match")]
+    pub match_msg: TriggerMatchYaml,
+    /// Action to perform. One of: { activate: "A" }, { deactivate: "B" }, { preset_select: 0 }, { execute: "C" }
+    pub action: TriggerActionYaml,
+}
+
+/// MIDI message pattern to match.
+///
+/// CC: matches Control Change with optional value range (value_gte/value_lt).
+/// ProgramChange: matches exact program number on channel.
+/// NoteOn: matches Note On with velocity > 0 only (velocity 0 = Note Off, not matched).
+#[derive(Deserialize, JsonSchema)]
+#[serde(untagged)]
+pub enum TriggerMatchYaml {
+    Cc {
+        cc: u8,
+        channel: u8,
+        #[serde(default)]
+        value_gte: Option<u8>,
+        #[serde(default)]
+        value_lt: Option<u8>,
+    },
+    ProgramChange {
+        program_change: u8,
+        channel: u8,
+    },
+    NoteOn {
+        note: u8,
+        channel: u8,
+    },
+}
+
+/// Action to perform when a trigger matches.
+///
+/// - Activate: set button LED on (no outgoing MIDI).
+/// - Deactivate: set button LED off (no outgoing MIDI).
+/// - PresetSelect: switch to preset by 0-based index.
+/// - Execute: fire the button's on_press actions as if physically pressed.
+#[derive(Deserialize, JsonSchema)]
+#[serde(untagged)]
+pub enum TriggerActionYaml {
+    Activate { activate: String },
+    Deactivate { deactivate: String },
+    PresetSelect { preset_select: u8 },
+    Execute { execute: String },
 }
 
 /// Default initial state for a preset on first activation after upload.
+///
+/// Determines which toggles start ON and encoder starting positions.
+/// After initial activation, runtime state is preserved in EEPROM across power cycles
+/// and takes precedence over these defaults.
 #[derive(Deserialize, JsonSchema)]
 pub struct DefaultsConfig {
     /// Button keys (A-F) mapped to "on" or "off". Omitted buttons default to off.
@@ -137,6 +200,10 @@ pub struct DefaultsConfig {
 }
 
 /// Expression pedal (analog input) configuration.
+///
+/// The raw ADC reading is clamped to the calibrated range (from global.calibration),
+/// then linearly mapped to the min–max CC range. Values below adc_min produce `min`;
+/// values above adc_max produce `max`. A value overlay appears on the OLED when moving.
 #[derive(Deserialize, JsonSchema)]
 pub struct AnalogYamlConfig {
     /// Display label for the expression pedal overlay.
@@ -155,6 +222,19 @@ pub struct AnalogYamlConfig {
 }
 
 /// Button configuration. Use one of: note, cc, program_change, or actions for the MIDI message.
+///
+/// **Modes:**
+/// - Momentary (default): active while pressed. Fires on_press on press, on_release on release.
+/// - Toggle (`toggle: true`): alternates active/inactive each press. Press when OFF → fires on_press.
+///   Press when ON → fires on_release (deactivation). LED stays lit while active.
+/// - RadioGroup (`radio_group: N`): only one button in group N active at a time. Pressing one
+///   silently deactivates others (no on_release fired for deactivated buttons).
+///
+/// **CcCycle** (`cc` + `values`): each press sends the next value in the list, wrapping around.
+/// With `reverse: true`, cycles backward. Cycle index persists in EEPROM across power cycles.
+///
+/// **Long press** (`on_long_press`): hold >500ms for secondary action. When configured,
+/// the normal on_press is deferred until release (if released before 500ms threshold).
 #[derive(Deserialize, JsonSchema)]
 pub struct ButtonConfig {
     /// Display label shown on OLED (max 16 characters).
@@ -171,10 +251,13 @@ pub struct ButtonConfig {
     /// CC value to send (default: 127). For toggle mode, this is the ON value.
     #[serde(default)]
     pub value: Option<u8>,
-    /// Toggle mode: alternates between on_press (active) and on_release (inactive) on each press. LED stays lit while active.
+    /// Toggle mode: alternates between on_press (active) and on_release (inactive) on each press.
+    /// LED stays lit while active. First press activates (sends CC=value), second press
+    /// deactivates (sends CC=0 for the shorthand form, or fires on_release actions).
     #[serde(default)]
     pub toggle: Option<bool>,
-    /// Radio group ID (0-255): only one button in the group can be active at a time. Pressing one deactivates others.
+    /// Radio group ID (0-255): only one button in the group can be active at a time.
+    /// Pressing one deactivates others silently (no on_release MIDI sent for deactivated buttons).
     #[serde(default)]
     pub radio_group: Option<u8>,
     /// Level mode: LED brightness reflects CC value (for multi-LED visualization).
@@ -196,15 +279,21 @@ pub struct ButtonConfig {
     #[serde(default)]
     pub channel: Option<u8>,
     /// Action on long press (hold > 500ms). Values: next_preset, prev_preset.
+    /// When configured, the normal on_press is deferred until release — if released before
+    /// 500ms, fires on_press; if held past 500ms, fires only the long-press action.
     #[serde(default)]
     pub on_long_press: Option<String>,
-    /// CC cycle values: each press sends the next value in the list. Use with cc field.
+    /// CC cycle values: each press sends the next value in the list (max 12). Use with cc field.
+    /// First press sends values[0], second sends values[1], etc. Wraps around after the last value.
+    /// Cycle index persists in EEPROM across power cycles.
     #[serde(default)]
     pub values: Option<Vec<u8>>,
-    /// Reverse cycle direction (cycle values list goes backward).
+    /// Reverse cycle direction: index decrements on each press, wrapping from 0 to last entry.
     #[serde(default)]
     pub reverse: Option<bool>,
-    /// Multi-action sequence: list of MIDI messages sent in order on press. Overrides cc/note/program_change fields.
+    /// Multi-action sequence: list of MIDI messages sent in order on press (max 8).
+    /// Supports CC, Program Change, Note On, and Delay between actions.
+    /// Overrides cc/note/program_change shorthand fields.
     #[serde(default)]
     pub actions: Option<Vec<ActionYaml>>,
     /// Reactive LED: ring shows heatmap proportional to incoming CC value. Format: { cc: N, channel: N }
@@ -213,6 +302,10 @@ pub struct ButtonConfig {
 }
 
 /// Reactive CC binding for LED visualization.
+///
+/// Makes the button's LED ring respond to incoming MIDI CC from external gear.
+/// In heatmap mode, ring fill is proportional to CC value (0=off, 127=all 12 LEDs).
+/// In trigger mode, LED turns on (with button's color/animation) when value ≥ threshold.
 #[derive(Deserialize, JsonSchema)]
 pub struct ListenCcYaml {
     /// MIDI CC number to listen for (0-127).
@@ -267,6 +360,12 @@ pub enum ActionYaml {
 }
 
 /// Rotary encoder configuration.
+///
+/// Sends absolute CC (0-127) that increments/decrements with each detent click.
+/// Values are clamped at both ends (min 0, max 127). Fast turning (acceleration)
+/// skips multiple steps but sends a single message with the final value.
+/// Encoder values persist across preset switches and power cycles via EEPROM.
+/// A large value overlay appears on the OLED briefly when turning.
 #[derive(Deserialize, JsonSchema)]
 pub struct EncoderConfig {
     /// Display label shown on OLED overlay when turning.
@@ -308,6 +407,72 @@ fn convert_actions(
                         .expect("invalid Note On: note or channel out of range"),
                 ),
             };
+        }
+    }
+    result
+}
+
+fn button_key_to_index(key: &str) -> u8 {
+    match key {
+        "A" => 0,
+        "B" => 1,
+        "C" => 2,
+        "D" => 3,
+        "E" => 4,
+        "F" => 5,
+        _ => 0,
+    }
+}
+
+fn convert_triggers(
+    triggers: &Option<Vec<TriggerYaml>>,
+) -> heapless::Vec<
+    pedalboard_protocol::config::Trigger,
+    { pedalboard_protocol::config::MAX_TRIGGERS },
+> {
+    use pedalboard_protocol::config as pc;
+    let mut result: heapless::Vec<pc::Trigger, { pc::MAX_TRIGGERS }> = heapless::Vec::new();
+    if let Some(triggers) = triggers {
+        for t in triggers {
+            let match_msg = match &t.match_msg {
+                TriggerMatchYaml::Cc {
+                    cc,
+                    channel,
+                    value_gte,
+                    value_lt,
+                } => pc::TriggerMatch::Cc {
+                    cc: *cc,
+                    channel: *channel,
+                    value_min: value_gte.unwrap_or(0),
+                    value_max: value_lt.map(|v| v.saturating_sub(1)).unwrap_or(127),
+                },
+                TriggerMatchYaml::ProgramChange {
+                    program_change,
+                    channel,
+                } => pc::TriggerMatch::ProgramChange {
+                    program: *program_change,
+                    channel: *channel,
+                },
+                TriggerMatchYaml::NoteOn { note, channel } => pc::TriggerMatch::NoteOn {
+                    note: *note,
+                    channel: *channel,
+                },
+            };
+            let action = match &t.action {
+                TriggerActionYaml::Activate { activate } => {
+                    pc::TriggerAction::Activate(button_key_to_index(activate))
+                }
+                TriggerActionYaml::Deactivate { deactivate } => {
+                    pc::TriggerAction::Deactivate(button_key_to_index(deactivate))
+                }
+                TriggerActionYaml::PresetSelect { preset_select } => {
+                    pc::TriggerAction::PresetSelect(*preset_select)
+                }
+                TriggerActionYaml::Execute { execute } => {
+                    pc::TriggerAction::Execute(button_key_to_index(execute))
+                }
+            };
+            result.push(pc::Trigger { match_msg, action }).ok();
         }
     }
     result
@@ -575,6 +740,7 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                 },
                 on_enter: convert_actions(&p.on_enter),
                 on_exit: convert_actions(&p.on_exit),
+                triggers: convert_triggers(&p.triggers),
             }
         })
         .collect()
