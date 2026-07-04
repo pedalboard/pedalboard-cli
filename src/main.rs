@@ -17,6 +17,8 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Show device status (firmware version, preset count, health)
+    Status,
     /// Factory reset the device
     Reset,
     /// Reboot the device (no data loss)
@@ -38,6 +40,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
     match cli.command {
+        Commands::Status => {
+            device_status(&cli.address).await?;
+        }
         Commands::Reset => {
             reset(&cli.address).await?;
         }
@@ -169,6 +174,58 @@ async fn pe_read(address: &str, index: u8) -> Result<(), Box<dyn std::error::Err
         }
         Ok(Some(Ok(_))) => println!("Preset {}: unexpected reply type", index),
         _ => println!("Preset {}: no reply (timeout)", index),
+    }
+
+    Ok(())
+}
+
+async fn device_status(address: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let (mut ws, _) = connect_async(address).await?;
+
+    let msg = pedalboard_protocol::property_exchange::build_get_inquiry(
+        [0x10, 0x20, 0x30, 0x40],
+        [0x01, 0x02, 0x03, 0x04],
+        0x01,
+        pedalboard_protocol::config::DEVICE_INFO_RESOURCE,
+    );
+    ws.send(Message::Binary(msg.to_vec())).await?;
+
+    match tokio::time::timeout(std::time::Duration::from_secs(2), ws.next()).await {
+        Ok(Some(Ok(Message::Binary(data)))) => {
+            let status = pedalboard_protocol::property_exchange::extract_reply_status(&data);
+            if let Some(s) = status {
+                if !s.is_ok() {
+                    eprintln!("Device returned error: {:?}", s);
+                    return Ok(());
+                }
+            }
+            if let Some(body) = pedalboard_protocol::property_exchange::extract_get_body(&data) {
+                let mut decoded_buf = [0u8; 64];
+                let dec_len =
+                    pedalboard_protocol::property_exchange::decode_mcoded7(body, &mut decoded_buf);
+                let body = &decoded_buf[..dec_len];
+                match postcard::from_bytes::<pedalboard_protocol::config::DeviceInfo>(body) {
+                    Ok(info) => {
+                        println!("Device Status:");
+                        println!("  Flash format version: {}", info.flash_format);
+                        println!("  Presets loaded:       {}", info.presets_loaded);
+                        if info.presets_skipped > 0 {
+                            println!(
+                                "  Presets skipped:      {} (version mismatch — re-upload setlist)",
+                                info.presets_skipped
+                            );
+                        } else {
+                            println!("  Presets skipped:      0");
+                        }
+                    }
+                    Err(e) => eprintln!("Failed to decode device info: {}", e),
+                }
+            } else {
+                eprintln!("No body in device info reply");
+            }
+        }
+        Ok(Some(Ok(_))) => eprintln!("Unexpected reply type"),
+        _ => eprintln!("No reply (device may not support status query)"),
     }
 
     Ok(())
