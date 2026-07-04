@@ -178,8 +178,24 @@ buttons:
 | Program Change | `program_change`, `channel?` | Send Program Change |
 | Note On | `note`, `channel?` | Send Note On (velocity 127) |
 | Delay | `delay` | Wait N milliseconds before next action |
+| Set LED | `color`, `animation?` | Change button's LED ring mid-sequence (animation default: solid) |
 
 Per-action `channel` overrides the button-level `channel`. If both omitted, defaults to channel 1.
+
+**Set LED example** — visual feedback during a looper clear sequence:
+
+```yaml
+buttons:
+  F:
+    label: "Clear"
+    color: red
+    actions:
+      - { color: red, animation: blink }   # "working..."
+      - { cc: 3, value: 127 }
+      - { delay: 200 }
+      - { cc: 3, value: 0 }
+      - { color: green }                   # "done"
+```
 
 ### LED Configuration
 
