@@ -204,5 +204,64 @@ else
   exit 1
 fi
 
+# Test 12: Stale preset clearing (upload 3, then upload 1, verify slot 1 is gone)
+echo -n "12. Stale preset clearing on shorter upload... "
+# First upload the 3-preset test config
+eval timeout 15 $CLI --address $BRIDGE/raw upload $TEST_CONFIG 2>&1 > /dev/null
+sleep 1
+# Verify preset 1 exists
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 1 2>&1)
+if [[ "$result" != *"LED Animations"* ]]; then
+  echo "✗ (preset 1 not present after 3-preset upload)"
+  echo "$result"
+  exit 1
+fi
+# Now upload a 1-preset config — should clear slots 1+
+SINGLE_TEST=/tmp/pedalboard-single-test.yaml
+cat > "$SINGLE_TEST" << 'EOF'
+presets:
+  - name: "Solo Preset"
+    buttons:
+      A: { label: "X", cc: 1, color: red }
+EOF
+eval timeout 15 $CLI --address $BRIDGE/raw upload $SINGLE_TEST 2>&1 > /dev/null
+rm -f "$SINGLE_TEST"
+sleep 1
+# Verify preset 0 is the new one
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 0 2>&1)
+if [[ "$result" != *"Solo Preset"* ]]; then
+  echo "✗ (preset 0 not updated)"
+  echo "$result"
+  exit 1
+fi
+# Verify preset 1 is gone (cleared)
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 1 2>&1)
+if [[ "$result" == *"not found"* ]]; then
+  echo "✓ (slot 1 cleared after single-preset upload)"
+else
+  echo "✗ (preset 1 still present)"
+  echo "$result"
+  exit 1
+fi
+
+# Test 13: Stale presets stay cleared across reboot
+echo -n "13. Cleared presets stay cleared across reboot... "
+eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
+sleep 7
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 0 2>&1)
+if [[ "$result" != *"Solo Preset"* ]]; then
+  echo "✗ (preset 0 lost after reboot)"
+  echo "$result"
+  exit 1
+fi
+result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 1 2>&1)
+if [[ "$result" == *"not found"* ]]; then
+  echo "✓ (slot 1 still cleared after reboot)"
+else
+  echo "✗ (preset 1 reappeared after reboot)"
+  echo "$result"
+  exit 1
+fi
+
 echo ""
 echo "All tests passed."
