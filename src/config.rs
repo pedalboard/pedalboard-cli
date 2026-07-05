@@ -310,6 +310,10 @@ pub struct ButtonConfig {
     /// Reactive LED: ring shows heatmap proportional to incoming CC value. Format: { cc: N, channel: N }
     #[serde(default)]
     pub listen_cc: Option<ListenCcYaml>,
+    /// Tap tempo mode: each press measures the interval to compute BPM for MIDI clock.
+    /// Averages the last 3 intervals (4 taps). Resets after 2 seconds idle.
+    #[serde(default)]
+    pub tap_tempo: Option<bool>,
 }
 
 /// Reactive CC binding for LED visualization.
@@ -660,6 +664,8 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                             pc::Action::note_on(note, btn.channel.unwrap_or(1))
                                 .expect("invalid Note On: note or channel out of range"),
                         );
+                    } else if btn.tap_tempo == Some(true) {
+                        let _ = on_press.push(pc::Action::TapTempo);
                     }
 
                     let color = btn
@@ -707,6 +713,9 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pedalboard_protocol::config::Pr
                                 }
                                 Some("prev_preset") => {
                                     lp.push(pc::Action::PresetPrev).ok();
+                                }
+                                Some("tap_tempo") => {
+                                    lp.push(pc::Action::TapTempo).ok();
                                 }
                                 _ => {}
                             }

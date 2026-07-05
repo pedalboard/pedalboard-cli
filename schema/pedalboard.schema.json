@@ -346,6 +346,14 @@
             "null"
           ]
         },
+        "tap_tempo": {
+          "description": "Tap tempo mode: each press measures the interval to compute BPM for MIDI clock. Averages the last 3 intervals (4 taps). Resets after 2 seconds idle.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "toggle": {
           "description": "Toggle mode: alternates between on_press (active) and on_release (inactive) on each press. LED stays lit while active. First press activates (sends CC=value), second press deactivates (sends CC=0 for the shorthand form, or fires on_release actions).",
           "default": null,
