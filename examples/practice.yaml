@@ -82,22 +82,20 @@ presets:
   - name: "Looper"
     buttons:
       A:
-        # Rhythm toggle — pulses blue when active (background activity)
+        # Rhythm toggle — blinks blue at BPM rate when active
         label: "Rhythm"
         cc: 4
         toggle: true
         color: blue
-        animation: pulse
+        animation: blink
       B:
         label: "Variat."
         cc: 5
         color: blue
       C:
-        # Tap tempo — white LED blinks at current BPM (visual metronome)
+        # Tap tempo — no LED (press registers via activity indicator)
         label: "Tap"
         tap_tempo: true
-        color: white
-        animation: blink
       D:
         label: "Mem+"
         cc: 1
