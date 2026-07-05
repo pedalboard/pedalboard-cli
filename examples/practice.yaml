@@ -93,10 +93,11 @@ presets:
         cc: 5
         color: blue
       C:
-        # Tap tempo — syncs MIDI clock to RC-500 loop tempo
+        # Tap tempo — white LED blinks at current BPM (visual metronome)
         label: "Tap"
         tap_tempo: true
         color: white
+        animation: blink
       D:
         label: "Mem+"
         cc: 1
