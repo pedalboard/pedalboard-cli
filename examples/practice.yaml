@@ -13,7 +13,7 @@ global:
   din_enabled: true
   din_to_usb_thru: true
   usb_to_din_thru: false
-  midi_clock: false
+  midi_clock: true
   bpm: 120
   calibration:
     exp1:
@@ -93,8 +93,10 @@ presets:
         cc: 5
         color: blue
       C:
-        label: ""
-        color: off
+        # Tap tempo — syncs MIDI clock to RC-500 loop tempo
+        label: "Tap"
+        tap_tempo: true
+        color: white
       D:
         label: "Mem+"
         cc: 1
