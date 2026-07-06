@@ -2,7 +2,7 @@
 # Integration test: verifies firmware PE config pipeline end-to-end
 set -e
 
-BRIDGE="ws://cm5-dev.home"
+BRIDGE="ws://cm5-dev.home:8080"
 CLI="cargo run -q --config 'patch.\"https://github.com/pedalboard/pedalboard-protocol\".pedalboard-protocol.path=\"../pedalboard-protocol\"' --"
 TEST_CONFIG="examples/feature-test.yaml"
 

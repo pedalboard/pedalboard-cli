@@ -8,7 +8,7 @@ use tokio_tungstenite::{connect_async, tungstenite::Message};
 #[command(name = "pedalboard-cli", about = "Pedalboard configuration tool", version = concat!(env!("CARGO_PKG_VERSION"), "-", env!("GIT_HASH")))]
 struct Cli {
     /// WebSocket address of the bridge
-    #[arg(short, long, default_value = "ws://cm5-dev.home/config")]
+    #[arg(short, long, default_value = "ws://cm5-dev.home:8080/config")]
     address: String,
 
     #[command(subcommand)]
