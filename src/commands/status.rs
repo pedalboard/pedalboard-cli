@@ -31,6 +31,7 @@ pub async fn device_status(address: &str) -> Result<(), Box<dyn std::error::Erro
                 match postcard::from_bytes::<pedalboard_protocol::config::DeviceInfo>(body) {
                     Ok(info) => {
                         println!("Device Status:");
+                        println!("  Firmware version:     {}", info.version);
                         println!("  Flash format version: {}", info.flash_format);
                         println!("  Presets loaded:       {}", info.presets_loaded);
                         if info.presets_skipped > 0 {
