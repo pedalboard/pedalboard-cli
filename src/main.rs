@@ -33,6 +33,11 @@ enum Commands {
     Monitor,
     /// Flash a UF2 firmware file to the device (enters bootloader, uploads via bridge)
     Flash { file: PathBuf },
+    /// Switch between live mode (bridge controls audio) and design mode (MOD UI controls audio)
+    Mode {
+        /// "live" or "design"
+        mode: String,
+    },
 }
 
 #[tokio::main]
@@ -63,6 +68,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Commands::Flash { file } => {
             flash(&cli.address, &file).await?;
+        }
+        Commands::Mode { mode } => {
+            set_mode(&cli.address, &mode).await?;
         }
     }
 
@@ -399,6 +407,23 @@ async fn flash(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::error::
         let status = resp.status();
         let body = resp.text().await?;
         eprintln!("Flash failed ({}): {}", status, body.trim());
+    }
+    Ok(())
+}
+
+async fn set_mode(address: &str, mode: &str) -> Result<(), Box<dyn std::error::Error>> {
+    // Convert ws:// address to http:// for the REST endpoint
+    let http_addr = address
+        .replace("ws://", "http://")
+        .replace("/config", "")
+        .replace("/raw", "");
+    let url = format!("{}/mode?set={}", http_addr, mode);
+    let resp = reqwest::Client::new().post(&url).send().await?;
+    let body = resp.text().await?;
+    match body.trim() {
+        "live" => println!("Mode: live (bridge controls audio, MOD UI disconnected)"),
+        "design" => println!("Mode: design (MOD UI can connect to mod-host:5555)"),
+        other => eprintln!("Unexpected response: {}", other),
     }
     Ok(())
 }
