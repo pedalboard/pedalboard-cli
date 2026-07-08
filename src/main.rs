@@ -7,7 +7,12 @@ use pedalboard_cli::commands::{compile, flash, mode, monitor, read, status, uplo
 #[command(name = "pedalboard-cli", about = "Pedalboard configuration tool", version = concat!(env!("CARGO_PKG_VERSION"), "-", env!("GIT_HASH")))]
 struct Cli {
     /// WebSocket address of the bridge
-    #[arg(short, long, default_value = "ws://cm5-dev.home:8080/config")]
+    #[arg(
+        short,
+        long,
+        default_value = "ws://cm5-dev.home:8080/config",
+        env = "PEDALBOARD_ADDR"
+    )]
     address: String,
 
     #[command(subcommand)]

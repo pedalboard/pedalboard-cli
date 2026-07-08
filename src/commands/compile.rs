@@ -8,7 +8,7 @@ pub fn compile(file: &PathBuf, output: &PathBuf) -> Result<(), Box<dyn std::erro
 
     let presets = yaml_to_presets(&setlist);
 
-    let mut config = pedalboard_protocol::config::Config::default();
+    let mut config = midi_controller::config::Config::default();
 
     // Set global config
     if let Some(ref global_yaml) = setlist.global {

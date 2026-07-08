@@ -1,4 +1,4 @@
-use pedalboard_protocol::config as pc;
+use midi_controller::config as pc;
 
 use super::color::parse_color;
 use super::{

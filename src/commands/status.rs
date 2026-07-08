@@ -6,29 +6,29 @@ use super::send_system_command;
 pub async fn device_status(address: &str) -> Result<(), Box<dyn std::error::Error>> {
     let (mut ws, _) = connect_async(address).await?;
 
-    let msg = pedalboard_protocol::property_exchange::build_get_inquiry(
+    let msg = midi_controller::property_exchange::build_get_inquiry(
         [0x10, 0x20, 0x30, 0x40],
         [0x01, 0x02, 0x03, 0x04],
         0x01,
-        pedalboard_protocol::config::DEVICE_INFO_RESOURCE,
+        midi_controller::config::DEVICE_INFO_RESOURCE,
     );
     ws.send(Message::Binary(msg.to_vec())).await?;
 
     match tokio::time::timeout(std::time::Duration::from_secs(2), ws.next()).await {
         Ok(Some(Ok(Message::Binary(data)))) => {
-            let status = pedalboard_protocol::property_exchange::extract_reply_status(&data);
+            let status = midi_controller::property_exchange::extract_reply_status(&data);
             if let Some(s) = status {
                 if !s.is_ok() {
                     eprintln!("Device returned error: {:?}", s);
                     return Ok(());
                 }
             }
-            if let Some(body) = pedalboard_protocol::property_exchange::extract_get_body(&data) {
+            if let Some(body) = midi_controller::property_exchange::extract_get_body(&data) {
                 let mut decoded_buf = [0u8; 64];
                 let dec_len =
-                    pedalboard_protocol::property_exchange::decode_mcoded7(body, &mut decoded_buf);
+                    midi_controller::property_exchange::decode_mcoded7(body, &mut decoded_buf);
                 let body = &decoded_buf[..dec_len];
-                match postcard::from_bytes::<pedalboard_protocol::config::DeviceInfo>(body) {
+                match postcard::from_bytes::<midi_controller::config::DeviceInfo>(body) {
                     Ok(info) => {
                         println!("Device Status:");
                         println!("  Firmware version:     {}", info.version);
@@ -59,7 +59,7 @@ pub async fn device_status(address: &str) -> Result<(), Box<dyn std::error::Erro
 pub async fn reset(address: &str) -> Result<(), Box<dyn std::error::Error>> {
     send_system_command(
         address,
-        pedalboard_protocol::config::SystemCommand::FactoryReset,
+        midi_controller::config::SystemCommand::FactoryReset,
     )
     .await?;
     println!("Factory reset sent. Device will reboot.");
@@ -67,17 +67,13 @@ pub async fn reset(address: &str) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 pub async fn reboot(address: &str) -> Result<(), Box<dyn std::error::Error>> {
-    send_system_command(address, pedalboard_protocol::config::SystemCommand::Reboot).await?;
+    send_system_command(address, midi_controller::config::SystemCommand::Reboot).await?;
     println!("Reboot sent.");
     Ok(())
 }
 
 pub async fn bootloader(address: &str) -> Result<(), Box<dyn std::error::Error>> {
-    send_system_command(
-        address,
-        pedalboard_protocol::config::SystemCommand::Bootloader,
-    )
-    .await?;
+    send_system_command(address, midi_controller::config::SystemCommand::Bootloader).await?;
     println!("Bootloader entry sent.");
     Ok(())
 }

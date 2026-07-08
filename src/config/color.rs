@@ -1,4 +1,4 @@
-use pedalboard_protocol::config::Color;
+use midi_controller::config::Color;
 
 pub fn parse_color(s: &str) -> Color {
     match s {

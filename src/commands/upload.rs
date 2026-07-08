@@ -32,11 +32,11 @@ pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std:
     if let Some(ref global_yaml) = setlist.global {
         let gc = yaml_global_to_protocol(global_yaml);
         let serialized = postcard::to_allocvec(&gc)?;
-        let msg = pedalboard_protocol::property_exchange::build_set_inquiry(
+        let msg = midi_controller::property_exchange::build_set_inquiry(
             [0x10, 0x20, 0x30, 0x40],
             [0x01, 0x02, 0x03, 0x04],
             0x7F, // request_id (must be 7-bit safe)
-            pedalboard_protocol::config::GLOBAL_CONFIG_RESOURCE,
+            midi_controller::config::GLOBAL_CONFIG_RESOURCE,
             &serialized,
         );
         println!("  Global config ({} bytes)", serialized.len());
@@ -44,8 +44,8 @@ pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std:
         match tokio::time::timeout(std::time::Duration::from_secs(5), ws.next()).await {
             Ok(Some(Ok(msg))) => {
                 let data = msg.into_data();
-                match pedalboard_protocol::property_exchange::extract_reply_status(&data) {
-                    Some(pedalboard_protocol::property_exchange::PeStatus::Ok) => {
+                match midi_controller::property_exchange::extract_reply_status(&data) {
+                    Some(midi_controller::property_exchange::PeStatus::Ok) => {
                         println!("    ACK ✓")
                     }
                     Some(status) => eprintln!("    Error: {:?}", status),
@@ -58,7 +58,7 @@ pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std:
 
     for (idx, preset) in presets.iter().enumerate() {
         let serialized = postcard::to_allocvec(preset)?;
-        let msg = pedalboard_protocol::property_exchange::build_set_inquiry(
+        let msg = midi_controller::property_exchange::build_set_inquiry(
             [0x10, 0x20, 0x30, 0x40], // CLI MUID
             [0x01, 0x02, 0x03, 0x04], // device MUID
             idx as u8 + 1,            // request_id
@@ -77,8 +77,8 @@ pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std:
         match tokio::time::timeout(std::time::Duration::from_secs(5), ws.next()).await {
             Ok(Some(Ok(msg))) => {
                 let data = msg.into_data();
-                match pedalboard_protocol::property_exchange::extract_reply_status(&data) {
-                    Some(pedalboard_protocol::property_exchange::PeStatus::Ok) => {
+                match midi_controller::property_exchange::extract_reply_status(&data) {
+                    Some(midi_controller::property_exchange::PeStatus::Ok) => {
                         println!("    ACK ✓")
                     }
                     Some(status) => eprintln!("    Error: {:?}", status),
@@ -100,7 +100,7 @@ pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std:
     if uploaded_count < max_presets {
         let mut cleared = 0u8;
         for idx in uploaded_count..max_presets {
-            let msg = pedalboard_protocol::property_exchange::build_set_inquiry(
+            let msg = midi_controller::property_exchange::build_set_inquiry(
                 [0x10, 0x20, 0x30, 0x40],
                 [0x01, 0x02, 0x03, 0x04],
                 idx + 1,

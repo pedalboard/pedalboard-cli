@@ -11,12 +11,12 @@ pub async fn flash(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
     println!("Entering bootloader...");
     let raw_address = address.replace("/config", "/raw");
     let (mut ws, _) = connect_async(&raw_address).await?;
-    let msg = pedalboard_protocol::property_exchange::build_set_inquiry(
+    let msg = midi_controller::property_exchange::build_set_inquiry(
         [0x10, 0x20, 0x30, 0x40],
         [0x01, 0x02, 0x03, 0x04],
         0x70,
-        pedalboard_protocol::config::SYSTEM_COMMAND_RESOURCE,
-        &[pedalboard_protocol::config::SystemCommand::Bootloader as u8],
+        midi_controller::config::SYSTEM_COMMAND_RESOURCE,
+        &[midi_controller::config::SystemCommand::Bootloader as u8],
     );
     ws.send(Message::Binary(msg.to_vec())).await?;
     drop(ws);
