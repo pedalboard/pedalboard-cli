@@ -363,6 +363,7 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pc::Preset> {
                     pc::EncoderConfig {
                         label: pc::Label::try_from(enc.label.as_str()).unwrap_or_default(),
                         action,
+                        ..Default::default()
                     }
                 } else {
                     pc::EncoderConfig {
@@ -373,6 +374,7 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pc::Preset> {
                             min: 0,
                             max: 127,
                         },
+                        ..Default::default()
                     }
                 };
                 let _ = encoders.push(enc_cfg);
