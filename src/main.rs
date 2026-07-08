@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
-use pedalboard_cli::commands::{flash, mode, monitor, read, status, upload};
+use pedalboard_cli::commands::{compile, flash, mode, monitor, read, status, upload};
 
 #[derive(Parser)]
 #[command(name = "pedalboard-cli", about = "Pedalboard configuration tool", version = concat!(env!("CARGO_PKG_VERSION"), "-", env!("GIT_HASH")))]
@@ -26,6 +26,13 @@ enum Commands {
     Bootloader,
     /// Upload config via MIDI-CI Property Exchange
     Upload { file: PathBuf },
+    /// Compile YAML config to binary (for use with pedalboard-sim)
+    Compile {
+        file: PathBuf,
+        /// Output binary file path
+        #[arg(short, long, default_value = "config.bin")]
+        output: PathBuf,
+    },
     /// Read back a preset from the device
     Read { index: u8 },
     /// Monitor MIDI output from the device in real-time
@@ -49,6 +56,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Reboot => status::reboot(&cli.address).await?,
         Commands::Bootloader => status::bootloader(&cli.address).await?,
         Commands::Upload { file } => upload::pe_upload(&cli.address, &file).await?,
+        Commands::Compile { file, output } => compile::compile(&file, &output)?,
         Commands::Read { index } => read::pe_read(&cli.address, index).await?,
         Commands::Monitor => monitor::monitor(&cli.address).await?,
         Commands::Flash { file } => flash::flash(&cli.address, &file).await?,
