@@ -3,7 +3,7 @@
 set -e
 
 BRIDGE="ws://cm5-dev.home:8080"
-CLI="cargo run -q --config 'patch.\"https://github.com/pedalboard/pedalboard-protocol\".pedalboard-protocol.path=\"../pedalboard-protocol\"' --"
+CLI="cargo run -q --config 'patch.\"https://github.com/pedalboard/midi-controller\".midi-controller.path=\"../midi-controller\"' --"
 TEST_CONFIG="examples/feature-test.yaml"
 
 echo "=== Integration Tests ==="

@@ -77,7 +77,7 @@ fi
 # Test 6: Audio patch switching via Program Change
 echo -n "6. PC switches audio patch... "
 # Upload a preset that sends PC on button press
-CLI="cargo run -q --config 'patch.\"https://github.com/pedalboard/pedalboard-protocol\".pedalboard-protocol.path=\"../pedalboard-protocol\"' --"
+CLI="cargo run -q --config 'patch.\"https://github.com/pedalboard/midi-controller\".midi-controller.path=\"../midi-controller\"' --"
 TMPFILE=$(mktemp /tmp/audio-test-XXXX.yaml)
 cat > "$TMPFILE" << EOF
 presets:

@@ -2,7 +2,7 @@
 
 .DEFAULT_GOAL := help
 
-PROTOCOL_PATCH := --config 'patch."https://github.com/pedalboard/pedalboard-protocol".pedalboard-protocol.path="../pedalboard-protocol"'
+PROTOCOL_PATCH := --config 'patch."https://github.com/pedalboard/midi-controller".midi-controller.path="../midi-controller"'
 
 build: ## build
 	cargo build --release $(PROTOCOL_PATCH)

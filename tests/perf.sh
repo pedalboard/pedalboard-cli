@@ -3,7 +3,7 @@
 set -e
 
 BRIDGE="ws://cm5-dev.home"
-CLI="cargo run -q --config 'patch.\"https://github.com/pedalboard/pedalboard-protocol\".pedalboard-protocol.path=\"../pedalboard-protocol\"' --"
+CLI="cargo run -q --config 'patch.\"https://github.com/pedalboard/midi-controller\".midi-controller.path=\"../midi-controller\"' --"
 PERF_CONFIG="examples/perf-32-presets.yaml"
 
 echo "=== Performance Test: 32 Presets ==="

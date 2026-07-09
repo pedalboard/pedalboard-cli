@@ -64,7 +64,7 @@ More examples in [examples/](examples/).
 ## Development
 
 When extending the config schema (new actions, fields, button modes), follow the
-[contributing guide](https://github.com/pedalboard/pedalboard-protocol/blob/main/CONTRIBUTING.md)
+[contributing guide](https://github.com/pedalboard/midi-controller/blob/main/CONTRIBUTING.md)
 to keep protocol, CLI, and firmware in sync.
 
 ## License
