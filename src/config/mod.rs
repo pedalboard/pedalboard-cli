@@ -1,6 +1,7 @@
 pub mod color;
 pub mod convert;
 pub mod schema;
+pub mod validate;
 
 use schemars::JsonSchema;
 use serde::Deserialize;

@@ -261,13 +261,6 @@ pub fn yaml_to_presets(setlist: &Setlist) -> Vec<pc::Preset> {
                         .map(parse_color)
                         .unwrap_or(pc::Color::Off);
 
-                    if btn.toggle == Some(true) && btn.radio_group.is_some() {
-                        panic!(
-                            "Button '{}' in preset '{}': toggle and radio_group are mutually exclusive. Use radio_group alone (it already stays lit when active).",
-                            key, p.name
-                        );
-                    }
-
                     let mode = if let Some(group) = btn.radio_group {
                         pc::ButtonMode::RadioGroup(group)
                     } else if btn.toggle == Some(true) {
@@ -824,19 +817,20 @@ presets:
     }
 
     #[test]
-    #[should_panic(expected = "toggle and radio_group are mutually exclusive")]
-    fn yaml_to_presets_toggle_radio_group_conflict() {
+    fn yaml_to_presets_toggle_radio_group_priority() {
+        // If both set (shouldn't happen after validation), radio_group wins.
         let yaml = r#"
 presets:
-  - name: "Conflict Test"
+  - name: "Priority Test"
     buttons:
       A:
-        label: "Bad"
+        label: "X"
         cc: 10
         toggle: true
         radio_group: 1
 "#;
         let setlist: Setlist = serde_yaml::from_str(yaml).unwrap();
-        yaml_to_presets(&setlist);
+        let presets = yaml_to_presets(&setlist);
+        assert_eq!(presets[0].buttons[0].mode, pc::ButtonMode::RadioGroup(1));
     }
 }

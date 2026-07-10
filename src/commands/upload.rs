@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use futures_util::{SinkExt, StreamExt};
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
+use crate::config::validate::validate;
 use crate::config::{yaml_global_to_protocol, yaml_to_presets, Setlist, SCHEMA_VERSION};
 
 pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
@@ -16,6 +17,16 @@ pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std:
             setlist.version, SCHEMA_VERSION
         );
         eprintln!("Upgrade pedalboard-cli to use this setlist file.");
+        std::process::exit(1);
+    }
+
+    // Validate config before compiling.
+    let errors = validate(&setlist);
+    if !errors.is_empty() {
+        eprintln!("Validation errors:");
+        for err in &errors {
+            eprintln!("  • {}", err);
+        }
         std::process::exit(1);
     }
 
