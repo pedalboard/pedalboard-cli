@@ -24,7 +24,7 @@ fi
 # Test 2: mod-host connected (bridge holds the connection)
 echo -n "2. mod-host connected (via bridge)... "
 # Bridge logs "mod-host connected" on startup
-MOD_LOG=$(ssh laenzi@$HOST "journalctl -u pedalboard-bridge --no-pager -n 50 | grep 'mod-host connected'" 2>/dev/null)
+MOD_LOG=$(ssh laenzi@$HOST "journalctl -u pedalboard-bridge --no-pager -n 200 | grep -m1 'mod-host connected'" 2>/dev/null)
 if [[ -n "$MOD_LOG" ]]; then
   echo "✓"
 else

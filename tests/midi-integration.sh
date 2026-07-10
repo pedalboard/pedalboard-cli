@@ -261,8 +261,8 @@ fi
 # Test 14: Device status reports correct preset count
 echo -n "14. Device status reports correct state... "
 result=$(eval timeout 5 $CLI --address $BRIDGE status 2>&1)
-if [[ "$result" == *"Presets loaded:"* ]] && [[ "$result" == *"Flash format version:"* ]]; then
-  loaded=$(echo "$result" | grep "Presets loaded" | awk '{print $NF}')
+if [[ "$result" == *"Presets:"* ]] && [[ "$result" == *"Flash fmt:"* ]]; then
+  loaded=$(echo "$result" | grep "Presets:" | awk '{print $2}')
   if [[ "$loaded" == "1" ]]; then
     echo "✓ (1 preset loaded, status OK)"
   else
