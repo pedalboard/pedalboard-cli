@@ -18,12 +18,67 @@ pub struct Setlist {
     /// Global device settings (MIDI routing, clock, etc.). Applied once on upload.
     #[serde(default)]
     pub global: Option<GlobalYamlConfig>,
+    /// Audio rig configuration (plugins, connections, snapshots). Loaded on the CM5 bridge at boot.
+    /// Optional — omit if no audio processing is configured.
+    #[serde(default)]
+    pub audio: Option<AudioConfig>,
     /// List of presets. Each preset defines the complete button/encoder/expression layout for one song or scene.
     pub presets: Vec<PresetConfig>,
 }
 
 fn default_schema_version() -> u8 {
     1
+}
+
+/// Audio rig configuration — the complete plugin chain loaded at boot on the CM5.
+///
+/// All plugins are loaded once and stay running for the entire session. Snapshots
+/// switch between tones by toggling bypass and adjusting parameters (instant, no audio gap).
+#[derive(Deserialize, JsonSchema)]
+pub struct AudioConfig {
+    /// Plugin instances to load at boot. Each gets a unique numeric ID used by mod-host.
+    pub plugins: Vec<AudioPlugin>,
+    /// JACK audio connections between plugins and system ports.
+    /// Each entry is [source_port, destination_port].
+    pub connections: Vec<[String; 2]>,
+    /// Named parameter snapshots. Switching a snapshot sets bypass + params for all instances.
+    pub snapshots: Vec<AudioSnapshot>,
+}
+
+/// A plugin instance in the audio rig.
+#[derive(Deserialize, JsonSchema)]
+pub struct AudioPlugin {
+    /// mod-host instance ID (0-9990). Must be unique within the rig.
+    pub id: u32,
+    /// LV2 plugin URI.
+    pub uri: String,
+    /// AIDA-X model file path (absolute). Only for neural amp modeler plugins.
+    /// The model is loaded via preset_load at boot.
+    #[serde(default)]
+    pub model: Option<String>,
+}
+
+/// A named audio snapshot — a set of parameter values and bypass states for all plugin instances.
+///
+/// Switching snapshots is instant (no plugin reload, no JACK reconnection).
+/// Only bypassed/params that differ from the previous snapshot need to be sent.
+#[derive(Deserialize, JsonSchema)]
+pub struct AudioSnapshot {
+    /// Snapshot name. Referenced by presets and buttons via `audio_snapshot`.
+    pub name: String,
+    /// Per-instance state. Key is the plugin instance ID (as string for YAML compatibility).
+    pub state: std::collections::HashMap<String, AudioInstanceState>,
+}
+
+/// State of a single plugin instance within a snapshot.
+#[derive(Deserialize, JsonSchema)]
+pub struct AudioInstanceState {
+    /// Whether this instance is bypassed. Default: false (active).
+    #[serde(default)]
+    pub bypassed: Option<bool>,
+    /// Parameter values to set. Key is the port symbol, value is the float value.
+    #[serde(default)]
+    pub params: std::collections::HashMap<String, f64>,
 }
 
 /// Global device configuration — system-wide settings independent of presets.
@@ -83,6 +138,11 @@ fn default_adc_max() -> u16 {
 pub struct PresetConfig {
     /// Preset name displayed on the OLED (max 16 characters).
     pub name: String,
+    /// Audio snapshot to activate when this preset becomes active.
+    /// References a snapshot name from the top-level `audio.snapshots` list.
+    /// If omitted, audio state is unchanged on preset switch.
+    #[serde(default)]
+    pub audio_snapshot: Option<String>,
     /// Button configurations keyed by position: A, B, C, D, E, F.
     #[serde(default)]
     pub buttons: std::collections::HashMap<String, ButtonConfig>,
@@ -281,6 +341,11 @@ pub struct ButtonConfig {
     /// Averages the last 3 intervals (4 taps). Resets after 2 seconds idle.
     #[serde(default)]
     pub tap_tempo: Option<bool>,
+    /// Audio snapshot to activate on button press. References a snapshot name from
+    /// the top-level `audio.snapshots` list. Switches tone instantly (bypass + params).
+    /// Can be combined with MIDI actions (e.g., send CC AND switch audio snapshot).
+    #[serde(default)]
+    pub audio_snapshot: Option<String>,
 }
 
 /// Reactive CC binding for LED visualization.

@@ -7,6 +7,17 @@
     "presets"
   ],
   "properties": {
+    "audio": {
+      "description": "Audio rig configuration (plugins, connections, snapshots). Loaded on the CM5 bridge at boot. Optional — omit if no audio processing is configured.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/AudioConfig"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "global": {
       "description": "Global device settings (MIDI routing, clock, etc.). Applied once on upload.",
       "anyOf": [
@@ -206,6 +217,115 @@
         }
       }
     },
+    "AudioConfig": {
+      "description": "Audio rig configuration — the complete plugin chain loaded at boot on the CM5.\n\nAll plugins are loaded once and stay running for the entire session. Snapshots switch between tones by toggling bypass and adjusting parameters (instant, no audio gap).",
+      "type": "object",
+      "required": [
+        "connections",
+        "plugins",
+        "snapshots"
+      ],
+      "properties": {
+        "connections": {
+          "description": "JACK audio connections between plugins and system ports. Each entry is [source_port, destination_port].",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 2,
+            "minItems": 2
+          }
+        },
+        "plugins": {
+          "description": "Plugin instances to load at boot. Each gets a unique numeric ID used by mod-host.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AudioPlugin"
+          }
+        },
+        "snapshots": {
+          "description": "Named parameter snapshots. Switching a snapshot sets bypass + params for all instances.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AudioSnapshot"
+          }
+        }
+      }
+    },
+    "AudioInstanceState": {
+      "description": "State of a single plugin instance within a snapshot.",
+      "type": "object",
+      "properties": {
+        "bypassed": {
+          "description": "Whether this instance is bypassed. Default: false (active).",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "params": {
+          "description": "Parameter values to set. Key is the port symbol, value is the float value.",
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    },
+    "AudioPlugin": {
+      "description": "A plugin instance in the audio rig.",
+      "type": "object",
+      "required": [
+        "id",
+        "uri"
+      ],
+      "properties": {
+        "id": {
+          "description": "mod-host instance ID (0-9990). Must be unique within the rig.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "model": {
+          "description": "AIDA-X model file path (absolute). Only for neural amp modeler plugins. The model is loaded via preset_load at boot.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "uri": {
+          "description": "LV2 plugin URI.",
+          "type": "string"
+        }
+      }
+    },
+    "AudioSnapshot": {
+      "description": "A named audio snapshot — a set of parameter values and bypass states for all plugin instances.\n\nSwitching snapshots is instant (no plugin reload, no JACK reconnection). Only bypassed/params that differ from the previous snapshot need to be sent.",
+      "type": "object",
+      "required": [
+        "name",
+        "state"
+      ],
+      "properties": {
+        "name": {
+          "description": "Snapshot name. Referenced by presets and buttons via `audio_snapshot`.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Per-instance state. Key is the plugin instance ID (as string for YAML compatibility).",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AudioInstanceState"
+          }
+        }
+      }
+    },
     "ButtonConfig": {
       "description": "Button configuration. Use one of: note, cc, program_change, or actions for the MIDI message.\n\n**Modes:** - Momentary (default): active while pressed. Fires on_press on press, on_release on release. - Toggle (`toggle: true`): alternates active/inactive each press. Press when OFF → fires on_press. Press when ON → fires on_release (deactivation). LED stays lit while active. - RadioGroup (`radio_group: N`): only one button in group N active at a time. Pressing one silently deactivates others (no on_release fired for deactivated buttons).\n\n**CcCycle** (`cc` + `values`): each press sends the next value in the list, wrapping around. With `reverse: true`, cycles backward. Cycle index persists in EEPROM across power cycles.\n\n**Long press** (`on_long_press`): hold >500ms for secondary action. When configured, the normal on_press is deferred until release (if released before 500ms threshold).",
       "type": "object",
@@ -225,6 +345,14 @@
         },
         "animation": {
           "description": "LED animation when active. Values: solid, blink, pulse, rotate, colorcycle.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "audio_snapshot": {
+          "description": "Audio snapshot to activate on button press. References a snapshot name from the top-level `audio.snapshots` list. Switches tone instantly (bypass + params). Can be combined with MIDI actions (e.g., send CC AND switch audio snapshot).",
           "default": null,
           "type": [
             "string",
@@ -660,6 +788,14 @@
           "additionalProperties": {
             "$ref": "#/definitions/AnalogYamlConfig"
           }
+        },
+        "audio_snapshot": {
+          "description": "Audio snapshot to activate when this preset becomes active. References a snapshot name from the top-level `audio.snapshots` list. If omitted, audio state is unchanged on preset switch.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "buttons": {
           "description": "Button configurations keyed by position: A, B, C, D, E, F.",
