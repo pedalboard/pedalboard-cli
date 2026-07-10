@@ -5,6 +5,7 @@ edition = "2021"
 license = "GPL-3.0"
 
 [dependencies]
+pedalboard-config = { git = "https://github.com/pedalboard/pedalboard-config" }
 serde = { version = "1", features = ["derive"] }
 serde_yaml = "0.9"
 serde_json = "1"
@@ -13,7 +14,7 @@ clap = { version = "4", features = ["derive", "env"] }
 tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = "0.24"
 futures-util = "0.3"
-midi-controller = "0.5.0"
+midi-controller = { git = "https://github.com/pedalboard/midi-controller" }
 postcard = { version = "1.1.1", features = ["alloc"] }
 heapless = "0.9.3"
 reqwest = { version = "0.12", features = ["multipart"] }

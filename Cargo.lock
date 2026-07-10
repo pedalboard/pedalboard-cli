@@ -806,10 +806,10 @@ checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 
 [[package]]
 name = "midi-controller"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "082054a456306b3db4ae68a8746feea34c676d8c115bb8185ed2c46677a50af4"
+version = "0.7.1"
+source = "git+https://github.com/pedalboard/midi-controller#72a1d6306415012e13c800de56e79d734e9822bd"
 dependencies = [
+ "bitflags",
  "heapless 0.9.3",
  "led-ring",
  "postcard",
@@ -946,6 +946,7 @@ dependencies = [
  "futures-util",
  "heapless 0.9.3",
  "midi-controller",
+ "pedalboard-config",
  "postcard",
  "reqwest",
  "schemars",
@@ -954,6 +955,19 @@ dependencies = [
  "serde_yaml",
  "tokio",
  "tokio-tungstenite",
+]
+
+[[package]]
+name = "pedalboard-config"
+version = "0.1.0"
+source = "git+https://github.com/pedalboard/pedalboard-config#d6085ab9a87c8b0b97b73819fd8fc5f872030aff"
+dependencies = [
+ "heapless 0.9.3",
+ "midi-controller",
+ "schemars",
+ "serde",
+ "serde_json",
+ "serde_yaml",
 ]
 
 [[package]]
