@@ -283,3 +283,9 @@ fi
 
 echo ""
 echo "All tests passed."
+
+# Cleanup: reboot device so it's in a clean state for next run.
+echo -n "Cleanup: rebooting device... "
+eval timeout 5 $CLI --address $BRIDGE reboot 2>&1 > /dev/null || true
+sleep 9
+echo "done."
