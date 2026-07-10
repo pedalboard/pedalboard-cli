@@ -3,6 +3,7 @@
 #
 # Rig: distortion boost + 3 AIDA-X amp instances (parallel, bypassed) + reverb + delay
 # Switching: instant via bypass/param changes (no plugin reload)
+# Expression: per-snapshot assignment (like Helix/Kemper)
 
 audio:
   plugins:
@@ -35,17 +36,10 @@ audio:
     # Reverb → delay → output
     - ["effect_4:out_l", "effect_5:in_l"]
     - ["effect_5:out_l", "system:playback_2"]
+  # Physical pedal → CC mapping (which CC number each pedal sends)
   expression:
-    # Exp1 (CC7) → Volume: controls MASTER on all amp instances
-    - cc: 7
-      targets:
-        - { instance: 1, param: "MASTER", min: 0.0, max: 1.0 }
-        - { instance: 2, param: "MASTER", min: 0.0, max: 1.0 }
-        - { instance: 3, param: "MASTER", min: 0.0, max: 1.0 }
-    # Exp2 (CC11) → Drive: controls DRIVE on the distortion pedal
-    - cc: 11
-      targets:
-        - { instance: 0, param: "DRIVE", min: 0.0, max: 1.0 }
+    - { name: "Exp1", cc: 7 }
+    - { name: "Exp2", cc: 11 }
   snapshots:
     - name: "Clean"
       state:
@@ -55,6 +49,10 @@ audio:
         "3": { bypassed: true }
         "4": { bypassed: false, params: { decay_time: 2.5 } }
         "5": { bypassed: true }
+      # Clean: Exp1 = volume, Exp2 = reverb size
+      expression:
+        Exp1: { instance: 1, param: "MASTER", min: 0.0, max: 1.0 }
+        Exp2: { instance: 4, param: "decay_time", min: 0.5, max: 5.0 }
     - name: "Crunch"
       state:
         "0": { bypassed: true }
@@ -63,6 +61,10 @@ audio:
         "3": { bypassed: true }
         "4": { bypassed: true }
         "5": { bypassed: false, params: { time_l: 4.0, feedback: 0.3 } }
+      # Crunch: Exp1 = volume, Exp2 = delay feedback
+      expression:
+        Exp1: { instance: 2, param: "MASTER", min: 0.0, max: 1.0 }
+        Exp2: { instance: 5, param: "feedback", min: 0.0, max: 0.8 }
     - name: "Lead"
       state:
         "0": { bypassed: false, params: { DRIVE: 0.6, VOLUME: 0.7 } }
@@ -71,6 +73,10 @@ audio:
         "3": { bypassed: false, params: { PREGAIN: 1.0, MASTER: 0.5 } }
         "4": { bypassed: false, params: { decay_time: 3.0 } }
         "5": { bypassed: false, params: { time_l: 5.0, feedback: 0.5 } }
+      # Lead: Exp1 = gain (push harder), Exp2 = drive amount
+      expression:
+        Exp1: { instance: 3, param: "PREGAIN", min: 0.5, max: 1.0 }
+        Exp2: { instance: 0, param: "DRIVE", min: 0.0, max: 1.0 }
 
 global:
   din_enabled: true
@@ -92,6 +98,7 @@ presets:
       Gain: { label: "Drive", cc: 91 }
     analog:
       Exp1: { label: "Volume", cc: 7 }
+      Exp2: { label: "Reverb", cc: 11 }
 
   - name: "Rock"
     audio_snapshot: "Crunch"
@@ -105,3 +112,6 @@ presets:
     encoders:
       Vol: { label: "Volume", cc: 7 }
       Gain: { label: "Gain", cc: 91 }
+    analog:
+      Exp1: { label: "Gain", cc: 7 }
+      Exp2: { label: "Drive", cc: 11 }

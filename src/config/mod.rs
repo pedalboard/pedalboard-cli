@@ -49,20 +49,22 @@ pub struct AudioConfig {
     pub expression: Option<Vec<ExpressionMapping>>,
 }
 
-/// Maps an incoming MIDI CC to one or more plugin parameters.
+/// Maps a physical expression pedal to a MIDI CC number.
+/// The actual parameter target is defined per-snapshot (changes with tone).
 #[derive(Deserialize, JsonSchema)]
 pub struct ExpressionMapping {
-    /// MIDI CC number to listen for (0-127).
+    /// Pedal name (e.g., "Exp1", "Exp2"). Referenced in snapshot `expression` field.
+    pub name: String,
+    /// MIDI CC number this pedal sends (0-127).
     pub cc: u8,
-    /// MIDI channel to listen on (1-16). Default: 1 (any).
+    /// MIDI channel to listen on (1-16). Default: any.
     #[serde(default)]
     pub channel: Option<u8>,
-    /// Plugin parameters to control. CC value (0-127) is scaled to the param's min-max range.
-    pub targets: Vec<ExpressionTarget>,
 }
 
-/// A single plugin parameter controlled by an expression pedal.
-#[derive(Deserialize, JsonSchema)]
+/// A plugin parameter controlled by an expression pedal within a snapshot.
+/// Defines where the pedal routes to and the value range.
+#[derive(Deserialize, JsonSchema, Debug, Clone)]
 pub struct ExpressionTarget {
     /// mod-host instance ID.
     pub instance: u32,
@@ -99,6 +101,10 @@ pub struct AudioSnapshot {
     pub name: String,
     /// Per-instance state. Key is the plugin instance ID (as string for YAML compatibility).
     pub state: std::collections::HashMap<String, AudioInstanceState>,
+    /// Expression pedal assignments for this snapshot.
+    /// Key is the pedal name (e.g., "Exp1", "Exp2"). Reassigned on snapshot switch.
+    #[serde(default)]
+    pub expression: std::collections::HashMap<String, ExpressionTarget>,
 }
 
 /// State of a single plugin instance within a snapshot.

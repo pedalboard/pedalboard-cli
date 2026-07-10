@@ -238,6 +238,16 @@
             "minItems": 2
           }
         },
+        "expression": {
+          "description": "Expression pedal → plugin parameter mappings. When the bridge receives the mapped CC, it sends param_set to all listed targets.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ExpressionMapping"
+          }
+        },
         "plugins": {
           "description": "Plugin instances to load at boot. Each gets a unique numeric ID used by mod-host.",
           "type": "array",
@@ -313,6 +323,13 @@
         "state"
       ],
       "properties": {
+        "expression": {
+          "description": "Expression pedal assignments for this snapshot. Key is the pedal name (e.g., \"Exp1\", \"Exp2\"). Reassigned on snapshot switch.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/ExpressionTarget"
+          }
+        },
         "name": {
           "description": "Snapshot name. Referenced by presets and buttons via `audio_snapshot`.",
           "type": "string"
@@ -665,6 +682,74 @@
           "type": "integer",
           "format": "uint16",
           "minimum": 0.0
+        }
+      }
+    },
+    "ExpressionMapping": {
+      "description": "Maps a physical expression pedal to a MIDI CC number. The actual parameter target is defined per-snapshot (changes with tone).",
+      "type": "object",
+      "required": [
+        "cc",
+        "name"
+      ],
+      "properties": {
+        "cc": {
+          "description": "MIDI CC number this pedal sends (0-127).",
+          "type": "integer",
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "channel": {
+          "description": "MIDI channel to listen on (1-16). Default: any.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "name": {
+          "description": "Pedal name (e.g., \"Exp1\", \"Exp2\"). Referenced in snapshot `expression` field.",
+          "type": "string"
+        }
+      }
+    },
+    "ExpressionTarget": {
+      "description": "A plugin parameter controlled by an expression pedal within a snapshot. Defines where the pedal routes to and the value range.",
+      "type": "object",
+      "required": [
+        "instance",
+        "param"
+      ],
+      "properties": {
+        "instance": {
+          "description": "mod-host instance ID.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "max": {
+          "description": "Maximum parameter value (at CC=127). Default: 1.0.",
+          "default": null,
+          "type": [
+            "number",
+            "null"
+          ],
+          "format": "double"
+        },
+        "min": {
+          "description": "Minimum parameter value (at CC=0). Default: 0.0.",
+          "default": null,
+          "type": [
+            "number",
+            "null"
+          ],
+          "format": "double"
+        },
+        "param": {
+          "description": "Port symbol name.",
+          "type": "string"
         }
       }
     },
