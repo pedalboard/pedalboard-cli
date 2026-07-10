@@ -8,7 +8,7 @@ TEST_CONFIG="examples/feature-test.yaml"
 
 echo "=== Integration Tests ==="
 
-# Test 1: OpenDeck handshake
+# Test 1: PE protocol handshake
 # Test 1: Device reachable via PE
 echo -n "1. Device reachable... "
 result=$(eval timeout 10 $CLI --address $BRIDGE read 0 2>&1)
