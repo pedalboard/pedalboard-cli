@@ -57,19 +57,29 @@ pub async fn device_status(address: &str) -> Result<(), Box<dyn std::error::Erro
     Ok(())
 }
 
-pub async fn reset(address: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn reset(address: &str, wait: bool) -> Result<(), Box<dyn std::error::Error>> {
     send_system_command(
         address,
         midi_controller::config::SystemCommand::FactoryReset,
     )
     .await?;
     println!("Factory reset sent. Device will reboot.");
+    if wait {
+        println!("Waiting for device...");
+        super::wait_for_device(address, 15).await?;
+        println!("Device ready.");
+    }
     Ok(())
 }
 
-pub async fn reboot(address: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn reboot(address: &str, wait: bool) -> Result<(), Box<dyn std::error::Error>> {
     send_system_command(address, midi_controller::config::SystemCommand::Reboot).await?;
     println!("Reboot sent.");
+    if wait {
+        println!("Waiting for device...");
+        super::wait_for_device(address, 15).await?;
+        println!("Device ready.");
+    }
     Ok(())
 }
 

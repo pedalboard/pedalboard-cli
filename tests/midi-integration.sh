@@ -62,8 +62,7 @@ fi
 # Test 5: Persistence (reboot + read-back without re-upload)
 echo -n "5. Persistence (reboot + read-back)... "
 # Reboot via SysEx (graceful — allows in-flight flash writes to complete)
-eval timeout 5 $CLI --address $BRIDGE reboot 2>&1 > /dev/null || true
-sleep 9
+eval timeout 15 $CLI --address $BRIDGE reboot --wait 2>&1 > /dev/null || true
 result=$(eval timeout 5 $CLI --address $BRIDGE read 0 2>&1)
 if [[ "$result" == *"Feature Test"* ]]; then
   echo -n "preset 0 ✓ "
@@ -122,8 +121,7 @@ fi
 
 # Test 8: Global config persists across reboot
 echo -n "8. Global config persists (reboot + clock check)... "
-eval timeout 5 $CLI --address $BRIDGE reboot 2>&1 > /dev/null || true
-sleep 9
+eval timeout 15 $CLI --address $BRIDGE reboot --wait 2>&1 > /dev/null || true
 clock_output=$(eval timeout 2 $CLI --address $BRIDGE monitor 2>&1 || true)
 clock_count=$(echo "$clock_output" | grep -c "Clock" || true)
 if [[ $clock_count -gt 5 ]]; then
@@ -170,8 +168,7 @@ EOF
 eval timeout 15 $CLI --address $BRIDGE upload $GLOBAL_TEST 2>&1 > /dev/null
 rm -f "$GLOBAL_TEST"
 sleep 1
-eval timeout 5 $CLI --address $BRIDGE reset 2>&1 > /dev/null || true
-sleep 9
+eval timeout 15 $CLI --address $BRIDGE reset --wait 2>&1 > /dev/null || true
 result=$(eval timeout 5 $CLI --address $BRIDGE read 0 2>&1)
 if [[ "$result" == *"not found"* ]] || [[ "$result" == *"no reply"* ]]; then
   # Also verify clock stopped (global config cleared)
@@ -192,9 +189,8 @@ fi
 # Test 11: PE presets survive reboot after factory reset + re-upload
 echo -n "11. PE re-upload after reset... "
 eval timeout 15 $CLI --address $BRIDGE upload $TEST_CONFIG 2>&1 > /dev/null
-sleep 1
-eval timeout 5 $CLI --address $BRIDGE reboot 2>&1 > /dev/null || true
-sleep 9
+sleep 3
+eval timeout 15 $CLI --address $BRIDGE reboot --wait 2>&1 > /dev/null || true
 result=$(eval timeout 5 $CLI --address $BRIDGE read 0 2>&1)
 if [[ "$result" == *"Feature Test"* ]]; then
   echo "✓ (preset persisted after reset + re-upload + reboot)"
@@ -246,8 +242,7 @@ fi
 
 # Test 13: Stale presets stay cleared across reboot
 echo -n "13. Cleared presets stay cleared across reboot... "
-eval timeout 5 $CLI --address $BRIDGE reboot 2>&1 > /dev/null || true
-sleep 9
+eval timeout 15 $CLI --address $BRIDGE reboot --wait 2>&1 > /dev/null || true
 result=$(eval timeout 5 $CLI --address $BRIDGE read 0 2>&1)
 if [[ "$result" != *"Solo Preset"* ]]; then
   echo "✗ (preset 0 lost after reboot)"
@@ -286,6 +281,5 @@ echo "All tests passed."
 
 # Cleanup: reboot device so it's in a clean state for next run.
 echo -n "Cleanup: rebooting device... "
-eval timeout 5 $CLI --address $BRIDGE reboot 2>&1 > /dev/null || true
-sleep 9
+eval timeout 15 $CLI --address $BRIDGE reboot --wait 2>&1 > /dev/null || true
 echo "done."

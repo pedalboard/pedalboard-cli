@@ -10,8 +10,7 @@ echo "=== Performance Test: 32 Presets ==="
 
 # Clean slate
 echo -n "1. Factory reset... "
-eval timeout 10 $CLI --address $BRIDGE/config reset 2>&1 > /dev/null || true
-sleep 8
+eval timeout 15 $CLI --address $BRIDGE/config reset --wait 2>&1 > /dev/null || true
 echo "✓"
 
 # Upload 32 presets and measure time
@@ -53,14 +52,12 @@ fi
 # Wait for persist then reboot
 echo -n "4. Persistence (reboot + verify)... "
 sleep 15  # 32 presets × ~180ms persist each + safety margin
-eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
-sleep 7
+eval timeout 15 $CLI --address $BRIDGE/config reboot --wait 2>&1 > /dev/null || true
 
 # Verify persistence (known limitation: #75 — not all presets may survive)
 echo -n "4. Persistence (reboot + verify)... "
 sleep 15
-eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
-sleep 7
+eval timeout 15 $CLI --address $BRIDGE/config reboot --wait 2>&1 > /dev/null || true
 
 persisted=0
 for i in $(seq 0 31); do

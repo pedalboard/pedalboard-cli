@@ -24,9 +24,17 @@ enum Commands {
     /// Show device status (firmware version, preset count, health)
     Status,
     /// Factory reset the device
-    Reset,
+    Reset {
+        /// Wait for device to be ready after reset
+        #[arg(long)]
+        wait: bool,
+    },
     /// Reboot the device (no data loss)
-    Reboot,
+    Reboot {
+        /// Wait for device to be ready after reboot
+        #[arg(long)]
+        wait: bool,
+    },
     /// Enter UF2 bootloader (for firmware flashing)
     Bootloader,
     /// Upload config via MIDI-CI Property Exchange
@@ -57,8 +65,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     match cli.command {
         Commands::Status => status::device_status(&cli.address).await?,
-        Commands::Reset => status::reset(&cli.address).await?,
-        Commands::Reboot => status::reboot(&cli.address).await?,
+        Commands::Reset { wait } => status::reset(&cli.address, wait).await?,
+        Commands::Reboot { wait } => status::reboot(&cli.address, wait).await?,
         Commands::Bootloader => status::bootloader(&cli.address).await?,
         Commands::Upload { file } => upload::pe_upload(&cli.address, &file).await?,
         Commands::Compile { file, output } => compile::compile(&file, &output)?,
