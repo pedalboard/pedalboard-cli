@@ -9,7 +9,7 @@ pub async fn flash(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
 
     // 1. Enter bootloader via PE system command
     println!("Entering bootloader...");
-    let raw_address = address.replace("/config", "/raw");
+    let raw_address = format!("{}/raw", address.trim_end_matches('/'));
     let (mut ws, _) = connect_async(&raw_address).await?;
     let msg = midi_controller::property_exchange::build_set_inquiry(
         [0x10, 0x20, 0x30, 0x40],
@@ -25,9 +25,10 @@ pub async fn flash(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::err
     println!("Uploading firmware to bridge...");
     tokio::time::sleep(std::time::Duration::from_secs(4)).await;
 
-    let base_url = address
-        .replace("ws://", "http://")
-        .replace("/config", "/flash");
+    let base_url = format!(
+        "{}/flash",
+        address.replace("ws://", "http://").trim_end_matches('/')
+    );
     let client = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(30))
         .build()?;

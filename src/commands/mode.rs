@@ -1,9 +1,8 @@
 pub async fn set_mode(address: &str, mode: &str) -> Result<(), Box<dyn std::error::Error>> {
-    // Convert ws:// address to http:// for the REST endpoint
     let http_addr = address
         .replace("ws://", "http://")
-        .replace("/config", "")
-        .replace("/raw", "");
+        .trim_end_matches('/')
+        .to_string();
     let url = format!("{}/mode?set={}", http_addr, mode);
     let resp = reqwest::Client::new().post(&url).send().await?;
     let body = resp.text().await?;

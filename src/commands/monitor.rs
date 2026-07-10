@@ -2,8 +2,7 @@ use futures_util::StreamExt;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
 pub async fn monitor(address: &str) -> Result<(), Box<dyn std::error::Error>> {
-    // Replace /config with /monitor in the address
-    let monitor_addr = address.replace("/config", "/monitor");
+    let monitor_addr = format!("{}/monitor", address.trim_end_matches('/'));
     let (mut ws, _) = connect_async(&monitor_addr).await?;
     println!("Monitoring MIDI output (Ctrl+C to stop)...");
 

@@ -6,6 +6,7 @@ use tokio_tungstenite::{connect_async, tungstenite::Message};
 use crate::config::{yaml_global_to_protocol, yaml_to_presets, Setlist, SCHEMA_VERSION};
 
 pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+    let raw_address = format!("{}/raw", address.trim_end_matches('/'));
     let content = std::fs::read_to_string(file)?;
     let setlist: Setlist = serde_yaml::from_str(&content)?;
 
@@ -25,7 +26,7 @@ pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std:
         presets.len()
     );
 
-    let (mut ws, _) = connect_async(address).await?;
+    let (mut ws, _) = connect_async(&raw_address).await?;
     tokio::time::sleep(std::time::Duration::from_millis(200)).await;
 
     // Upload global config if present

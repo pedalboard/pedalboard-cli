@@ -10,7 +10,7 @@ struct Cli {
     #[arg(
         short,
         long,
-        default_value = "ws://cm5-dev.home:8080/config",
+        default_value = "ws://cm5-dev.home:8080",
         env = "PEDALBOARD_ADDR"
     )]
     address: String,

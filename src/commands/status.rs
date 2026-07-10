@@ -4,7 +4,8 @@ use tokio_tungstenite::{connect_async, tungstenite::Message};
 use super::send_system_command;
 
 pub async fn device_status(address: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let (mut ws, _) = connect_async(address).await?;
+    let raw_address = format!("{}/raw", address.trim_end_matches('/'));
+    let (mut ws, _) = connect_async(&raw_address).await?;
 
     let msg = midi_controller::property_exchange::build_get_inquiry(
         [0x10, 0x20, 0x30, 0x40],

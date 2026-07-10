@@ -13,7 +13,7 @@ async fn send_system_command(
     address: &str,
     cmd: midi_controller::config::SystemCommand,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let raw_address = address.replace("/config", "/raw");
+    let raw_address = format!("{}/raw", address.trim_end_matches('/'));
     let (mut ws, _) = connect_async(&raw_address).await?;
     let msg = midi_controller::property_exchange::build_set_inquiry(
         [0x10, 0x20, 0x30, 0x40],
