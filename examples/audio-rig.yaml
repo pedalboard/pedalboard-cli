@@ -87,12 +87,14 @@ presets:
   - name: "Ballad"
     audio_snapshot: "Clean"
     buttons:
-      A: { label: "Clean", audio_snapshot: "Clean", color: green }
-      B: { label: "Crunch", audio_snapshot: "Crunch", color: yellow }
-      C: { label: "Lead", audio_snapshot: "Lead", color: red }
+      A: { label: "Clean", program_change: 0, color: green, radio_group: 1 }
+      B: { label: "Crunch", program_change: 1, color: yellow, radio_group: 1 }
+      C: { label: "Lead", program_change: 2, color: red, radio_group: 1 }
       D: { label: "Reverb", cc: 80, toggle: true, color: blue }
       E: { label: "Delay", cc: 81, toggle: true, color: cyan }
       F: { label: "Boost", cc: 82, color: white, on_long_press: next_preset }
+    defaults:
+      buttons: { A: "on" }
     encoders:
       Vol: { label: "Volume", cc: 7 }
       Gain: { label: "Drive", cc: 91 }
@@ -103,12 +105,14 @@ presets:
   - name: "Rock"
     audio_snapshot: "Crunch"
     buttons:
-      A: { label: "Riff", audio_snapshot: "Crunch", color: yellow }
-      B: { label: "Solo", audio_snapshot: "Lead", color: red }
-      C: { label: "Clean", audio_snapshot: "Clean", color: green }
+      A: { label: "Riff", program_change: 1, color: yellow, radio_group: 1 }
+      B: { label: "Solo", program_change: 2, color: red, radio_group: 1 }
+      C: { label: "Clean", program_change: 0, color: green, radio_group: 1 }
       D: { label: "FX", cc: 80, toggle: true, color: blue }
       E: { label: "", color: off }
       F: { label: "Next", cc: 99, color: magenta, on_long_press: next_preset }
+    defaults:
+      buttons: { A: "on" }
     encoders:
       Vol: { label: "Volume", cc: 7 }
       Gain: { label: "Gain", cc: 91 }
