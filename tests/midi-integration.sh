@@ -63,7 +63,7 @@ fi
 echo -n "5. Persistence (reboot + read-back)... "
 # Reboot via SysEx (graceful — allows in-flight flash writes to complete)
 eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
-sleep 12
+sleep 9
 result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 0 2>&1)
 if [[ "$result" == *"Feature Test"* ]]; then
   echo -n "preset 0 ✓ "
@@ -123,7 +123,7 @@ fi
 # Test 8: Global config persists across reboot
 echo -n "8. Global config persists (reboot + clock check)... "
 eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
-sleep 12
+sleep 9
 clock_output=$(eval timeout 2 $CLI --address $BRIDGE/monitor monitor 2>&1 || true)
 clock_count=$(echo "$clock_output" | grep -c "Clock" || true)
 if [[ $clock_count -gt 5 ]]; then
@@ -171,7 +171,7 @@ eval timeout 15 $CLI --address $BRIDGE/raw upload $GLOBAL_TEST 2>&1 > /dev/null
 rm -f "$GLOBAL_TEST"
 sleep 1
 eval timeout 5 $CLI --address $BRIDGE/config reset 2>&1 > /dev/null || true
-sleep 12
+sleep 9
 result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 0 2>&1)
 if [[ "$result" == *"not found"* ]] || [[ "$result" == *"no reply"* ]]; then
   # Also verify clock stopped (global config cleared)
@@ -194,7 +194,7 @@ echo -n "11. PE re-upload after reset... "
 eval timeout 15 $CLI --address $BRIDGE/raw upload $TEST_CONFIG 2>&1 > /dev/null
 sleep 1
 eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
-sleep 12
+sleep 9
 result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 0 2>&1)
 if [[ "$result" == *"Feature Test"* ]]; then
   echo "✓ (preset persisted after reset + re-upload + reboot)"
@@ -247,7 +247,7 @@ fi
 # Test 13: Stale presets stay cleared across reboot
 echo -n "13. Cleared presets stay cleared across reboot... "
 eval timeout 5 $CLI --address $BRIDGE/config reboot 2>&1 > /dev/null || true
-sleep 12
+sleep 9
 result=$(eval timeout 5 $CLI --address $BRIDGE/raw read 0 2>&1)
 if [[ "$result" != *"Solo Preset"* ]]; then
   echo "✗ (preset 0 lost after reboot)"
