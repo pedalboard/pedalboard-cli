@@ -43,6 +43,37 @@ pub struct AudioConfig {
     pub connections: Vec<[String; 2]>,
     /// Named parameter snapshots. Switching a snapshot sets bypass + params for all instances.
     pub snapshots: Vec<AudioSnapshot>,
+    /// Expression pedal → plugin parameter mappings.
+    /// When the bridge receives the mapped CC, it sends param_set to all listed targets.
+    #[serde(default)]
+    pub expression: Option<Vec<ExpressionMapping>>,
+}
+
+/// Maps an incoming MIDI CC to one or more plugin parameters.
+#[derive(Deserialize, JsonSchema)]
+pub struct ExpressionMapping {
+    /// MIDI CC number to listen for (0-127).
+    pub cc: u8,
+    /// MIDI channel to listen on (1-16). Default: 1 (any).
+    #[serde(default)]
+    pub channel: Option<u8>,
+    /// Plugin parameters to control. CC value (0-127) is scaled to the param's min-max range.
+    pub targets: Vec<ExpressionTarget>,
+}
+
+/// A single plugin parameter controlled by an expression pedal.
+#[derive(Deserialize, JsonSchema)]
+pub struct ExpressionTarget {
+    /// mod-host instance ID.
+    pub instance: u32,
+    /// Port symbol name.
+    pub param: String,
+    /// Minimum parameter value (at CC=0). Default: 0.0.
+    #[serde(default)]
+    pub min: Option<f64>,
+    /// Maximum parameter value (at CC=127). Default: 1.0.
+    #[serde(default)]
+    pub max: Option<f64>,
 }
 
 /// A plugin instance in the audio rig.

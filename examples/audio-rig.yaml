@@ -1,58 +1,76 @@
 # Example: Audio-enabled setlist with neural amp modeling.
 # Demonstrates the full rig loaded at boot with snapshot-based tone switching.
 #
-# Rig: 3 AIDA-X amp instances (parallel, bypassed) + reverb + delay
+# Rig: distortion boost + 3 AIDA-X amp instances (parallel, bypassed) + reverb + delay
 # Switching: instant via bypass/param changes (no plugin reload)
 
 audio:
   plugins:
     - id: 0
-      uri: "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-loader"
-      model: "/etc/pedalboard/models/tw40_california_clean_deerinkstudios.json"
+      uri: "http://guitarix.sourceforge.net/plugins/gx_mxrdist_#_mxrdist_"
     - id: 1
       uri: "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-loader"
-      model: "/etc/pedalboard/models/tw40_british_rhythm_deerinkstudios.json"
+      model: "/etc/pedalboard/models/tw40_california_clean_deerinkstudios.json"
     - id: 2
       uri: "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-loader"
-      model: "/etc/pedalboard/models/tw40_blues_deluxe_deerinkstudios.json"
+      model: "/etc/pedalboard/models/tw40_british_rhythm_deerinkstudios.json"
     - id: 3
-      uri: "http://calf.sourceforge.net/plugins/Reverb"
+      uri: "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-loader"
+      model: "/etc/pedalboard/models/tw40_blues_deluxe_deerinkstudios.json"
     - id: 4
+      uri: "http://calf.sourceforge.net/plugins/Reverb"
+    - id: 5
       uri: "http://calf.sourceforge.net/plugins/VintageDelay"
   connections:
-    # Guitar in → all amp instances (parallel)
-    - ["system:capture_2", "effect_0:lv2_audio_in_1"]
-    - ["system:capture_2", "effect_1:lv2_audio_in_1"]
-    - ["system:capture_2", "effect_2:lv2_audio_in_1"]
+    # Guitar in → distortion pedal
+    - ["system:capture_2", "effect_0:in"]
+    # Distortion → all amp instances (parallel)
+    - ["effect_0:out", "effect_1:lv2_audio_in_1"]
+    - ["effect_0:out", "effect_2:lv2_audio_in_1"]
+    - ["effect_0:out", "effect_3:lv2_audio_in_1"]
     # Amp outputs → reverb (only active one passes audio)
-    - ["effect_0:lv2_audio_out_1", "effect_3:in_l"]
-    - ["effect_1:lv2_audio_out_1", "effect_3:in_l"]
-    - ["effect_2:lv2_audio_out_1", "effect_3:in_l"]
+    - ["effect_1:lv2_audio_out_1", "effect_4:in_l"]
+    - ["effect_2:lv2_audio_out_1", "effect_4:in_l"]
+    - ["effect_3:lv2_audio_out_1", "effect_4:in_l"]
     # Reverb → delay → output
-    - ["effect_3:out_l", "effect_4:in_l"]
-    - ["effect_4:out_l", "system:playback_2"]
+    - ["effect_4:out_l", "effect_5:in_l"]
+    - ["effect_5:out_l", "system:playback_2"]
+  expression:
+    # Exp1 (CC7) → Volume: controls MASTER on all amp instances
+    - cc: 7
+      targets:
+        - { instance: 1, param: "MASTER", min: 0.0, max: 1.0 }
+        - { instance: 2, param: "MASTER", min: 0.0, max: 1.0 }
+        - { instance: 3, param: "MASTER", min: 0.0, max: 1.0 }
+    # Exp2 (CC11) → Drive: controls DRIVE on the distortion pedal
+    - cc: 11
+      targets:
+        - { instance: 0, param: "DRIVE", min: 0.0, max: 1.0 }
   snapshots:
     - name: "Clean"
       state:
-        "0": { bypassed: false, params: { PREGAIN: 0.3, MASTER: 0.8 } }
-        "1": { bypassed: true }
+        "0": { bypassed: true }
+        "1": { bypassed: false, params: { PREGAIN: 0.3, MASTER: 0.8 } }
         "2": { bypassed: true }
-        "3": { bypassed: false, params: { decay_time: 2.5 } }
-        "4": { bypassed: true }
+        "3": { bypassed: true }
+        "4": { bypassed: false, params: { decay_time: 2.5 } }
+        "5": { bypassed: true }
     - name: "Crunch"
       state:
         "0": { bypassed: true }
-        "1": { bypassed: false, params: { PREGAIN: 0.7, MASTER: 0.6 } }
-        "2": { bypassed: true }
+        "1": { bypassed: true }
+        "2": { bypassed: false, params: { PREGAIN: 0.7, MASTER: 0.6 } }
         "3": { bypassed: true }
-        "4": { bypassed: false, params: { time_l: 4.0, feedback: 0.3 } }
+        "4": { bypassed: true }
+        "5": { bypassed: false, params: { time_l: 4.0, feedback: 0.3 } }
     - name: "Lead"
       state:
-        "0": { bypassed: true }
+        "0": { bypassed: false, params: { DRIVE: 0.6, VOLUME: 0.7 } }
         "1": { bypassed: true }
-        "2": { bypassed: false, params: { PREGAIN: 1.0, MASTER: 0.5 } }
-        "3": { bypassed: false, params: { decay_time: 3.0 } }
-        "4": { bypassed: false, params: { time_l: 5.0, feedback: 0.5 } }
+        "2": { bypassed: true }
+        "3": { bypassed: false, params: { PREGAIN: 1.0, MASTER: 0.5 } }
+        "4": { bypassed: false, params: { decay_time: 3.0 } }
+        "5": { bypassed: false, params: { time_l: 5.0, feedback: 0.5 } }
 
 global:
   din_enabled: true
