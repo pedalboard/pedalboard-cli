@@ -211,18 +211,14 @@ impl Device {
 
         // Upload global config if present.
         if let Some(gc) = &global {
-            let mut buf = [0u8; 32];
-            let bytes =
-                postcard::to_slice(gc, &mut buf).map_err(|e| format!("serialize gc: {e}"))?;
-            let mut encoded_buf = [0u8; 64];
-            let enc_len =
-                midi_controller::property_exchange::encode_mcoded7(bytes, &mut encoded_buf);
+            let serialized =
+                postcard::to_allocvec(gc).map_err(|e| format!("serialize gc: {e}"))?;
             let msg = midi_controller::property_exchange::build_set_inquiry(
                 [0x10, 0x20, 0x30, 0x40],
                 [0x01, 0x02, 0x03, 0x04],
-                0xFF,
+                0x7F,
                 midi_controller::config::GLOBAL_CONFIG_RESOURCE,
-                &encoded_buf[..enc_len],
+                &serialized,
             );
             ws.send(Message::Binary(msg.to_vec()))
                 .await
@@ -236,17 +232,14 @@ impl Device {
 
         // Upload presets.
         for (idx, preset) in presets.iter().enumerate() {
-            let bytes =
+            let serialized =
                 postcard::to_allocvec(preset).map_err(|e| format!("serialize preset: {e}"))?;
-            let mut encoded_buf = vec![0u8; bytes.len() * 2];
-            let enc_len =
-                midi_controller::property_exchange::encode_mcoded7(&bytes, &mut encoded_buf);
             let msg = midi_controller::property_exchange::build_set_inquiry(
                 [0x10, 0x20, 0x30, 0x40],
                 [0x01, 0x02, 0x03, 0x04],
+                idx as u8 + 1,
                 idx as u8,
-                idx as u8,
-                &encoded_buf[..enc_len],
+                &serialized,
             );
             ws.send(Message::Binary(msg.to_vec()))
                 .await
@@ -256,6 +249,34 @@ impl Device {
             {
                 preset_acks += 1;
             }
+        }
+
+        // Clear stale presets beyond uploaded count (empty body = delete).
+        let uploaded_count = presets.len() as u8;
+        for idx in uploaded_count..32 {
+            let msg = midi_controller::property_exchange::build_set_inquiry(
+                [0x10, 0x20, 0x30, 0x40],
+                [0x01, 0x02, 0x03, 0x04],
+                idx + 1,
+                idx,
+                &[],
+            );
+            ws.send(Message::Binary(msg.to_vec()))
+                .await
+                .map_err(|e| format!("clear preset {idx}: {e}"))?;
+        }
+        // Drain ACKs.
+        for _ in uploaded_count..32 {
+            if tokio::time::timeout(Duration::from_millis(100), ws.next())
+                .await
+                .is_err()
+            {
+                break;
+            }
+        }
+        // Allow firmware persist queue to drain.
+        if uploaded_count < 32 {
+            tokio::time::sleep(Duration::from_millis(500)).await;
         }
 
         Ok(UploadResult {
