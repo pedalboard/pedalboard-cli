@@ -1,0 +1,4 @@
+presets:
+  - name: "Solo Preset"
+    buttons:
+      A: { label: "X", cc: 1, color: red }

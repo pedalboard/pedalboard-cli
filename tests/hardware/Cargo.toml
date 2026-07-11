@@ -1,0 +1,33 @@
+[package]
+name = "hardware-tests"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.24"
+futures-util = "0.3"
+reqwest = { version = "0.12", features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+midi-controller = { git = "https://github.com/pedalboard/midi-controller" }
+pedalboard-config = { git = "https://github.com/pedalboard/pedalboard-config" }
+postcard = { version = "1.1.1", features = ["alloc"] }
+serial_test = "3"
+
+[lib]
+path = "src/lib.rs"
+
+[[test]]
+name = "midi"
+path = "src/midi.rs"
+
+[[test]]
+name = "audio"
+path = "src/audio.rs"
+
+[[test]]
+name = "compiler"
+path = "src/compiler.rs"

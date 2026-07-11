@@ -1,0 +1,11 @@
+global:
+  din_enabled: true
+  din_to_usb_thru: true
+  usb_to_din_thru: false
+  midi_clock: true
+  bpm: 100
+  internal_channel: 16
+presets:
+  - name: "GC Test"
+    buttons:
+      A: { label: "X", cc: 1, color: red }
