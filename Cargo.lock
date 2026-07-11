@@ -807,7 +807,7 @@ checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 [[package]]
 name = "midi-controller"
 version = "0.7.1"
-source = "git+https://github.com/pedalboard/midi-controller#8b4406d668348b3fe4633afe9a35fa33d55dc605"
+source = "git+https://github.com/pedalboard/midi-controller#c1257f2e2f571c6f431cab37efb7777581219fc1"
 dependencies = [
  "bitflags",
  "heapless 0.9.3",
@@ -960,7 +960,7 @@ dependencies = [
 [[package]]
 name = "pedalboard-config"
 version = "0.1.0"
-source = "git+https://github.com/pedalboard/pedalboard-config#e8879c5a0604e888dfc232396f9889f223f659e4"
+source = "git+https://github.com/pedalboard/pedalboard-config#64df0b11ea733c9482b06cc3e9e3ddc70f0e3547"
 dependencies = [
  "heapless 0.9.3",
  "midi-controller",
