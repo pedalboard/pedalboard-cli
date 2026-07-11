@@ -183,3 +183,39 @@ presets:
     assert_eq!(gc.exp2_min, 0);
     assert_eq!(gc.exp2_max, 3750);
 }
+
+#[test]
+fn global_config_internal_channel_parsed() {
+    use pedalboard_cli::config::yaml_global_to_protocol;
+
+    let yaml = r#"
+global:
+  internal_channel: 10
+presets:
+  - name: "Test"
+    buttons: {}
+"#;
+    let setlist: Setlist = serde_yaml::from_str(yaml).unwrap();
+    let global_yaml = setlist.global.expect("global section missing");
+    let gc = yaml_global_to_protocol(&global_yaml);
+
+    assert_eq!(gc.internal_channel, 10);
+}
+
+#[test]
+fn global_config_internal_channel_defaults_to_16() {
+    use pedalboard_cli::config::yaml_global_to_protocol;
+
+    let yaml = r#"
+global:
+  midi_clock: false
+presets:
+  - name: "Test"
+    buttons: {}
+"#;
+    let setlist: Setlist = serde_yaml::from_str(yaml).unwrap();
+    let global_yaml = setlist.global.expect("global section missing");
+    let gc = yaml_global_to_protocol(&global_yaml);
+
+    assert_eq!(gc.internal_channel, 16);
+}

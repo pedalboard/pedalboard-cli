@@ -807,7 +807,7 @@ checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 [[package]]
 name = "midi-controller"
 version = "0.7.1"
-source = "git+https://github.com/pedalboard/midi-controller#72a1d6306415012e13c800de56e79d734e9822bd"
+source = "git+https://github.com/pedalboard/midi-controller#da4b6551ecc481ebe736a56a8211e301058eebad"
 dependencies = [
  "bitflags",
  "heapless 0.9.3",
@@ -960,7 +960,7 @@ dependencies = [
 [[package]]
 name = "pedalboard-config"
 version = "0.1.0"
-source = "git+https://github.com/pedalboard/pedalboard-config#d6085ab9a87c8b0b97b73819fd8fc5f872030aff"
+source = "git+https://github.com/pedalboard/pedalboard-config#b0a6ad903310170f64240d850e43ff5481f6ebc8"
 dependencies = [
  "heapless 0.9.3",
  "midi-controller",
@@ -1354,9 +1354,9 @@ dependencies = [
 
 [[package]]
 name = "sha1"
-version = "0.10.6"
+version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e3bf829a2d51ab4a5ddf1352d8470c140cadc8301b2ae1789db023f01cedd6ba"
+checksum = "a978451301f4db1d02937a4ab3ccce137717b81826e79b7d49ffe3244a13c3b8"
 dependencies = [
  "cfg-if",
  "cpufeatures",
@@ -2004,18 +2004,18 @@ dependencies = [
 
 [[package]]
 name = "zerocopy"
-version = "0.8.53"
+version = "0.8.54"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75726053136156d419e285b9b7eddaaea9e3fea6ce32eed44a89901f0bd98de1"
+checksum = "b7cbbc0a705a0fd05cc3676525980d2bf5a9bc4adac6d6475209a7887cf59d19"
 dependencies = [
  "zerocopy-derive",
 ]
 
 [[package]]
 name = "zerocopy-derive"
-version = "0.8.53"
+version = "0.8.54"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4714fd92cf900833d49538023a9b3915155210801d1c1169eba513b2addefd71"
+checksum = "e2e817b7b52d0c7358d3246da9d69935ebb18116b2b102b4230dac079b4862f5"
 dependencies = [
  "proc-macro2",
  "quote",

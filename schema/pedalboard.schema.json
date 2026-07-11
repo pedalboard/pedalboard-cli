@@ -794,6 +794,16 @@
             "null"
           ]
         },
+        "internal_channel": {
+          "description": "Internal MIDI channel (1-16). Messages on this channel are forwarded to USB only (for bridge consumption) and never sent to DIN output. Default: 16.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "minimum": 0.0
+        },
         "midi_clock": {
           "description": "Enable MIDI Clock output. Default: false.",
           "default": null,

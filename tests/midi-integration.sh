@@ -90,6 +90,7 @@ global:
   usb_to_din_thru: false
   midi_clock: true
   bpm: 100
+  internal_channel: 16
 presets:
   - name: "GC Test"
     buttons:
