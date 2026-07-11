@@ -219,3 +219,43 @@ presets:
 
     assert_eq!(gc.internal_channel, 16);
 }
+
+#[test]
+fn compiler_generates_buttons_for_minimal_audio() {
+    use pedalboard_cli::config::yaml_to_presets;
+
+    let yaml = std::fs::read_to_string("examples/minimal-audio.yaml")
+        .expect("examples/minimal-audio.yaml not found");
+    let setlist: Setlist = serde_yaml::from_str(&yaml).unwrap();
+
+    // Before compilation: no buttons
+    assert!(
+        setlist.presets[0].buttons.is_empty(),
+        "minimal-audio.yaml should have no explicit buttons"
+    );
+
+    // After compilation: 3 snapshot buttons
+    let result = pedalboard_config::compile::compile(setlist);
+    let preset = &result.setlist.presets[0];
+    assert_eq!(
+        preset.buttons.len(),
+        3,
+        "compiler should generate 3 buttons"
+    );
+    assert_eq!(preset.buttons["A"].label, "Clean");
+    assert_eq!(preset.buttons["B"].label, "Crunch");
+    assert_eq!(preset.buttons["C"].label, "Lead");
+
+    // Buttons use internal channel (16) and Program Change
+    assert_eq!(preset.buttons["A"].channel, Some(16));
+    assert_eq!(preset.buttons["A"].program_change, Some(0));
+    assert_eq!(preset.buttons["B"].program_change, Some(1));
+    assert_eq!(preset.buttons["C"].program_change, Some(2));
+
+    // The compiled output converts to valid presets
+    let presets = yaml_to_presets(&result.setlist);
+    assert_eq!(presets.len(), 1);
+    assert_eq!(presets[0].name.as_str(), "Compiler Test");
+    // Should have 6 buttons (3 generated + 3 empty defaults)
+    assert!(!presets[0].buttons.is_empty());
+}

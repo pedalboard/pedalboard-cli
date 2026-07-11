@@ -1,0 +1,25 @@
+# Minimal audio-integrated setlist for compiler testing.
+# No explicit buttons — the compiler auto-generates snapshot switching buttons.
+
+audio:
+  plugins:
+    - id: 0
+      uri: "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-loader"
+      model: "/etc/pedalboard/models/tw40_california_clean_deerinkstudios.json"
+  connections:
+    - ["system:capture_2", "effect_0:lv2_audio_in_1"]
+    - ["effect_0:lv2_audio_out_1", "system:playback_2"]
+  snapshots:
+    - name: "Clean"
+      state:
+        "0": { params: { PREGAIN: 0.3 } }
+    - name: "Crunch"
+      state:
+        "0": { params: { PREGAIN: 0.7 } }
+    - name: "Lead"
+      state:
+        "0": { params: { PREGAIN: 1.0 } }
+
+presets:
+  - name: "Compiler Test"
+    audio_snapshot: "Clean"
