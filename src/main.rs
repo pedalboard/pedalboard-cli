@@ -45,6 +45,9 @@ enum Commands {
         /// Output binary file path
         #[arg(short, long, default_value = "config.bin")]
         output: PathBuf,
+        /// Show what would be generated without writing output
+        #[arg(long)]
+        preview: bool,
     },
     /// Read back a preset from the device
     Read { index: u8 },
@@ -69,7 +72,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Reboot { wait } => status::reboot(&cli.address, wait).await?,
         Commands::Bootloader => status::bootloader(&cli.address).await?,
         Commands::Upload { file } => upload::pe_upload(&cli.address, &file).await?,
-        Commands::Compile { file, output } => compile::compile(&file, &output)?,
+        Commands::Compile {
+            file,
+            output,
+            preview,
+        } => compile::compile(&file, &output, preview)?,
         Commands::Read { index } => read::pe_read(&cli.address, index).await?,
         Commands::Monitor => monitor::monitor(&cli.address).await?,
         Commands::Flash { file } => flash::flash(&cli.address, &file).await?,
