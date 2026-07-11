@@ -258,25 +258,6 @@ impl Device {
             }
         }
 
-        // Clear remaining slots.
-        for idx in presets.len()..32 {
-            let msg = midi_controller::property_exchange::build_set_inquiry(
-                [0x10, 0x20, 0x30, 0x40],
-                [0x01, 0x02, 0x03, 0x04],
-                idx as u8,
-                idx as u8,
-                &[],
-            );
-            ws.send(Message::Binary(msg.to_vec()))
-                .await
-                .map_err(|e| format!("clear slot {idx}: {e}"))?;
-            if let Ok(Some(Ok(_))) =
-                tokio::time::timeout(Duration::from_secs(2), ws.next()).await
-            {
-                // cleared
-            }
-        }
-
         Ok(UploadResult {
             preset_acks,
             global_ack,
