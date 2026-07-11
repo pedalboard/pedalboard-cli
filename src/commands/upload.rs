@@ -20,6 +20,10 @@ pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std:
         std::process::exit(1);
     }
 
+    // Run the compiler: auto-generate buttons from audio snapshots (ADR-005).
+    let compiled = pedalboard_config::compile::compile(setlist);
+    let setlist = compiled.setlist;
+
     // Validate config before compiling.
     let errors = validate(&setlist);
     if !errors.is_empty() {
