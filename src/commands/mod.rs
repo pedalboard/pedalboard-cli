@@ -1,4 +1,3 @@
-pub mod compile;
 pub mod flash;
 pub mod mode;
 pub mod monitor;

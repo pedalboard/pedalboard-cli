@@ -6,7 +6,11 @@ use tokio_tungstenite::{connect_async, tungstenite::Message};
 use crate::config::validate::validate;
 use crate::config::{yaml_global_to_protocol, yaml_to_presets, Setlist, SCHEMA_VERSION};
 
-pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn pe_upload(
+    address: &str,
+    file: &PathBuf,
+    dry_run: bool,
+) -> Result<(), Box<dyn std::error::Error>> {
     let raw_address = format!("{}/raw", address.trim_end_matches('/'));
     let content = std::fs::read_to_string(file)?;
     let setlist: Setlist = serde_yaml::from_str(&content)?;
@@ -24,6 +28,13 @@ pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std:
     let compiled = pedalboard_config::compile::compile(setlist);
     let setlist = compiled.setlist;
 
+    if !compiled.notes.is_empty() {
+        println!("Compiler:");
+        for note in &compiled.notes {
+            println!("  {}", note);
+        }
+    }
+
     // Validate config before compiling.
     let errors = validate(&setlist);
     if !errors.is_empty() {
@@ -35,6 +46,18 @@ pub async fn pe_upload(address: &str, file: &PathBuf) -> Result<(), Box<dyn std:
     }
 
     let presets = yaml_to_presets(&setlist);
+
+    if dry_run {
+        println!("Dry run — {} presets would be uploaded:", presets.len());
+        for (idx, preset) in presets.iter().enumerate() {
+            let size = postcard::to_allocvec(preset)?.len();
+            println!("  Preset {}: \"{}\" ({} bytes)", idx, preset.name, size);
+        }
+        if setlist.global.is_some() {
+            println!("  Global config: yes");
+        }
+        return Ok(());
+    }
 
     println!(
         "Uploading {} presets via Property Exchange...",

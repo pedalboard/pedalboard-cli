@@ -279,8 +279,7 @@ fi
 
 # Test 15: Compiler-generated preset uploads and reads back correctly
 echo -n "15. Compiled audio preset (ADR-005)... "
-COMPILED_BIN=/tmp/pedalboard-compiled-test.bin
-eval timeout 5 $CLI compile examples/minimal-audio.yaml -o $COMPILED_BIN 2>&1 > /dev/null
+eval timeout 5 $CLI upload examples/minimal-audio.yaml --dry-run 2>&1 > /dev/null
 eval timeout 15 $CLI --address $BRIDGE upload examples/minimal-audio.yaml 2>&1 > /dev/null
 sleep 1
 result=$(eval timeout 5 $CLI --address $BRIDGE read 0 2>&1)
@@ -289,10 +288,8 @@ if [[ "$result" == *"Compiler Test"* ]] && [[ "$result" == *"Clean"* ]] && [[ "$
 else
   echo "✗ (unexpected content)"
   echo "$result"
-  rm -f "$COMPILED_BIN"
   exit 1
 fi
-rm -f "$COMPILED_BIN"
 
 echo ""
 echo "All tests passed."
