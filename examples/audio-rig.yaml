@@ -88,11 +88,11 @@ presets:
     bpm: 72
     audio_snapshot: "Clean"
     buttons:
-      A: { label: "Clean", program_change: 0, color: green, radio_group: 1 }
+      A: { label: "Clean", program_change: 0, color: green, radio_group: 1, on_long_press: prev_preset }
       B: { label: "Crunch", program_change: 1, color: yellow, radio_group: 1 }
       C: { label: "Lead", program_change: 2, color: red, radio_group: 1 }
       D: { label: "Reverb", cc: 80, toggle: true, color: blue }
-      E: { label: "Delay", cc: 81, toggle: true, color: cyan }
+      E: { label: "Delay", cc: 81, toggle: true, color: cyan, on_long_press: prev_preset }
       F: { label: "Boost", cc: 82, color: white, on_long_press: next_preset }
     defaults:
       buttons: { A: "on" }
@@ -111,8 +111,8 @@ presets:
       B: { label: "Solo", program_change: 2, color: red, radio_group: 1 }
       C: { label: "Clean", program_change: 0, color: green, radio_group: 1 }
       D: { label: "FX", cc: 80, toggle: true, color: blue }
-      E: { label: "", color: off }
-      F: { label: "Next", cc: 99, color: magenta, on_long_press: next_preset }
+      E: { label: "Tap", tap_tempo: true, color: orange, on_long_press: prev_preset }
+      F: { label: "Boost", cc: 82, color: white, on_long_press: next_preset }
     defaults:
       buttons: { A: "on" }
     encoders:
@@ -121,3 +121,78 @@ presets:
     analog:
       Exp1: { label: "Gain", cc: 7 }
       Exp2: { label: "Drive", cc: 11 }
+
+  - name: "Outro"
+    bpm: 72
+    audio_snapshot: "Lead"
+    buttons:
+      A: { label: "Lead", program_change: 2, color: red, radio_group: 1 }
+      B: { label: "Clean", program_change: 0, color: green, radio_group: 1 }
+      C: { label: "Crunch", program_change: 1, color: yellow, radio_group: 1 }
+      D: { label: "Reverb", cc: 80, toggle: true, color: blue }
+      E: { label: "Swell", cc: 83, toggle: true, color: purple, on_long_press: prev_preset }
+      F: { label: "Boost", cc: 82, color: white, on_long_press: next_preset }
+    defaults:
+      buttons: { A: "on", D: "on" }
+    encoders:
+      Vol: { label: "Volume", cc: 7 }
+      Gain: { label: "Gain", cc: 91 }
+    analog:
+      Exp1: { label: "Volume", cc: 7 }
+      Exp2: { label: "Drive", cc: 11 }
+
+  - name: "Song 4"
+    audio_snapshot: "Clean"
+    buttons:
+      A: { label: "Clean", program_change: 0, color: green, radio_group: 1, on_long_press: prev_preset }
+      F: { label: "Next", cc: 82, color: white, on_long_press: next_preset }
+    defaults:
+      buttons: { A: "on" }
+
+  - name: "Song 5"
+    audio_snapshot: "Clean"
+    buttons:
+      A: { label: "Clean", program_change: 0, color: green, radio_group: 1, on_long_press: prev_preset }
+      F: { label: "Next", cc: 82, color: white, on_long_press: next_preset }
+    defaults:
+      buttons: { A: "on" }
+
+  - name: "Song 6"
+    audio_snapshot: "Clean"
+    buttons:
+      A: { label: "Clean", program_change: 0, color: green, radio_group: 1, on_long_press: prev_preset }
+      F: { label: "Next", cc: 82, color: white, on_long_press: next_preset }
+    defaults:
+      buttons: { A: "on" }
+
+  - name: "Song 7"
+    audio_snapshot: "Clean"
+    buttons:
+      A: { label: "Clean", program_change: 0, color: green, radio_group: 1, on_long_press: prev_preset }
+      F: { label: "Next", cc: 82, color: white, on_long_press: next_preset }
+    defaults:
+      buttons: { A: "on" }
+
+  - name: "Song 8"
+    audio_snapshot: "Clean"
+    buttons:
+      A: { label: "Clean", program_change: 0, color: green, radio_group: 1, on_long_press: prev_preset }
+      F: { label: "Next", cc: 82, color: white, on_long_press: next_preset }
+    defaults:
+      buttons: { A: "on" }
+
+  - name: "Song 9"
+    audio_snapshot: "Clean"
+    buttons:
+      A: { label: "Clean", program_change: 0, color: green, radio_group: 1, on_long_press: prev_preset }
+      F: { label: "Next", cc: 82, color: white, on_long_press: next_preset }
+    defaults:
+      buttons: { A: "on" }
+
+  - name: "Song 10"
+    audio_snapshot: "Lead"
+    buttons:
+      A: { label: "Lead", program_change: 2, color: red, radio_group: 1, on_long_press: prev_preset }
+      F: { label: "Next", cc: 82, color: white, on_long_press: next_preset }
+    defaults:
+      buttons: { A: "on" }
