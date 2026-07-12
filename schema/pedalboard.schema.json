@@ -396,6 +396,30 @@
           "format": "uint8",
           "minimum": 0.0
         },
+        "clock_start": {
+          "description": "Start MIDI clock transport (sends MIDI Start 0xFA) on press.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "clock_stop": {
+          "description": "Stop MIDI clock transport (sends MIDI Stop 0xFC) on press.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "clock_toggle": {
+          "description": "Toggle MIDI clock transport on/off on each press.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "color": {
           "description": "LED ring color when active. Values: red, green, blue, yellow, cyan, magenta, white, orange, purple, off, or #RRGGBB hex.",
           "default": null,
@@ -891,6 +915,16 @@
             "string",
             "null"
           ]
+        },
+        "bpm": {
+          "description": "BPM for this preset (30-300). Applied on preset switch. Overrides global BPM for this song. Omit to keep the current tempo unchanged when switching to this preset.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint16",
+          "minimum": 0.0
         },
         "buttons": {
           "description": "Button configurations keyed by position: A, B, C, D, E, F.",

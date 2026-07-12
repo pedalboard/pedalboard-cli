@@ -10,7 +10,8 @@
 global:
   din_enabled: true
   din_to_usb_thru: true
-  midi_clock: false
+  midi_clock: true
+  bpm: 120
 
 presets:
   - name: "Feature Test"
@@ -74,3 +75,16 @@ presets:
       Vol: { label: "FX Knob", mode: relative, cc: 16, channel: 1, increment: 65, decrement: 63 }
       # Preset scroll mode (no MIDI, scrolls presets)
       Gain: { label: "Bank", mode: preset_scroll }
+
+  - name: "Clock Test"
+    bpm: 140
+    buttons:
+      A: { label: "Start", clock_start: true, color: green }
+      B: { label: "Stop", clock_stop: true, color: red }
+      C: { label: "Toggle", clock_toggle: true, color: orange }
+      D: { label: "Tap", tap_tempo: true, color: cyan }
+      E: { label: "CC", cc: 50, color: blue }
+      F: { label: "Next", cc: 100, color: magenta, on_long_press: clock_toggle }
+    encoders:
+      Vol: { label: "Tempo", mode: preset_scroll }
+      Gain: { label: "Mix", cc: 91 }

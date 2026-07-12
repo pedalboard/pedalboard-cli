@@ -85,6 +85,7 @@ global:
 
 presets:
   - name: "Ballad"
+    bpm: 72
     audio_snapshot: "Clean"
     buttons:
       A: { label: "Clean", program_change: 0, color: green, radio_group: 1 }
@@ -103,6 +104,7 @@ presets:
       Exp2: { label: "Reverb", cc: 11 }
 
   - name: "Rock"
+    bpm: 130
     audio_snapshot: "Crunch"
     buttons:
       A: { label: "Riff", program_change: 1, color: yellow, radio_group: 1 }
