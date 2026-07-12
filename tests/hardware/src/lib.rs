@@ -199,7 +199,7 @@ impl Device {
         let global = setlist
             .global
             .as_ref()
-            .map(|g| pedalboard_config::yaml_global_to_protocol(g));
+            .map(pedalboard_config::yaml_global_to_protocol);
 
         let (mut ws, _) = connect_async(&self.raw_url())
             .await
