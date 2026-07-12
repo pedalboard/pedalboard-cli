@@ -52,6 +52,12 @@ pub async fn pe_read(address: &str, index: u8) -> Result<(), Box<dyn std::error:
                             for (i, enc) in preset.encoders.iter().enumerate() {
                                 println!("  Encoder {}: \"{}\"", i, enc.label);
                             }
+                            for (i, analog) in preset.analog.iter().enumerate() {
+                                println!(
+                                    "  Analog {}: \"{}\" (CC {}, ch {})",
+                                    i, analog.label, analog.cc, analog.channel
+                                );
+                            }
                         }
                         Err(e) => println!("Preset {}: deserialize error: {}", index, e),
                     }
