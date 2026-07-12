@@ -45,7 +45,17 @@ enum Commands {
         dry_run: bool,
     },
     /// Read back a preset from the device
-    Read { index: u8 },
+    Read {
+        /// Preset index (0-31). Omit with --all to read all presets.
+        #[arg(required_unless_present = "all")]
+        index: Option<u8>,
+        /// Output as valid setlist YAML (re-uploadable)
+        #[arg(long)]
+        yaml: bool,
+        /// Read all presets
+        #[arg(long)]
+        all: bool,
+    },
     /// Monitor MIDI output from the device in real-time
     Monitor,
     /// Flash a UF2 firmware file to the device (enters bootloader, uploads via bridge)
@@ -69,7 +79,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Upload { file, dry_run } => {
             upload::pe_upload(&cli.address, &file, dry_run).await?
         }
-        Commands::Read { index } => read::pe_read(&cli.address, index).await?,
+        Commands::Read { index, yaml, all } => {
+            read::pe_read(&cli.address, index, yaml, all).await?
+        }
         Commands::Monitor => monitor::monitor(&cli.address).await?,
         Commands::Flash { file } => flash::flash(&cli.address, &file).await?,
         Commands::Mode { mode: m } => mode::set_mode(&cli.address, &m).await?,
