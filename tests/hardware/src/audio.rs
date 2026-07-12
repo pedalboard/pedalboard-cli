@@ -60,12 +60,27 @@ async fn snapshot_active() {
 #[tokio::test]
 #[serial]
 async fn audio_connections_wired() {
-    // Verify capture → first plugin is connected.
-    let connections = ssh_cmd("jack_lsp -c 2>/dev/null | grep -A1 'effect_0:in$' | grep capture")
-        .await;
+    // mod-host manages the internal plugin chain. The external JACK routing is:
+    // mod-monitor:out → system:playback (output monitoring path).
+    let output_conn =
+        ssh_cmd("jack_lsp -c 2>/dev/null | grep -A1 'mod-monitor:out_1' | grep playback").await;
     assert!(
-        connections.is_ok() && !connections.unwrap().is_empty(),
-        "system:capture should be connected to effect_0:in"
+        output_conn.is_ok() && !output_conn.as_ref().unwrap().is_empty(),
+        "mod-monitor:out should be connected to system:playback"
+    );
+}
+
+#[tokio::test]
+#[serial]
+async fn amp_models_loaded() {
+    let d = device();
+    let status = d.bridge_status().await.unwrap();
+    let audio = status.audio.expect("audio should be present");
+    // Each snapshot corresponds to an AIDA-X amp model (clean/crunch/lead).
+    assert!(
+        audio.snapshots >= 3,
+        "expected >=3 amp model snapshots, got {}",
+        audio.snapshots
     );
 }
 
