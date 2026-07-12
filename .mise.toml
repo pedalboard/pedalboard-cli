@@ -1,2 +1,5 @@
+[env]
+PEDALBOARD_ADDR = "ws://cm5-dev.home:8080"
+
 [tools]
 "pipx:json-schema-for-humans" = "1.5.1"
